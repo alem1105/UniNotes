@@ -1,0 +1,2 @@
+# Sottoinsiemi e Inclusione
+Un insieme B si dice **sottoinsieme** di A se **tutti gli elementi** di B appartengono ad A e si indica con il simbolo $B \subseteq A$, con questo simbolo includiamo anche il caso in qui B sia l'insieme vuoto oppure  B è uguale ad A, con il simbolo $B \subset A$ indichiamo un **sottoinsieme proprio** ovvero che tutti gli elementi di B appartengono ad A ma ci sono elementi di A che non appartengono a B.
