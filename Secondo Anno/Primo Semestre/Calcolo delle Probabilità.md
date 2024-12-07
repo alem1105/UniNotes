@@ -3491,5 +3491,5 @@ Inoltre $S_{n}=X_{1}+X_{2}+\dots+X_{n}$ che sono tutte indipendenti quindi sono 
 
 _Eserczio_ Lancio 10.000 volte una moneta onesta, con l'approssimazione gaussiana trovare $P(|\text{\#Teste - 5000}|\geq 75)$
 
-
+a
 
