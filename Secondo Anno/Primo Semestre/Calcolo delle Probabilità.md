@@ -3490,6 +3490,3 @@ $$
 Inoltre $S_{n}=X_{1}+X_{2}+\dots+X_{n}$ che sono tutte indipendenti quindi sono tutte $Bern(p)$. $S_{n}$ è quindi somma di v.a. indipendenti identicamente distribuite.
 
 _Eserczio_ Lancio 10.000 volte una moneta onesta, con l'approssimazione gaussiana trovare $P(|\text{\#Teste - 5000}|\geq 75)$
-
-a
-
