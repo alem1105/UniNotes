@@ -71,4 +71,4 @@ I File Management Systems sollevano i programmatori dal dover scrivere codice pe
 - Ogni utente deve poter mantenere una copia di backup dei propri file
 - Ogni utente deve poter accedere ai propri file tramite nomi simbolici (scelti da lui)
 
-_Continuare primo video File System_
+_Continuare primo video File System_, p
