@@ -202,3 +202,87 @@ Ovviamente più bucket abbiamo più è basso il costo delle operazioni, ma dobbi
 **Osservazioni per esame e corso**
 - Ogni record deve essere contenuto completamente in un blocco
 - I blocchi vengono allocati per intero
+
+# File con Indice
+Quando le chiavi permettono un ordinamento significativo per l'applicazione ci conviene utilizzare un'organizzazione fisica che ne tiene conto in modo da vere più vantaggi.
+
+Interi e stringhe ammettono i classici ordinamenti, quindi crescente o decrescente e per le stringhe lessicografico. Per i campi multipli si ordina prima sul primo campo poi sul secondo e così via.
+
+## Ordine Lessicografico
+Un alfabeto finito totalmente ordinato di simboli è un insieme:
+
+$$
+\Sigma=(\delta_{1},\dots,\delta_{n})
+$$
+
+Dotato di ordine totale, quindi:
+
+$$
+\delta_{1} < \delta_{2} <\dots< \delta_{n}
+$$
+
+E date due sequenze di simboli:
+
+$$
+\begin{align*}
+I=\delta_{i1}\delta_{i2}\dots\delta_{in} \\
+J=\delta_{j1}\delta_{j2}\dots\delta_{jm}
+\end{align*}
+$$
+
+Diciamo che $I<J$ se esiste un numero $k\in \mathbb{N}$ per cui:
+
+$$
+\delta_{i1}\delta_{i2}\dots\delta_{ik}=\delta_{j1}\delta_{j2}\dots\delta_{jk}
+$$
+
+E vale una delle seguenti relazioni:
+
+$$
+\delta_{i(k+1)}<\delta_{j(k+1)} \text{ oppure } n=k<m
+$$
+Quindi abbiamo preso due sequenze di simboli tali che fino ad un certo valore $k$ risultano uguali. Diciamo che la sequenza $I$ è minore della sequenza $J$ se il valore successivo a k di $I$ è minore a quello successivo in $J$ oppure se $I$ è una sottosequenza di $J$ e quindi $I$ è completamente contenuta in $J$.
+
+## Algoritmo di Confronto
+Le condizioni appena viste sono equivalenti al seguente algoritmo:
+
+- Si pone $n=1$
+- Si confrontano i simboli nella posizione n-esima della stringa:
+	- Se una delle due non possiede l'elemento n-esimo allora è minore dell'altra e terminiamo
+	- Se entrambe le stringhe non possiedono l'elemento n-esimo allora sono uguali e l'algoritmo termina
+	- Se i simboli sono uguali si passa alla posizione successiva
+	- Se questi sono diversi, il loro ordine è l'ordine delle stringhe
+
+## File con Indice (sparso)
+Il primo esempio è il file **ISAM (Indexed Sequential Access Method)**.
+
+Questo è il file che abbiamo come esempio:
+
+![[Pasted image 20241211183149.png|250]]
+
+Questo file viene ordinato in base al valore della chiave, in questo caso la matricola. Per fare questo viene creato un nuovo file, **il file indice**, che contiene un record per ogni blocco del file principale, questi record hanno due campi, uno è il puntatore ad un blocco del file principale e affiancato a questo c'è il valore più piccolo della chiave presente in quel blocco:
+
+![[Pasted image 20241211183347.png|250]]
+
+## Ricerca
+Ad esempio il record con chiave 090 deve trovarsi nel blocco del file principale che contiene 031 come valore più piccolo, dato che nel precedente il valore più piccolo è 003 e nei successivi sono $\geq 101$.
+
+Oppure il record con chiave 234 deve trovarsi nell'ultimo blocco del file principale dato che nei precedenti i valori della chiave sono < 220.
+
+Per ricercare un record con valore della chiave $k$ occorre ricercare sul file indice un valore $k'$ della chiave che ricopre $k$ cioè tale che:
+- $k'\leq k$
+- Se il record con chiave $k'$ non è l'ultimo record del file indice e $k''$ è il valore della chiave nel record successivo allora $k<k''$.
+
+La ricerca di un record con chiave $k$ richiede una ricerca sul file indice più un accesso in lettura sul file principale.
+
+## Ricerca Binaria sul file Indice
+Dato che il file indice è ordinato in base al valore della chiave, la ricerca di un valore che ricopre la chiave può essere effettuata tramite la ricerca binaria:
+
+- Si fa un accesso in lettura al blocco $\frac{m}{2} +1$ e si confronta $k$ con $k1$ (prima chiave del blocco)
+- Se $k=k1$ abbiamo finito
+- Se $k<k1$ allora si ripete il procedimento sui blocchi da 1 a $\frac{m}{2}$
+- Altrimenti si ripete il procedimento sui blocchi da $\frac{m}{2}+1$ a $m$ (ricontrolliamo anche questo blocco dato che prima abbiamo controllato solo la prima chiave e non il resto del blocco)
+
+Ci si ferma quando lo spazio di ricerca è ridotto ad un unico blocco e quindi dopo $\lceil \log_{2} m \rceil$ accessi
+
+## Ricerca per Interpolazione
