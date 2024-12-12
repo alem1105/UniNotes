@@ -264,6 +264,8 @@ Questo file viene ordinato in base al valore della chiave, in questo caso la mat
 
 ![[Pasted image 20241211183347.png|250]]
 
+_L'indice $-\infty$ è usato solo come notazione per indicare il primo blocco._
+
 ## Ricerca
 Ad esempio il record con chiave 090 deve trovarsi nel blocco del file principale che contiene 031 come valore più piccolo, dato che nel precedente il valore più piccolo è 003 e nei successivi sono $\geq 101$.
 
@@ -286,3 +288,54 @@ Dato che il file indice è ordinato in base al valore della chiave, la ricerca d
 Ci si ferma quando lo spazio di ricerca è ridotto ad un unico blocco e quindi dopo $\lceil \log_{2} m \rceil$ accessi
 
 ## Ricerca per Interpolazione
+Si basa sulla conoscenza della distribuzione della chiave, abbiamo quindi bisogno di una funzione $f$ che dati tre valori $k1,k 2, k 3$ della chiave fornisca un valore che è la frazione dell'intervallo di valori della chiave compresi tra $k 2$ e $k 3$ in cui deve trovarsi $k 1$ cioè la chiave che stiamo cercando.
+
+Ad esempio quando andiamo a cercare un valore in un dizionario non partiamo sempre da metà ma se ad esempio cerchiamo una parola con la C cercheremo in una zona vicina all'inizio.
+
+- $k 1$ deve essere confrontato con il valore $k$ della chiave nel primo record del blocco $i$ del file indice, dove $i=f(k 1, k 2, k3)*m$ 
+- Se poi $k 1$ è minore di tale valore allora il procedimento deve essere ripetuto sui blocchi $1,2,\dots,i-1$ mentre se è maggiore lo ripetiamo sui blocchi $i,i+1,\dots,m$ finché la ricerca si restringe ad un unico blocco.
+
+La ricerca per interpolazione richiede circa $1+\log_{2}(\log_{2} m)$ accessi è quindi molto più veloce ma è anche molto difficile conoscere la $f$ e poi dobbiamo anche considerare che la distribuzione dei dati potrebbe cambiare nel tempo, possiamo quindi utilizzarla solo su strutture statiche nel tempo.
+
+_Esempio pratico_
+
+Supponiamo di avere un array ordinato: $[10,20,30,40,\dots,90,100]$ e vogliamo cercare il valore 55.
+
+Prendiamo quindi il valore minimo 10 e il massimo 100 e calcoliamo la posizione stimata con la seguente funzione (che può variare da caso a caso):
+
+$$
+i = inizio + (\frac{v_{1}-v_{2}}{v_{3}-v_{2}})\cdot(fine - inizio)
+$$
+
+Quindi sostituendo:
+
+$$
+0 + (\frac{55-10}{100-10})\cdot (9-0)=4.5
+$$
+
+Adesso a seconda della funzione scegliamo se prendere 4 o 5 come indice e confrontiamo il valore di questo indice con il valore della chiave. Se combaciano abbiamo finito altrimenti se la chiave è più piccola ripetiamo il procedimento sulla metà inferiore o se più grande su quella superiore.
+
+## Inserimento
+
+Per effettuare un inserimento dobbiamo sicuramente pagare il costo della ricerca + 1 accesso per scrivere il blocco modificato se nel blocco c'è spazio per inserirlo altrimenti possiamo seguire diverse strategie e abbiamo bisogno di più accessi (consideriamo B il blocco dove inserire il record):
+- Se c'è spazio nel blocco successivo o nel precedente, il nuovo record o un record che era nel blocco pieno diventano il primo record del successivo e quindi modifichiamo anche il valore affiancato al record nel file indice.
+- Se non c'è spazio né nel precedente né nel successivo dobbiamo richiedere un nuovo blocco che seguirà B al file system e dobbiamo ripartire i record tra B e il nuovo blocco, sarà necessario quindi inserire un nuovo record nel file indice relativo al nuovo blocco:
+  
+  ![[Pasted image 20241212113318.png]]
+  ![[Pasted image 20241212113343.png]]
+In ogni caso occorre modificare i bit _usato / non usato_ nelle intestazioni dei blocchi
+
+## Cancellazione
+Ci serve ovviamente il costo della ricerca + 1 accesso per modificare il blocco.
+
+Se il record cancellato è il primo di un blocco abbiamo bisogno di ulteriori accessi per modificare il record nel file indice.
+
+Se il record cancellato era l'unico del blocco, il blocco viene restituito al sistema e nel file indice cancelliamo il record relativo (anche in questo caso se il record è l'unico del blocco lo restituiamo al sistema).
+
+In ogni caso occorre modificare i bit di _usato / non usato_ nelle intestazioni dei blocchi.
+
+## Modifica
+Come prima cosa occorre cercare il record poi distinguiamo due casi:
+- Se la modifica non coinvolge i campi della chiave, il record viene modificato e il blocco riscritto.
+- Altrimenti la modifica equivale ad una cancellazione seguita da un inserimento.
+
