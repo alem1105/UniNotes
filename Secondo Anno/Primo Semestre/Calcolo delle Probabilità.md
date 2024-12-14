@@ -3489,4 +3489,118 @@ $$
 
 Inoltre $S_{n}=X_{1}+X_{2}+\dots+X_{n}$ che sono tutte indipendenti quindi sono tutte $Bern(p)$. $S_{n}$ è quindi somma di v.a. indipendenti identicamente distribuite.
 
-_Eserczio_ Lancio 10.000 volte una moneta onesta, con l'approssimazione gaussiana trovare $P(|\text{\#Teste - 5000}|\geq 75)$
+# Teorema del Limite Centrale
+Nel teorema di De Moivre consideriamo $S_{n}=Bin(n,p)$ che non è altro che la somma di $n$ v.a. indipendenti di prove successo / insuccesso con $p$ probabilità di successo per ogni singola prova.
+
+Quindi definiamo $S_{n}$ come il numero di successi e notiamo che:
+
+$$
+S_{n}=X_{1}+X_{2}+\dots+X_{n}
+$$
+
+Dove:
+
+$$
+X_{i}=\begin{cases}
+1 \text{ se alla prova i ho successo} \\
+0 \text{ altrimenti}
+\end{cases}
+$$
+
+Per $i=1,2,\dots,n$ abbiamo che $X_{1},\dots,X_{n}$ sono tutte $Bern(p)$ quindi identicamente distribuite e sono v.a. indipendenti perché si riferiscono a prove indipendenti.
+
+L'importante è quindi che $S_n$ è somma di $n$ v.a. I.I.D. (indipendenti e identicamente distribuite)
+
+**Enunciato Teorema Limite Centrale**
+
+Siano $X_{1},X_{2},X_{3},\dots$ v.a. indipendenti e identicamente distribuite, tutte di valore atteso $\mu\in \mathbb{R}$ e di varianza $\sigma^2\in(0,\infty)$ allora posto $S_{n}:=X_{1}+\dots X_{n}$ abbiamo:
+
+$$
+\frac{S_{n}-n\mu}{\sigma \sqrt{ n }}\to Z=\mathcal{N}(0,1)
+$$
+
+Più precisamente, $\forall a<b$ vale:
+
+$$
+\lim_{ n \to \infty } P\left( a<\frac{S_{n}-\mu n}{\sigma \sqrt{ n }}<b \right) = \underbrace{ P(a<Z<b) }_{ \frac{1}{\sqrt{ 2\pi }} \int_{a}^b e^{- \frac{x^2}{2}} dx}
+$$
+
+## Commenti sul Teorema
+$X_{1},X_{2},\dots,X_{n}$ sono v.a. I.I.D., cosa significa?
+- Indipendenti significa che $\forall n$ $X_{1},\dots,X_{n}$ sono indipendenti, ovvero:
+  
+  $$
+ P(X_{1}\in A_{1}, \dots, X_{n}\in A_{n}=\prod_{i=1}^n P(X_{i}\in A_{i}) \quad \forall A_{1},\dots,A_{n} \subset \mathbb{R} 
+ $$
+
+- Identicamente Distribuite significa che $\forall i\neq j$ vale $P(X_{i}\in A)=P(X_{j}\in A) \quad \forall A\subset \mathbb{R}$, quindi non le distinguiamo a livello probabilistico.
+  
+- Per v.a. discrete questo significa che $p_{X_{i}}=p_{X_{j}}$ $\forall i\neq j$, mentre per v.a. continue questo significa che $f_{X_{i}}=f_{X_{j}}$ $\forall i\neq j$
+
+Prendiamo un esempio di successione IID: $X_{1},X_{2},\dots$ sono tutte indipendenti e $Bern(p)$ allora in questo caso $S_{n}=X_{1}+\dots+X_{n}=Bin(n,p)$ e infatti il Teorema di De Moivre non è altro che un caso particolare del Teorema del Limite Centrale.
+
+Infatti abbiamo detto che $X_{1},\dots$ è una successione di v.a. indipendenti $Bern(p)$, allora $\mu=E[X_{i}]=p$ e $\sigma^2=Var(X_{i})=p(1-p)$.
+
+Otteniamo quindi che:
+- $n\mu=np$
+- $\sigma \sqrt{ n }=\sqrt{ \sigma^2 n }=\sqrt{ np(1-p) }$
+
+E il TLC mi diche che posto $S_{n}=X_{1}+\dots+X_{n}=Bin(n,p)$ si ha:
+
+$$
+\frac{S_{n}-n\mu}{\sigma \sqrt{ n }}=\frac{S_{n}-np}{\sqrt{ np(1-p) }}\to Z=\mathcal{N}(0,1)
+$$
+
+Che non è altro che il Teorema di De Moivre
+
+---
+
+Esistono v.a. per cui valore atteso o varianza non son ben definite oppure sono ben definite ma divergono, nel T.L.C (Teorema Limite Centrale) queste situazioni non sono considerate, infatti abbiamo che $\mu\in \mathbb{R}$ e che $\sigma^2\in(0,+\infty)$.
+
+---
+
+Nel TLC consideriamo la v.a. $\frac{S_{n}-\mu n}{\sigma \sqrt{ n }}$ ma da dove vengono $n \mu$ e $\sigma \sqrt{ n }$ ?
+
+$$
+\begin{align*}
+&E[S_{n}]=E[X_{1}+\dots+X_{n}]=E[X_{1}]+\dots+E[X_{n}]=n\mu  \\ \\
+&\text{Abbiamo trovato quindi che } E[S_{n}]=n\mu, \text{ quindi}: \\
+ \\
+&E\left[ \frac{S_{n}-n\mu}{\sigma \sqrt{ n }} \right] =\frac{E[S_{n}]-n\mu}{\sigma \sqrt{ n }}=0
+\end{align*}
+$$
+
+Mentre per quanto riguarda la varianza:
+
+$$
+\begin{align*}
+&Var(S_{n})=Var(X_{1}+\dots+X_{n})=\sum_{i=1}^n Var(X_{i})=n\sigma^2 \\
+ \\
+&\text{Quindi:} \\
+ \\
+&Var\left( \frac{S_{n}-n\mu}{\sigma \sqrt{ n }} \right)=Var\left( \frac{1}{\sigma \sqrt{ n }} S_{n} -\frac{n\mu}{\sigma \sqrt{ n }} \right) = \left( \frac{1}{\sigma \sqrt{ n }} \right)^2 Var(S_{n})=\frac{1}{\sigma^2 n}\cdot n\sigma ^2 = 1
+\end{align*}
+$$
+
+- Quindi le costanti che appaiono in $\frac{S_{n}-n\mu}{\sigma \sqrt{ n }}$ sono state scelte per garantire che il suo valore atteso sia 0 e la varianza 1
+
+# Legge Forte dei Grandi Numeri
+Inizialmente nel corso ci ponevamo domande del tipo "Cosa significa che lanciando una moneta abbiamo 1/3 di probabilità che esca testa?". Una prima risposta era che "Lanciando una moneta tante volte allora esce testa in circa un terzo dei casi" ma non riuscivamo a rendere precisa questa affermazione che ha varie criticità, ad esempio non possiamo definire il circa o le tante volte.
+
+Abbiamo quindi scartato questa opzione e abbiamo introdotto lo spazio di probabilità come modello matematico astratto.
+
+Ma esiste un teorema che ci permette di non scartare completamente la prima idea? Si, la **legge forte dei grandi numeri**.
+
+Consideriamo un esperimento descritto dallo spazio di probabilità (S,P).
+
+_Esempio_
+
+Lancio una moneta truccata che dà T con prob 1/3. Abbiamo quindi che $S=\{ T,C \}$ e $P(\{ T \})=\frac{1}{3}$ mentre $P(\{ C \})=\frac{2}{3}$.
+
+Introduciamo un META-esperimento come segue: Ripeto l'esperimento descritto da (S,P) infinite volte sempre con lo stesso protocollo e gli esperimenti che ripeto non si influenzano, sono quindi indipendenti fra loro.
+
+Il Meta-esperimento è descritto dal suo spazio di probabilità che denotiamo con $(\overline{S},\overline{P})$, $\overline{S}$ é dato quindi da: $\overline{S}=\{ (s_{1},s_{2},\dots) :s_{i}\in S\}$ e quindi tornando all'esempio della moneta abbiamo che $\overline{S}=\{ (s_{1},s_{2},\dots) :s_{i}\in \{ T,C \}\}$, quindi $s_{i}$ é l'esito di un sottoesperimento, notiamo quindi che l'esito del meta-esperimento é una stringa composta dagli esiti dei sottoesperimenti, ad esempio:
+
+$(T,C,T,T,C,C, \dots)$ significa che al primo lancio abbiamo ottenuto testa, al seconda croce, al terzo testa...
+
+Per quanto riguarda la funzione di probabilità $\overline{P}$ la situazione è più complessa e difficile da introdurre, ci basta sapere che esiste una funzione di probabilità che descrive questo esperimento.
