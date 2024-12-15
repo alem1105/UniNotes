@@ -339,3 +339,108 @@ Come prima cosa occorre cercare il record poi distinguiamo due casi:
 - Se la modifica non coinvolge i campi della chiave, il record viene modificato e il blocco riscritto.
 - Altrimenti la modifica equivale ad una cancellazione seguita da un inserimento.
 
+# B-Tree
+È una generalizzazione del file indice dove accediamo attraverso una gerarchia di file indice. L'indice a livello più alto viene detto **radice** ed é costituito da un singolo blocco, possiamo quindi caricarlo in RAM durante l'utilizzo del file.
+
+Ogni blocco di un file indice é costituito da record contenenti una coppia $(v,b)$ dove $v$ è il valore della chiave del primo record della porzione di file principale accessibile attraverso il puntatore $b$, questo puntatore però può puntare anche ad un blocco del file indice a livello immediatamente più basso oppure ad un blocco del file principale.
+
+In ogni file indice possiamo risparmiare spazio memorizzando, per il primo record, soltanto il puntatore infatti non ci serve sapere il valore più basso che troveremo, se dobbiamo cercare un valore più piccolo di quello presente nel secondo record lo andremo a cercare sicuramente nel primo.
+
+Ogni blocco del file principale è memorizzato come quello di un ISAM.
+
+Ogni blocco di un B-Tree sia indice che file principale, deve essere pieno almeno per metà tranne eventualmente la radice.
+
+![[Pasted image 20241215115923.png]]
+
+Notiamo che nei blocchi dei file indice non è mai presente il primo record per intero infatti manca il valore associato all'indirizzo ma come detto prima non ci serve.
+
+## Ricerca
+Per cercare un record con un dato valore si accede agli indice di livello più alto e si scende nei livelli più bassi restringendo la porzione del file principale in cui potrebbe trovarsi il record in un unico blocco.
+
+Partiamo quindi dalla radice ed esaminiamo blocco per blocco, se il blocco esaminato è un blocco del file principale allora quello è il blocco in cui potrebbe trovarsi il record, se invece è un blocco del file indice si cerca in quel blocco un valore della chiave che ricopre il valore che stiamo cercando e poi si segue il puntatore associato a quel valore proseguendo così in un altro livello.
+
+Per la ricerca sono necessari quindi $h+1$ accessi dove $h$ è l'altezza dell'albero.
+
+> [!NOTE] Osservazione
+> ![[actually.png|150]]
+> 
+> Più i blocchi sono pieni più sarà piccolo $h$ e quindi meno costerà la nostra ricerca e per questo chiediamo che i blocchi siano pieni almeno per metà. Ma se i blocchi sono completamente pieni un inserimento può richiedere una modifica dell'indice ad ogni livello e in alcuni casi far crescere l'altezza di un livello.
+
+_Esempio_
+
+![[Pasted image 20241215121449.png]]
+
+Vogliamo inserire in questo albero il record con chiave 40, dobbiamo quindi riorganizzare la struttura:
+
+![[Pasted image 20241215121522.png]]
+
+In questo modo abbiamo anche i blocchi non completamente occupati.
+
+Ma qual è il massimo valore che può assumere $h$ nel caso peggiore?
+
+Definiamo:
+- $N$ numero di record nel file principale
+- $2e-1$ numero di record del file principale che possono essere memorizzati in un blocco
+- $2d-1$ numero di record del file indice che possono essere memorizzati in un blocco
+
+*Li rendiamo dispari per rendere semplici i calcoli*
+
+Siccome vogliamo che i blocchi siano pieni almeno per metà:
+- Ogni blocco del file principale deve contenere almeno $e$ record
+- Ogni blocco del file indice deve contenere almeno $d$ record
+
+L'altezza massima dell'albero denotata con $k$ si ha quando i blocchi sono pieni al minimo e quindi quando i blocchi hanno esattamente il numero di elementi scritti sopra quindi $e$ per quelli del principale e $d$ per l'indice.
+
+Quindi:
+- Il file principale ha al massimo $\frac{N}{e}$ blocchi
+- Al livello 1 il file indice ha $\frac{N}{e}$ record che possono essere memorizzati in $\frac{N}{ed}$ blocchi
+- Al livello 2 il file indice ha $\frac{N}{ed}$ record possono essere memorizzati in $\frac{N}{ed^2}$ blocchi
+- ...
+- Al livello $i$ il file indice ha $\frac{N}{ed^{i-1}}$ blocchi che possono essere memorizzati in $\frac{N}{ed^i}$ blocchi.
+
+Al livello $k$ che abbiamo detto essere il massimo, il file indice ha esattamente 1 blocco e quindi:
+- $\frac{N}{ed^k}\leq 1$, nelle divisioni prendiamo la parte intera superiore e quindi $\left\lceil  \frac{N}{ed^k}  \right\rceil=1$, consideriamo quindi per semplicità l'uguaglianza $ed^k=N$ da cui troviamo che $d^k=\frac{N}{e}$ e infine:
+
+$$
+k=\log_{d}\left( \frac{N}{e} \right)
+$$
+
+Che rappresenta un valore che approssima sufficientemente il limite superiore per l'altezza dell'albero.
+
+## Inserimento
+La ricerca costa $h+2$ ovvero il costo dell'accesso per cercare il blocco in cui deve essere inserito il record ($h+1$) + 1 accesso per riscrivere il blocco ma questo se nel blocco c'è spazio sufficiente per inserire il record.
+
+Infatti se non c'è spazio nel blocco abbiamo il costo della ricerca $h+1$ e poi dobbiamo aggiungere $s$ accessi dove $s\leq 2h+1$ infatti nel caso peggiore per ogni livello dobbiamo sdoppiare un blocco e quindi effettuare due accessi più uno alla fine per la nuova radice.
+
+_Vediamo quindi questo esempio più particolare:_
+
+![[Pasted image 20241215142948.png]]
+
+Vogliamo inserire il record con chiave 25 ma notiamo che il blocco in cui dovrebbe trovarsi è pieno, dobbiamo quindi riorganizzare la struttura sdoppiando dei blocchi:
+
+![[Pasted image 20241215143053.png]]
+
+In questo modo i blocchi sono pieni almeno per metà e hanno anche spazio aggiuntivo per contenere successivi inserimenti.
+
+## Cancellazione
+Abbiamo come sempre il costo della ricerca quindi $h+1$ e poi dobbiamo aggiungere un accesso per riscrivere il blocco modificato, ma questo solo se il blocco rimane pieno per almeno metà dopo la cancellazione altrimenti sono necessari ulteriori accessi.
+
+_Esempio_
+
+![[Pasted image 20241215143331.png]]
+
+Vogliamo cancellare il record con chiave 28 ma se lo facciamo quel blocco rimane con meno della metà dello spazio occupato, quindi riorganizziamo la struttura:
+
+![[Pasted image 20241215143404.png]]
+
+## Modifica
+Abbiamo sempre il costo della ricerca $h+1$, dobbiamo aggiungere un accesso per riscrivere il blocco se la modifica non coinvolge i campi della chiave altrimenti se li coinvolge abbiamo anche il costo della cancellazione e quello di un inserimento, infatti equivale a cancellare il record e inserirne uno nuovo.
+
+## Osservazioni
+In un B-tree, per definizione, ogni blocco è sempre pieno almeno per metà (metà spazio fisico ovvero i byte) e quindi andrebbe sempre verificata questa condizione.
+
+Per quanto riguarda il file principale:
+- Se il numero di record massimo è dispari e quindi esprimibile come abbiamo fatto con $2e-1$ allora possiamo considerare $e$ come occupazione minima.
+- Se il numero di record massimo è pari e quindi esprimibile come $2e$ allora consideriamo $e+1$ come occupazione minima, tranne nel caso in cui la taglia del record è esattamente un sottomultiplo di quella del blocco e quindi la metà dei record riempie esattamente la metà dei byte.
+
+Per il file indice valgono le stesse regole ma dobbiamo fare attenzione al fatto che nei blocchi, il primo record contiene solo un puntatore e quindi vanno eseguiti dei calcoli diversi.
