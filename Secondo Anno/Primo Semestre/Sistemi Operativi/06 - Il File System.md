@@ -341,4 +341,238 @@ Copia nel journal soltanto i metadati delle operazioni effettuate e se c'è un c
 
 # Gestione dei File in UNIX
 
-_Secondo video File System_
+In UNIX esistono 6 tipi di file:
+- Normale
+- Directory
+- Speciale (Mappano i dispositivi I/O su nomi di file, ad esempio i dischi collegati)
+- Named Pipe (Fanno comunicare tra loro i processi)
+- Hard Link (Collegamenti, nomi di file alternativi)
+- Link Simbolico (Contiene il nome del file cui si riferisce)
+
+## Inode
+È una struttura dati che contiene le informazioni essenziali per un file.
+
+Di solito per ogni inode c'è un file ma tramite gli Hard Link si può fare in modo che lo stesso inode si riferisca più file.
+
+Tutti gli inode sono conservati sul disco e alcuni di questi sono anche in RAM ovvero quelli che si riferiscono a file aperti.
+
+Ogni inode ha un numero associato tramite il quale possiamo accedere all'inode.
+
+![[Pasted image 20241216160539.png]]
+
+Alcune delle informazioni presenti negli inode:
+- Quando il file è stato acceduto in lettura / scrittura per l'ultima volta
+- Identificatori dell'utente proprietario
+- Tempo di creazione e ultimo accesso
+- Flag utente e kernel
+- Dimensione totale del file
+- Numero dei blocchi, dimensione dei blocchi e puntatori ai blocchi
+- Se si riferisce ad una directory allora anche il numero di file
+
+
+> [!NOTE] Per quanto riguarda la dimensione del file
+> ![[actually.png|150]]
+> 
+> Se andiamo a vedere la dimensione di un file avremo: _dimensione file e dimensione su disco_, questo perché la dimensione del file è quella vera mentre quella su disco è quella allocata tramite la dimensione dei blocchi e quindi superiore a quella effettiva in alcuni casi.
+
+Qual é l'idea dietro gli inode per quanto riguarda **l'allocazione di File**?
+- Se il file è piccolo i dati vengono raggiunti tramite i puntatori che nella foto sono chiamati _direct_, nell'esempio abbiamo 13 puntatori e quindi basterebbero se il file fosse grande $DimensioneBlocco \cdot 13$.
+Se questi non bastano ci sono puntatori a più livelli: singoli, doppi, tripli.
+- Singoli: -> Blocco di Puntatori -> Blocco
+- Doppi: -> Blocco di Puntatori  -> Blocco di Puntatori  -> Blocco
+- Tripli: -> Blocco di Puntatori  -> Blocco di Puntatori  -> Blocco di Puntatori  -> Blocco
+
+Inoltre i blocchi non devono essere contrassegnati se sono per puntatori o dati, questo perché partendo dall'inode sappiamo quanti livelli dobbiamo passare.
+
+![[Pasted image 20241216165033.png]]
+
+A destra sono indicate le dimensioni massime per un singolo file che possiamo coprire con i vari livelli di puntatori.
+
+Questo perché se ad esempio abbiamo blocchi da 4KB e un puntatore occupa 4 byte con i puntatori singoli avremo il primo puntatore che punta ad un blocco di puntatori e dentro a questo blocco di puntatori possiamo immagazzinare $\frac{4096}{4}=1024$ puntatori ovvero blocchi di dati.
+
+Con i puntatori doppi abbiamo il puntatore che punta ad un blocco di puntatori e questi puntatori a loro volta puntano ad altri blocchi di puntatori, quindi seguendo lo stesso esempio di prima abbiamo $1024\cdot 1024$ blocchi di dati.
+
+Infine per il terzo livello sempre seguendo lo stesso esempio $1024\cdot 1024\cdot 1024$ blocchi di dati.
+
+## Inode e Directory
+Le directory sono dei file speciali che contengono una lista di coppie formate da (nome di file, puntatore ad inode corrispondente) e alcuni di questi file potrebbero essere a loro volta delle directory formando così una gerarchia:
+
+![[Pasted image 20241216173630.png]]
+
+## Accesso ai File
+Come visto prima, per accedere ad un file dobbiamo essere un utente abilitato.
+
+Per ogni file esiste una terna di permessi: lettura, scrittura ed esecuzione. Quando qualcuno vuole svolgere un'operazione su un file Linux confronta i permessi con l'utente che ha richiesto l'operazione.
+
+Ci sono 3 distinzioni: Proprietario, gruppi dove si trova il proprietario e tutti gli altri.
+
+Quindi:
+- Prima si controlla se l'utente coincide con il proprietario
+- Se questo non accade si cerca se hanno un gruppo in comune
+- Altrimenti si applica la regola per gli altri
+
+_Esempio_
+
+![[Pasted image 20241216174155.png]]
+
+In questo esempio:
+- Proprietario ha scrittura e lettura
+- Gruppo del proprietario ha solo lettura
+- Gli altri nessuna
+
+## Gestione File Condivisi
+Come si gestiscono i file che devono essere condivisi su più directory? Dato che fare una copia del file è costoso ed inutile ci sono diverse soluzioni:
+
+- Symbolik Links
+
+Esiste un solo descrittore del file originale, ad esempio un inode e i symlink contengono il cammino completo sul file system verso quel file. Da notare che possono esistere symlink a file non più esistenti.
+
+- Hard links
+
+Puntatore diretto al descrittore del file originale, ovvero l'inode, il file condiviso non può essere cancellato finché esistono link remoti ad esso. L'inode contiene un contatore dei file che lo referenziano.
+
+# Gestione dei File su Windows
+Windows ha 2 file system principali:
+- FAT: vecchio file system presente sulle versioni MS-DOS
+- NTFS: nuovo file system, usa un'allocazione con bitmap con blocchi (cluster) di dimensione fissa.
+
+## FAT
+FAT sta per File Allocation Table, è infatti una tabella ordinata di puntatori ma è molto limitato e andava bene per i vecchi dischi, tuttavia viene ancora usato per le chiavette USB.
+
+In questa tabella sono presenti dei record che possono essere da 12, 16 o 32 bit, da qui i nomi FAT-12, FAT-16 e FAT-32. Abbiamo tanti record quanti i cluster del disco.
+
+I cluster hanno dimensione da 2 a 32KB ed è scelta dall'utente in fase di formattazione, da qui nascono i primi problemi infatti se abbiamo ad esempio un disco da 32MB e scegliamo 32KB come dimensione dei cluster allora la nostra tabella è lunga 1000 e se questi record sono da 32bit avremo 4KB di tabella.
+
+È quindi poco scalabile, se ad esempio abbiamo puntatori da 32 bit con un disco da 100GB e cluster da 2KB allora la FAT ha 50M di righe quindi $32bit\cdot 50M = 4byte \cdot 50M=200MB$ per la FAT.
+
+Come funziona?
+
+Il volume viene diviso in varie regioni:
+
+![[Pasted image 20241216190134.png]]
+
+- Regione Boot Sector: Contiene informazioni necessarie per l'accesso al volume ovvero la tipologia e il puntatore alle altre sezioni del volume e il bootloader del sistema operativo
+- Regione FAT: È la tabella dei puntatori vista prima, mappa quindi il contenuto della regione dati indicando a quali file o directory i cluster appartengono. Sono presenti due copie di questa regione per coprire i casi in cui una sia corrotta.
+- La root directory è una directory table che contiene tutti i file entry per la directory root del sistema, in FAT12 e FAT16 ha una dimensione fissa e limitata di 256 entries. In FAT32 è inclusa nella regione dati insieme a file e directory normali e non ha limitazioni sulla dimensione.
+- Regione Dati: È la regione del volume in cui sono effettivamente contenuti i dati dei file e directory, le directory seguono la struttura FAT e i file sono semplicemente dei dati contenuti nei cluster.
+  
+  Per quanto riguarda le directory, queste contengono un elenco di entries da 32 byte, ogni entry contiene le informazioni per un file: nome, attributi, timestamp, ..., e ovviamente l'indirizzo del primo cluster nella tabella FAT, se é presente un'altra directory allora avrà le stesse informazioni per i suoi file ottenendo quindi una struttura gerarchica.
+
+Data la tabella FAT, il puntatore i-esimo:
+- Se è zero indica che l'i-esimo cluster del disco è libero
+- Se non è zero e non è un valore speciale, indica il cluster dove troviamo il prossimo pezzo del file. Quindi se ad esempio alla riga 10 troviamo scritto 5 significa che il cluster 10 ha dei pezzi di file e al blocco 5 troviamo i prossimi.
+- Se sono presenti tutti 1 allora siamo in un valore speciale, questo indica che è l'ultimo blocco del file.
+
+_Esempio_
+
+![[Pasted image 20241216192558.png]]
+
+Quindi nella directory leggo che il file 1 inizia al blocco 2, quindi vado nella FAT alla riga 2, questo significa che appunto nella riga 2 trovo la successiva riga da esplorare e nel blocco 2 i pezzi di file successivi.
+Continuando quindi nella 2 ci spostiamo alla riga 3 e quindi al blocco 3 e poi alla riga 4 e blocco 4, qui troviamo il valore speciale 1111 e quindi capiamo che ci troviamo nell'ultimo blocco.
+
+![[Pasted image 20241216193026.png]]
+
+Anche qui il file1 inizia alla riga 1, quindi accediamo al cluster 1 per i dati e nella riga 1 troviamo scritto 2, quindi accediamo al cluster 2 per i dati e nella riga 2 troviamo scritto FFFF quindi era l'ultimo blocco.
+
+### Limitazioni FAT
+- Supporta file di massimo 4GB, infatti nelle directory le entries hanno a disposizione solamente 32bit nel campo della dimensione del file.
+- Non implementa il Journaling
+- Non consente meccanismi di controllo degli accessi ai file o directory
+- Le partizioni possono essere grandi al massimo 2TB ($2^{32}$ settori da 512B) 
+
+## NTFS
+Questo è il file system utilizzato anche nelle recenti versioni di Windows:
+- Per i nomi di file utilizza UNICODE e ha un limite massimo di 255 caratteri
+- I file sono definiti come un insieme di attributi e questi attributi sono rappresentati come un byte stream
+- Supporta Hard e Soft Link
+- Implementa il Journaling
+
+Vediamo la composizione del volume:
+
+![[Pasted image 20241217163734.png]]
+
+- Boot Sector: Valgono le stesse regole del FAT ma alcuni campi si trovano in posizioni diverse
+
+- Master File Table (MFT): È la principale struttura dati del file system ed è unica per ciascun volume a differenza del FAT.
+  
+Questa è implementata come un file, è una sequenza di record da 1 a 4KB e ogni record descrive un file.
+
+Ogni record contiene una lista di attributi sottoforma di coppie (attributo, valore):
+- Attributo è un intero che indica appunto il tipo di attributo
+- Valore è definito come una sequenza di byte
+- Il contenuto di un file è anch'esso un attributo
+
+Se il valore dell'attributo è piccolo allora può essere incluso direttamente nel record e viene chiamato **attributo residente** altrimenti è un puntatore ad un record remoto e quindi viene chiamato **attributo non residente**.
+
+I primi 27 record sono riservata per metadati del filesystem:
+0) Descrive l'MFT stesso, in particolari tutti i file nel volume
+1) Contiene una copia dei primi record dell'MFT in modo non residente (Chiamata *MFT Mirror*)
+2) Informazioni di journaling (solo metadata)
+3) Informazioni sul volume come ID, Label, versione FS ecc...
+4) Tabella degli attributi usati nell'MFT (definisce gli interi da usare per ogni attributo)
+6) Definisce la lista dei blocchi liberi usando una bitmap
+
+Dal record 28 in poi ci sono i descrittori dei file normali.
+
+L' NTFS cerca sempre di assegnare ad un file delle sequenze contigue di blocchi, oppure se il file è piccolo lo salva direttamente nella MFT. Per i file grandi quindi il valore dell'attributo indica la sequenza ordinata dei blocchi sul disco dove risiede il file.
+
+Per ogni file esiste un record nell'MFT, se il file ha delle zone vuote queste non occupano spazio fisico sul disco ma l'MFT se le "ricorda" impostando i bit a 0, in questo modo non sprechiamo spazio, inoltre il sistema ha una lista che contiene tutte queste aree vuote.
+
+Questo è utile, ad esempio se creiamo un file da 1GB ma con 100MB effettivi utilizzati allora quei 900MB non verranno scritti a 0 sul disco fisico ma soltanto nell'MFT, per il sistema operativo il file sembrerà comunque lungo 1GB, riservando quindi spazio per quel file.
+
+_Esempio Record_
+
+![[Pasted image 20241217172913.png]]
+
+Quindi il primo indica da dove partire e il secondo numero quanti blocchi contigui. Questo consente di descrivere file di dimensione potenzialmente illimitata, dipende tutto dalla contiguità dei blocchi:
+- Se abbiamo blocchi da 1KB, 1 file da 20GB descritto in 20 sequenze (zone contigue) da 1 milione di blocchi sappiamo che ogni sequenza ha bisogno di una coppia di valori e nel nostro caso gli attributi sono da 64bit = 8byte quindi per ogni coppia $2\cdot 8=16$ byte. 
+  
+  Inoltre a fine sequenza ce ne sta un'altra vuota che ci segnala la fine del file quindi in tutto 21 coppie da 16 byte = $21\cdot 16=336byte$
+  
+  Quindi per descrivere un file da 20GB diviso in 20 sequenze contigue sono necessari 336 byte.
+
+- Prendiamo come altro esempio un file da 64KB diviso in 64 sequenze da 1 blocco.
+  
+  Seguendo i ragionamenti di prima abbiamo 65 coppie da 16 byte e quindi 1040 byte, quindi per descrivere un file da 64KB frammentato in 64 blocchi singoli abbiamo bisogno di 1040byte 
+
+
+Quindi notiamo che quando i blocchi sono contigui il file può essere descritto con poche coppie se invece è frammentato ne servono di più aumentando anche lo spazio necessario per descrivere il file.
+
+Per file più grandi o molto frammentati possono essere necessari più record e qui NTFS usa una tecnica simile agli INODE di Linux:
+- Il record base è un puntatore a $N$ record secondari e eventuale spazio rimanente nel record base contiene le prime sequenze del file
+
+_Esempio_
+
+![[Pasted image 20241217185736.png]]
+
+
+## Unix File System
+È diviso nelle seguenti regioni:
+
+![[Pasted image 20241217185940.png]]
+
+- La regione Boot Block è simile al blocco di boot per FAT, contiene quindi informazioni e dati necessari per il bootstrap
+- Regione superblock: Contiene informazioni sui metadati del filesystem come le dimensioni delle partizioni, dimensione dei blocchi e puntatore alla lista dei blocchi liberi.
+  
+  Di questa ci sono copie ridondanti in caso di corruzione, queste sono salvate in gruppi di blocchi sparsi nel file system, la prima copia però è sempre in una parte prefissata per facilitare la recovery.
+
+- Regione Lista degli I-node (i-list): è una tabella numerata di descrittori dei file ovvero gli inode. È presente un inode per ogni file salvato nel sistema e ciascun inode nella lista punta ai blocchi dei file nella sezione dati del volume.
+
+
+Il kernel Unix usa due strutture di controllo separate per gestire file aperti e descrittori i-node:
+- Per file attualmente in uso c'è il puntatore al suo descrittore salvato nel Process Control Block
+- Una tabella globale di descrittori di file aperti mantenuta in una apposita struttura dati
+
+![[Pasted image 20241217190435.png]]
+
+## Linux?
+
+Linux supporta nativamente _ext2/ext3/ext4_, le differenze sono:
+- ext2: direttamente dai file system Unix originari
+- ext3: ext2 ma con journaling
+- ext4: ext3 in grado di memorizzare singoli file più grandi di 2TB e file system più grandi di 16TB.
+
+Ha pieno supporto per gli inode che sono memorizzati nella parte iniziale del file system e permette inoltre di leggere e scrivere altri file system come quelli di Windows, ma:
+- Con FAT non è possibile memorizzare gli inode sul dispositivo
+- vengono creati on-the-fly su una cache quando vengono aperti i file
+
