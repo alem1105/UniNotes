@@ -171,7 +171,7 @@ Abbiamo quindi una struttura simile:
 ![[Pasted image 20241130213258.png|500]]
 
 ## Funzione Hash
-Dato un valore _v_ per la chiave, il numero del bucket in cui deve trovarsi un recordo con chiave _v_ è calcolato mediante una funzione chiamata **funzione hash**.
+Dato un valore _v_ per la chiave, il numero del bucket in cui deve trovarsi un record con chiave _v_ è calcolato mediante una funzione chiamata **funzione hash**.
 
 Una funzione di Hash per essere "buona" deve suddividere in modo equo i record nei vari bucket, quindi al variare della chiave tutti i bucket devono avere la stessa probabilità di "uscita". In genere una funzione hash trasforma la chiave in un numero, lo divide per B e fornisce il resto della divisione come numero del bucket (in modo da rimanere limitati al numero di bucket), questo resto è il bucket dove andrà inserito il record.
 
@@ -204,7 +204,7 @@ Ovviamente più bucket abbiamo più è basso il costo delle operazioni, ma dobbi
 - I blocchi vengono allocati per intero
 
 # File con Indice
-Quando le chiavi permettono un ordinamento significativo per l'applicazione ci conviene utilizzare un'organizzazione fisica che ne tiene conto in modo da vere più vantaggi.
+Quando le chiavi permettono un ordinamento significativo per l'applicazione ci conviene utilizzare un'organizzazione fisica che ne tiene conto in modo da avere più vantaggi.
 
 Interi e stringhe ammettono i classici ordinamenti, quindi crescente o decrescente e per le stringhe lessicografico. Per i campi multipli si ordina prima sul primo campo poi sul secondo e così via.
 
@@ -444,3 +444,239 @@ Per quanto riguarda il file principale:
 - Se il numero di record massimo è pari e quindi esprimibile come $2e$ allora consideriamo $e+1$ come occupazione minima, tranne nel caso in cui la taglia del record è esattamente un sottomultiplo di quella del blocco e quindi la metà dei record riempie esattamente la metà dei byte.
 
 Per il file indice valgono le stesse regole ma dobbiamo fare attenzione al fatto che nei blocchi, il primo record contiene solo un puntatore e quindi vanno eseguiti dei calcoli diversi.
+
+# Controllo della Concorrenza
+Sappiamo che in un computer i processi vengono eseguiti in modo **interleaved** ovvero vengono alternati fra di loro ma la CPU può eseguirne soltanto uno alla volta.
+
+La CPU può quindi eseguire alcune istruzioni di un programma, sospenderlo ed eseguire istruzioni di un altro e poi tornare al primo programma. Questo permette un utilizzo efficiente della CPU.
+
+In un DBMS la principale risorsa alla quale accediamo in modo concorrente è appunto la base di dati, questo tipo di accesso può causare problemi quando effettuiamo delle scritture e va quindi controllato.
+
+## Transazione
+
+> [!NOTE] Definizione
+> È l'esecuzione di una parte di un programma e rappresenta un'unità logica di accesso o modifica alla base di dati. Possiamo vederla quindi come una vera e propria operazione sulla base di dati.
+
+Le transazioni devono rispettare delle proprietà che si indicano con la sigla **ACID**, dall'inglese **Atomicity, Consistency, Isolation, Durability** (Atomicità, Consistenza, Isolamento, Durabilità):
+- Atomicità: Quando eseguiamo una transazione questa deve essere eseguita per intero, se viene interrotta per qualche motivo allora dobbiamo annullare ogni operazione fatta da questa. Se altre transazioni hanno usato le modifiche fatte da una transazione annullata allora dobbiamo annullare anche quest'ultima.
+- Consistenza: Quando eseguiamo una transazione, le modifiche che apporta alla base di dati non devono violare i vincoli di integrità.
+- Isolamento: Ogni transazione deve essere eseguita in modo isolato e indipendente dalle altre, l'eventuale fallimento di una non deve interferire con le altre. L'esito di un insieme di transazioni quindi non deve dipendere dall'ordine in cui le eseguo, ovviamente posso ottenere risultati diversi ma l'importante è che non falliscano presa una loro permutazione qualsiasi.
+- Durabilità: Prende anche il nome di _persistenza_, si riferisce al fatto che una transazione dopo aver scritto i suoi risultati sulla base, questi non devono essere persi, per assicurarsi questo vengono scritti anche dei log su tutte le operazioni eseguite sul BD.
+
+## Schedule
+Uno schedule è un ordinamento di un insieme T di transazioni, questo conserva l'ordine che le operazioni hanno all'intero delle singole transazioni.
+
+Se l'operazione O1 precede l'operazione O2 in una transazione allora sarà così in ogni schedule dove compare questa transazione, ovviamente fra loro due potrebbero comparire operazioni di altre transazioni.
+
+### Schedule Seriale
+È uno schedule che si ottiene permutando le transazioni in T, questo corrisponde ad una esecuzione sequenziale delle transazioni queste non vengono quindi interrotte e vengono eseguite una per volta per intero.
+
+Vedremo più avanti che uno schedule accettabile è uno schedule  ovvero equivalente ad uno schedule seriale.
+
+## Problemi dell'Esecuzione Concorrente
+Consideriamo ad esempio le due transazioni:
+
+![[Pasted image 20241219095118.png|100]]
+
+![[Pasted image 20241219095139.png|100]]
+
+E vediamo un *possibile schedule* di queste due:
+
+![[Pasted image 20241219095227.png|250]]
+
+Questo è un caso di **lost o ghost update** ovvero un aggiornamento perso. Infatti se il valore di X iniziale è X0, al termine dell'esecuzione invece di essere X0-N+M sarà X0+M questo perché T2 legge il valore di X iniziale invece di quello modificato da T1.
+
+Altro *esempio di schedule*:
+
+![[Pasted image 20241219095456.png|250]]
+
+Questo è un caso di **dato sporco** infatti il valore letto da T2 è un valore, anche se aggiornato correttamente, di un'operazione che non si è conclusa e quindi non più valido.
+
+_Altro esempio di schedule_:
+
+![[Pasted image 20241219095624.png|250]]
+
+In questo caso l'errore prende il nome di **aggregato non corretto** e si verifica quando una parte dei dati che abbiamo utilizzato non è corretta. Infatti nell'esempio abbiamo il valore di X aggiornato correttamente ma non quello di Y.
+
+> [!NOTE] Quando definiamo uno schedule errato?
+> Definiamo uno schedule errato quando i valori prodotti non sono quelli che si avrebbero se le due transazioni fossero eseguite in modo sequenziale. Per questo i precedenti sono errati.
+
+## Serializzabilità
+Tutti gli scheduli seriali sono corretti, gli schedule non seriali invece sono corretti se **serializzabili** ovvero **equivalenti** ad uno schedule seriale. Che significa equivalente nel contesto degli schedule?
+
+Una prima ipotesi potrebbe essere: Due schedule si dicono equivalente se presi gli stessi input producono gli stessi risultati. Ma **non basta**.
+
+Infatti vediamo ad esempio questi due schedule:
+
+![[Pasted image 20241219100305.png]]
+
+Questi producono lo stesso risultato _solo se_ il valore iniziale di X è 10, negli altri casi no.
+
+> [!NOTE] Equivalenza di schedule
+> Due schedule si dicono equivalenti se producono valori uguali, ma due valori si dicono uguali solo se prodotti dalla stessa sequenza di operazioni.
+> 
+
+_Esempio_
+
+![[Pasted image 20241219100550.png]]
+
+Questi non sono equivalenti perché X non è prodotto dalla stessa sequenza di operazioni ma sono comunque corretti dato che sono seriali.
+
+## Testare la serializzabilità
+Testare la serializzabilità di uno schedule è molto difficile:
+- È difficile stabilire quando uno schedule comincia o finisce
+- È impossibile determinare in anticipo in che ordine verranno eseguite le operazioni dato che questo dipende dal carico del sistema, l'ordine in cui queste vengono inviate e la loro priorità
+- Se eseguiamo uno schedule e poi testando la serializzabilità notiamo che non è serializzabile allora dovremmo annullare i suoi effetti
+
+Quindi il metodo che si usa non è testare la serializzabilità ma usare metodi che la garantiscono per gli schedule, eliminando così la necessità di doverli testare ogni volta. Facciamo questo **imponendo dei protocolli** alle transazioni oppure usando i **timestamp** delle transazioni ovvero degli identificatori generati dal sistema usati per ordinarle e garantire la serializzabilità.
+
+### Item
+Entrambi i metodi visti sopra fanno uso del concetto di **item** ovvero un'unità della base di dati della quale controlliamo l'accesso.
+
+Le dimensioni degli item devono essere definite in base all'uso che viene fatto della base di dati e in modo da garantire che una transazione acceda in media a pochi item. Le dimensioni di un item usate dal sistema sono dette la sua **granularità**.
+
+La granularità va dal singolo campo ad un'intera tabella o oltre, una grande granularità ci permette una gestione efficiente della concorrenza mentre una piccola ci permette di eseguire più transazioni in modo concorrente ma allo stesso tempo sovraccarica il sistema.
+
+## Il meccanismo di Lock
+Questo si realizza tramite una variabile associata ad ogni item che ne descrive lo stato rispetto alle operazioni che possono essere eseguite su di lui, la variabile assume due valori nel caso di **lock binario**:
+- Locked: L'item è in uso da una transazione e non può essere utilizzato da altre
+- Unlocked: È possibile utilizzare l'item per svolgere operazioni su di esso.
+
+Quando una transazione vuole utilizzare un item quindi, controlla se questo è unlock e se si, tramite un'operazione di *locking* lo porta in stato di locked in modo da poterlo utilizzare per le sue operazioni, una volta finito lo rilascia tramite un'operazione di *unlocking* permettendo quindi ad altre transazioni di utilizzarlo.
+
+Il lock agisce quindi da **primitiva di sincronizzazione**.
+
+> [!Note] Schedule Legale
+> Uno schedule è detto **legale** se una transazione, ogni volta che deve leggere o scrivere un item effettua un locking e poi rilascia ogni lock fatto. (Notiamo quindi che il lock risolve il problema di _lost update_)
+
+Il lock binario, visto prima, assume i due valori visti prima e fa uso di due operazioni:
+- lock(X) per richiedere l'accesso ad un item X
+- unlock(X) per rilasciare l'item X
+
+L'insieme degli item letti e scritti da una transazione coincidono.
+
+> [!NOTE] Osservazione
+> ![[actually.png|100]]
+> 
+> Come detto prima, questo è il metodo più semplice di implementare il lock ma ne esistono anche altri come il lock a tre valori che tramite un altro stato permette la lettura sullo stesso item in modo simultaneo da più transazioni aumentando quindi il livello di concorrenza.
+> 
+
+## Equivalenza
+Vedremo che il concetto di equivalenza degli schedule cambia in base al protocollo di locking adottato. Noi vedremo in base al lock binario.
+
+Per prima cosa utilizziamo un modello delle transazioni che considera soltanto le operazioni rilevanti ovvero gli accessi che nel nostro caso sono soltanto le operazioni di _lock e unlock_.
+
+Quindi per noi una transazione diventa **una sequenza di operazioni di lock e unlock** e ogni _lock(X)_ implica la lettura di _X_ mentre un _unlock(X)_ implica la scrittura di _X_.
+
+Per verificare l'equivalenza andiamo ad associare ad ogni _unlock_ una funzione, diversa dagli altri unlock, che prende come input tutti gli item letti dalla transazione prima di quell'unlock. Quindi ad esempio:
+
+![[Pasted image 20241219214117.png|250]]
+
+E diciamo che due schedule **sono equivalenti** quando le formule finali per ciascun item sono uguali. Inoltre uno **schedule è serializzabile** se è **equivalente ad uno schedule seriale**.
+
+_Esempio_
+
+Consideriamo le due transazioni:
+
+![[Pasted image 20241219214312.png]]
+
+E lo schedule:
+
+![[Pasted image 20241219214333.png]]
+
+Otteniamo come valore finale di X: $f_{4}(f_{1}(X_{0}),Y_{0})$, Y per ora non ci interessa.
+
+In questo caso abbiamo due possibili schedule seriali quindi dobbiamo confrontare il valore finale di X con entrambi:
+
+![[Pasted image 20241219214438.png]]
+
+In questo caso abbiamo come valore finale di X: $f_{4}(f_{1}(X_{0}),f_{2}(X_{0},Y_{0}))$ che è diverso dallo schedule iniziale, proviamo a controllare l'altro schedule seriale:
+
+![[Pasted image 20241219214537.png]]
+
+Questo scrive come valore finale di X: $f_{1}(f_{4}(X_{0},Y_{0}))$.
+
+Quindi lo schedule preso inizialmente non è serializzabile dato che non è equivalente ad uno scchedule seriale. Inoltre come detto nella definizione vanno controllati i valori di tutti gli item ma se già ne abbiamo uno sbagliato è inutile andare a controllare gli altri.
+
+Quindi:
+- Per verificare che uno schedule è serializzabile controlliamo tutti gli item
+- Per verificare che non lo è ci possiamo fermare anche al primo item errato
+
+> [!NOTE] Schedule Serializzabile
+> Uno schedule è serializzabile se esiste uno schedule seriale tale che per ogni item, l'ordine in cui le varie transazioni fanno un lock su quell'item coincide con quello dello schedule seriale.
+
+## Algoritmo 1 - Testare Serializzabilità
+Dato uno schedule S creiamo un grafo diretto G, **grafo di serializzazione** dove:
+- I nodi sono le transazioni
+- Gli archi vanno da una transazione $T_{i}$ ad una transazione $T_{j}$ e hanno etichetta X se in S la transazione $T_{i}$ si esegue un unlock(X) e $T_{j}$ esegue il successivo lock(X)
+
+Attenzione! Non un lock(X) successivo qualsiasi, ma il successivo ovvero il primo lock(X) immediatamente dopo a quel unlock.
+
+> [!example]- Esempio Grafo
+> 
+>_Esempi:_
+>
+>Prendiamo lo schedule:
+>
+>![[Pasted image 20241219220210.png|250]]
+>
+>Che avrà come grafo:
+>
+>![[Pasted image 20241219220313.png|250]]
+
+Il passo successivo è quello di osservare il grafo e notare se sono presenti dei cicli, se G ha un ciclo allora lo schedule non è serializzabile altrimenti applicando a G l'ordinamento topologico si ottiene uno schedule seriale equivalente ad $S$.
+
+### Ordinamento Topologico
+Preso il grafo eliminiamo in modo ricorsivo i nodi che non hanno archi entranti, ogni possibile ordinamento topologico è uno schedule seriale equivalente a S.
+
+![[Pasted image 20241219220655.png|250]]
+
+Un possibile schedule seriale equivalente è quindi: T4 T7 T5 T1 T8 T9 T2 T3 T6.
+
+## Teorema (Correttezza algoritmo grafo serializzazione)
+Uno schedule S è serializzabile se e solo se il suo grafo di serializzazione è aciclico.
+
+Inoltre da notare che se applichiamo l'ordinamento topologico su dei grafi con dei cicli, questo prima o poi si bloccherà.
+
+## Protocollo di Locking a due Fasi
+Una transazione si dice **a due fasi** se:
+- Prima effettua tutte le operazioni di lock (_fase di locking_)
+- Poi tutte le operazioni di unlock (fase di _unlocking_)
+
+Quindi una volta effettuato un unlock non è più possibile effettuare altri lock, per nessuna variabile.
+
+Inoltre da non confondere il protocollo a due fasi da il lock a due valori, il fatto di essere a due fasi è solo una caratteristica aggiuntiva, ci possono essere infatti anche transazioni a due fasi e 3 valori di lock.
+
+### Teorema sul lock a due fasi
+Sia T un insieme di transazioni, se **ogni transazione** in T è **a due fasi** allora **ogni schedule** di T è **serializzabile**.
+
+_Dimostrazione Teorema per Assurdo_
+
+Dato che facciamo una dimostrazione per assurdo, abbiamo ogni transazione in S a due fasi ma nel nostro grafo vogliamo anche un ciclo:
+
+![[Pasted image 20241219221844.png|250]]
+
+E nel nostro schedule S avremo:
+- T1 unlock(X1)
+- ...
+- T2 lock(X1)
+- ...
+- T2 unlock(X2)
+- ...
+- T3 lock(X3)
+- ...
+- ...
+- Tk unlock(Xk)
+- ...
+- T1 lock(Xk)
+
+Notiamo che per creare il ciclo abbiamo bisogno di T1 che esegue un lock su Xk ma questo non è possibile dato che è a due fasi e quindi dopo avere effettuato all'inizio un unlock su X1 non può più effettuare altri lock. Abbiamo ottenuto una contraddizione e quindi dimostrato il teorema.
+
+Ovviamente questa contraddizione può crearsi ovunque ma noi per comodità lo abbiamo mostrato all'inizio.
+
+> [!NOTE] Nota
+> Da notare che se abbiamo uno schedule con tutte transazioni non a due fasi non è detto che non sia serializzabile, ma se ne abbiamo anche solo una a due fasi esisterà sempre uno schedule non serializzabile.
+
+## Deadlock e Livelock
+
+_Pag 47_
