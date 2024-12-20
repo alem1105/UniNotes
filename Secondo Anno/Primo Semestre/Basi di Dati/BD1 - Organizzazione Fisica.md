@@ -679,4 +679,208 @@ Ovviamente questa contraddizione può crearsi ovunque ma noi per comodità lo ab
 
 ## Deadlock e Livelock
 
-_Pag 47_
+Un deadlock si verifica quando ogni transazione in un insieme T è in attesa di ottenere un lock su un item sul quale un'altra transazione nello stesso insieme mantiene un lock quindi questa rimane bloccata non rilasciando i lock e bloccando anche eventuali transazioni non dell'insieme.
+
+Essenzialmente accade una situazione del tipo:
+- A ha un lock e sta un unlock di B
+- Anche B sta aspettando un unlock di C
+- Ma C sta aspettando un unlock di A
+Quindi è tutto bloccato.
+
+Quando si verificano queste situazioni, **vanno risolte**.
+
+Possiamo verificare il sussistere di una situazione di stallo si mantiene il grafo di attesa, dove:
+- I nodi sono le transazioni
+- Gli archi vanno da una transazione T1 ad una T2 se la T1 è in attesa di ottenere un lock su un item sul quale T2 mantiene un lock
+
+Se nel grafo c'è un ciclo si verificherà una situazione di stallo che coinvolge le transazioni nel ciclo.
+
+Per risolvere il sussistere di un deadlock dobbiamo necessariamente effettuare il rollback di una transazione coinvolta e farla ripartire. Per **rollback** intendiamo:
+1) Abortire la transazione
+2) Annullare i suoi effetti sulla base di dati, ripristinando quindi i valori dei dati precedenti all'inizio della transazione
+3) Tutti i lock mantenuti dalla transazione vengono rilasciati
+
+Ovviamente oltre a risolvere le situazioni di stallo si possono anche **prevenire**. 
+
+Ad esempio: Si ordinano gli item e si impone alle transazioni di richiedere i lock necessari seguendo tale ordine. In questo modo non possiamo avere cicli nel grafo, infatti:
+
+Supponiamo per assurdo che le transazioni richiedono gli item seguendo un ordine fissato e che nel grafo ci sia un ciclo.
+
+![[Pasted image 20241220091354.png|250]]
+
+Osservando il grafo notiamo che $X_{1}<X_{2}, X_2<X_{3}\dots X_{k-1} < X_{k}$ e da questo segue che $X_{1}<X_{k}$ ma poi otteniamo $X_{k}<X_{1}$ che è una contraddizione dato che $X_{1}$ doveva essere la prima nell'ordine prefissato.
+
+---
+
+Un **livelock** invece si verifica quando una transazione aspetta indefinitamente che gli venga concesso un lock su un certo item, questo può non arrivare perché arrivano sempre altre transazioni prima di lei.
+
+Per risolvere il livelock possiamo usare una strategia **first came-first served** oppure eseguendo le transazioni in base alla loro priorità e aumentando la priorità di una transazione in base al tempo in cui rimane in attesa.
+
+## Abort di una Transazione
+Ci sono diversi casi in cui eseguiamo l'abort di una transazione:
+1) La transazione esegue un'operazione non corretta, ad esempio una divisione per 0
+2) Lo scheduler rileva un deadlock
+3) Lo scheduler fa abortire la transazione per garantire la serializzabilità (timestamp)
+4) Si verifica un malfunzionamento hardware o software
+
+## Punto di Commit
+Il punto di commit di una transazione è il punto in cui la transazione:
+- Ha ottenuto tutti i lock necessari
+- Ha effettuato tutti i calcoli necessari
+
+Una volta raggiunto questo punto la transazione non può più essere abortita per i motivi 1 e 3 visti sopra.
+
+## Dati Sporchi
+Sono dei dati scritti da una transazione sulla base di dati prima che abbia raggiunto il suo punto di commit.
+
+## Rollback a Cascata
+Quando una transazione T viene abortita abbiamo visto che devono essere annullati anche i suoi effetti prodotti sulla base di dati ma non solo di T, anche di tutte le transazioni che hanno letto i dati sporchi.
+
+## Problemi Concorrenza e Soluzioni
+Abbiamo quindi visto che:
+- L'aggiornamento perso viene risolto dal lock binario
+- I dati sporchi vengono risolti dal protocollo a 2 fasi stretto, che vedremo tra poco
+- L'aggregato non corretto viene risolto dal protocollo a 2 fasi.
+
+Per risolvere il problema dei dati sporchi le transazioni devono obbedire a regole più restrittive di quelle del locking a due fasi.
+
+## Protocollo a due Fasi Stretto
+Una transazione si dice che soddisfa il protocollo di locking a due fasti stretto se:
+- Non scrive sulla base di dati prima del punto di commit.
+- Non rilascia un lock finché non ha finito di scrivere tutti gli item sulla base.
+
+## Classificazione dei Protocolli
+Possiamo classificarli in due categorie:
+- **Conservativi**: Cercano di evitare le situazioni di stallo
+- **Aggressivi**: Cercano di eseguire le transazioni nel modo più veloce possibile anche causando situazioni di stallo per poi risolverle.
+
+### Protocolli Conservativi
+Una transazione T richiede tutti i lock che servono all'inizio e li ottiene se e solo se tutti i lock sono disponibili, se non lo sono allora la transazione viene messa in una coda di attesa.
+
+In questo modo evitiamo il deadlock ma non il livelock, infatti una transazione rischia di non partire mai.
+
+Applichiamo quindi questo tipo di protocolli quando abbiamo un alto rischio di deadlock.
+
+Se vogliamo però evitare anche il livelock:
+- Come prima la transazione deve richiedere tutti i lock e li riceve se tutti disponibili ma anche se nessuna transazione che la precede nella coda è in attesa di un lock richiesto da lei.
+
+Quindi in conclusione:
+- **Vantaggi**
+	- Si evita il verificarsi di deadlock e livelock
+- **Svantaggi**
+	- L'esecuzione di una transazione può essere ritardata
+	- Una transazione è costretta a chiedere un lock su ogni item che potrebbe servirgli anche se poi non lo usa effettivamente
+
+### Protocolli Aggressivi
+In questo tipo di protocolli, una transazione deve richiedere un lock su un item subito prima di leggerlo o scriverlo, in questo modo sono possibili i deadlock.
+
+---
+
+Quindi, quando scegliere un protocollo aggressivo o uno conservativo? Possiamo distinguere i casi in base alla probabilità che due transazioni richiedano un lock su uno stesso item, se questa è:
+- Alta: Conviene utilizzare i conservativi in quanto evitiamo il sovraccarico di sistema per gestire il deadlock (ovvero eseguire parzialmente delle transazioni che verranno abortite e riavviate)
+- Bassa: Conviene utilizzare gli aggressivi in quanto evitiamo il sovraccarico della gestione dei lock (decidere se garantire un lock, mantenere le code ecc...)
+
+> [!NOTE] Conclusione
+> Solo se tutte le transazioni sono a due fasi abbiamo la certezza che ogni schedule è serializzabile.
+> 
+> Tutti i protocolli di lock a due fasi risolvono l'aggregato non corretto.
+
+## Time-Stamp
+Il timestamp è un valore sequenziale e crescente che identifica una transazione. È assegnato alla transazione quando questa viene creata e può assumere diversi valori come ad esempio un contatore o anche l'ora di creazione.
+
+Questo significa che più il valore del timestamp è alto e meno è il tempo che la transazione si trova nel sistema. Quindi se una transazione T1 ha timestamp minore di T2, se fossero eseguite in modo sequenziale T1 verrebbe eseguita prima di T2.
+
+> [!NOTE] Serializzabilità
+> Uno schedule è serializzabile se è equivalente allo schedule seriale dove le transazioni compaiono ordinate in base ai loro timestamp.
+> 
+> Quindi possiamo anche dire che è serializzabile se per ciascun item acceduto da più transazioni, l'ordine in cui queste accedono è lo stesso ordine imposto dai timestamp
+
+_Esempio_
+
+Prediamo le due transazioni
+
+![[Pasted image 20241220095115.png|250]]
+
+Queste hanno come timestamp T1 = 110 e T2 = 100 quindi significa che T2 è arrivata prima di T1. Uno schedule serializzabile deve quindi essere equivalente allo schedule seriale T2 T1.
+
+Prendiamo lo schedule:
+
+![[Pasted image 20241220095251.png|250]]
+
+Questo non è serializzabile dato che T1 ha letto il valore di X prima della modifica di T2.
+
+_Altro esempio_
+
+Abbiamo le transazioni
+
+![[Pasted image 20241220095507.png|250]]
+
+Con timestamp T1 = 110 e T2 = 100 quindi come prima lo schedule è serializzabile se equivalente allo schedule seriale T2 T1.
+
+Prendiamo quindi lo schedule:
+
+![[Pasted image 20241220095619.png|250]]
+
+Osserviamo però anche lo schedule seriale T2 T1:
+
+![[Pasted image 20241220095702.png|250]]
+
+Notiamo che il dato finale di X viene scritto da T1 e non si basa sul valore attuale di X ma su quello di Y che è lo stesso per entrambe le transazioni.
+
+Quindi lo schedule preso come esempio è ancora serializzabile se non effettuiamo l'ultima write di T2, in questo modo rispettiamo lo schedule seriale.
+
+## Diversi Timestamp
+Associamo ad ogni item due timestamp:
+- _read timestamp_ di un item X che indichiamo con _read_TS(X)_ ed è il più grande fra tutti i timestamp di transazioni che hanno letto X con successo.
+- _write timestamp_ di un item X che indichiamo con _write_TS(X)_ ed è il più grande fra tutti i timestamp di transazioni che hanno scritto X con successo.
+
+Come li utilizziamo?
+- Ogni volta che una transazione T cerca di eseguire un _read(X)_ o un _write(X)_ confrontiamo il timestamp della transazione con il read e write timestamp dell'item per assicurarci che non ci siano violazioni nell'ordine stabilito dai timestamp.
+
+Nello specifico:
+- T vuole eseguire una _write(X)_:
+	- Se _read_TS(X) > TS(T)_ allora T viene rolled back, significa che qualcuno di più recente ha già letto il dato e quindi la scrittura andrebbe a causargli danni
+	- Se _write_TS(X) > TS(T)_ allora l'operazione di scrittura non viene effettuata, infatti è inutile andare a scrivere dato che il dato è stato modificato più recentemente. Più avanti vedremo in modo dettagliato.
+	- Se nessuna delle condizioni è soddisfatta allora eseguiamo il write e impostiamo il write timestamp dell'item uguale a quello della transazione.
+
+- T vuole eseguire una _read(X)_:
+	- Se _write_TS(X) > TS(T)_ allora T viene rolled back, questo significa che qualcuno arrivato dopo T ha già scritto il dato e quindi T "ha fatto tardi"
+	- Se _write_TS(X) <= TS(T)_ allora la read è eseguita e se _read_TS(X) < TS(T)_ allora impostiamo il read timestamp dell'item uguale a quello della transazione. Infatti significa che stiamo seguendo il giusto ordine delle operazioni
+
+_Esempio 1_
+
+![[Pasted image 20241220101038.png]]
+
+Al passo 9 dobbiamo abortire l'operazione perché T2 ha timestamp 100 e vuole eseguire un _write(X)_ ma notiamo che il Read timestamp di X è più grande quindi qualcuno arrivato dopo ha già letto il dato e T2 andrebbe a causare incongruenze.
+
+_Esempio 2_
+
+![[Pasted image 20241220101217.png]]
+
+Al passo 9 T2 vuole eseguire un _write(X)_, lei ha timestamp 110 ma il read time stamp di X è più grande e quindi dobbiamo eseguire un rollback.
+
+Al passo 11 accade la stessa cosa.
+
+### Osservazioni
+In entrambi i casi, lo schedule delle transazioni superstiti è equivalente allo schedule seriale delle transazioni eseguite nell'ordine di arrivo.
+
+Quello che provoca il rollback di una transazione che vuole leggere è che una più giovane ha già scritto i dati.
+
+Quello che provoca il rollback di una transazione che vuole scrivere è che una più giovane ha già letto i dati.
+
+Da notare che se una transazione vuole scrivere e non c'è stata nessuna transazione più giovane che ha già letto ma una più giovane li ha già scritti allora non è necessario il rollback ma ci basta non effettuare la scrittura della più vecchia.
+
+Perché è importante salvare il timestamp più alto e non quello dell'ultima transazione ad aver usato l'item?
+
+![[Pasted image 20241220101812.png]]
+
+Adesso supponiamo di scrivere su X il timestamp dell'ultima transazione, secondo l'algoritmo di scrittura T2 potrebbe scrivere su X ma è sbagliato dato che T3 che è più giovane ha già letto il dato e quindi T2 andrebbe a modificargli i dati essendo lei più vecchia. Non abbiamo rispettato l'ordine dei timestamp ovvero T1 T2 T3.
+
+---
+
+Perché possiamo annullare semplicemente la write in quel caso? Anche se spiegato prima:
+
+![[Pasted image 20241220103640.png|400]]
+
+
+
