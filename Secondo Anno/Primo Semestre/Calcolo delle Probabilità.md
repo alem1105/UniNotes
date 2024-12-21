@@ -3529,9 +3529,9 @@ $$
 $X_{1},X_{2},\dots,X_{n}$ sono v.a. I.I.D., cosa significa?
 - Indipendenti significa che $\forall n$ $X_{1},\dots,X_{n}$ sono indipendenti, ovvero:
   
-  $$
- P(X_{1}\in A_{1}, \dots, X_{n}\in A_{n}=\prod_{i=1}^n P(X_{i}\in A_{i}) \quad \forall A_{1},\dots,A_{n} \subset \mathbb{R} 
- $$
+$$
+P(X_{1}\in A_{1}, \dots, X_{n}\in A_{n}=\prod_{i=1}^n P(X_{i}\in A_{i}) \quad \forall A_{1},\dots,A_{n} \subset \mathbb{R} 
+$$
 
 - Identicamente Distribuite significa che $\forall i\neq j$ vale $P(X_{i}\in A)=P(X_{j}\in A) \quad \forall A\subset \mathbb{R}$, quindi non le distinguiamo a livello probabilistico.
   
