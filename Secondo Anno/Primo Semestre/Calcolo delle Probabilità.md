@@ -3603,4 +3603,87 @@ Il Meta-esperimento è descritto dal suo spazio di probabilità che denotiamo co
 
 $(T,C,T,T,C,C, \dots)$ significa che al primo lancio abbiamo ottenuto testa, al seconda croce, al terzo testa...
 
-Per quanto riguarda la funzione di probabilità $\overline{P}$ la situazione è più complessa e difficile da introdurre, ci basta sapere che esiste una funzione di probabilità che descrive questo esperimento.
+Per quanto riguarda la funzione di probabilità $\overline{P}$ la situazione è più complessa e difficile da introdurre.
+
+Questa si chiama **probabilità prodotto** e la indichiamo con $\overline{P}$, questa funzione di probabilità ha le seguenti proprietà:
+- $\overline{P}=(\{ \overline{s} = (s_{1},\dots) \in \overline{S}:s_{i}\in E\})=P(E)$ questo $\forall i\in \{ 1,2,\dots \}=\mathbb{N}_{+}$ e $\forall E\subset S$
+- $\overline{P}(E_{1} \times E_{2} \times \dots \times E_{n} \times S \times S \times \dots)=P(E_{1})P(E_{2})\dots P(E_{n})$ questo $\forall n$ e $\forall E_{1},E_{2},\dots,E_{n}\subset S$
+
+Possiamo spiegare queste proprietà in modo più discorsivo:
+- $\overline{P}$ ha la proprietà che se mi interesso alla prova i-esima la probabilità che il risultato della prova i-esima soddisfi l'evento $E\subset S$ è la probabilità che si verifichi $E$ nell'esperimento base (ad esempio la probabilità che al terzo lancio di un dado esca 2 é 1/6 proprio come nell'esperimento base)
+- $\overline{P}$ ha la proprietà che eventi riferiti a prove diverse sono indipendenti
+
+## Frequenza Assoluta
+Osserviamo che il metaesperimento é descritto dallo spazio di probabilità $(\overline{S},\overline{P})$ dove $\overline{S}=S^{\mathbb{N}_{+}}$ con $\mathbb{N}_{+}=\{ 1,2,\dots \}$. Quindi $\overline{S}=\{ (s_{1},\dots):s_{i}\in S \quad \forall i\in \mathbb{N}_{+} \}$.
+
+Fissiamo adesso un evento $E\subset S$ ad esempio $E=\text{Esce un numero pari}$ e dato un $n$ intero definiamo:
+
+$$
+Y^E_{n}:= \text{Volte in cui si verifica E nelle prime n prove del metaesperimento}
+$$
+
+È quindi una funzione definita su:
+
+$$
+Y^E_{n}:\overline{S}\to \{ 0,1,2,\dots,n \} 
+$$
+
+_Esempio_
+
+Supponiamo $\overline{s}=(4,3,2,5,1,1,\dots)$ (ricordiamo che è infinito) e se $E=\{ 2,4,6 \}$ allora:
+
+$$
+\begin{align*}
+Y^E_{3}(\overline{s} )=2 \\
+Y^E_{6}(\overline{s} )=2
+\end{align*}
+$$
+
+## Teorema (Interpretazione frequentistica della probabilità)
+$\forall E\subset S$ evento dell'esperimento base, vale:
+
+$$
+\overline{P}\left( \left\{  \overline{s}:\lim_{ n \to \infty } \frac{Y^E_{n}(\overline{s} )}{n} = P(E)  \right\} \right)= 1 
+$$
+
+- $\frac{Y^E_{n}(\overline{s} )}{n}$ Questo prende il nome di **frequenza relativa di E nelle prime n prove**
+
+Questa formula è conseguenza della legge forte dei grandi numeri e risolve i problemi che avevamo per rispondere alla domanda sulla probabilità. Infatti con "tanti lanci" ci riferiamo alla probabilità del metaesperimento $\overline{P}$ mentre con $P$ ci riferiamo alla probabilità del singolo lancio. Inoltre abbiamo una definizione precisa ovvero $=1$ e non "circa".
+
+## Teorema (Legge Forte dei Grandi Numeri)
+Sia $(S,P)$ spazio di probabilità e siano $X_{1},X_{2},\dots$ v.a. IID tutte definite su $S$ e con valore atteso $\mu$. Allora:
+
+$$
+P\left( \left\{  s\in S:\lim_{ n \to \infty } \frac{X_{1}(s)+X_{2}(s)+\dots+ X_{n}(s)}{n} =\mu  \right\} \right) = 1
+$$
+
+Ricordiamo infatti che IID sta per **indipendenti e identicamente distribuite** e che per identicamente distribuite intendiamo:
+
+$$
+P(X_{i}\in A)=P(X_{j}\in A) \quad \forall i\neq j \qquad \forall A\subset \mathbb{R}
+$$
+
+E questo implica che:
+
+$$
+E[X_{i}]=E[X_{j}]
+$$
+
+Quindi in modo discorsivo possiamo dire che, la media aritmetica di una sequenza di variabili aleatorie IID converge al loro valore atteso quando il numero di esperimenti tende a infinito.
+
+## Corollario della Legge forte dei grandi numeri
+$\forall(S,P)$ prendiamo un esperimento base e $\forall X:S\to \mathbb{R}$ variabile aleatoria con $\mu:E[X]$ ben definito, vale:
+
+$$
+\overline{P}\left( \left\{  \overline{s}\in \overline{S}  :\lim_{ n \to \infty } \frac{X_{1}(\overline{s} )+\dots+X_{n}(\overline{s} )}{n} =E[X] \right\} \right)=1 
+$$
+
+Questo ci dà un'interpretazione frequentistica del valore atteso.
+
+Ricordando che definiamo $\forall i=1,2,\dots$    $X_{i}:\overline{S}\to \mathbb{R}$ come:
+
+$$
+X_{i}(\overline{s} )=X(s_{i})
+$$
+
+Dove $\overline{s}=(s_{1},s_{2},\dots)\in \overline{S}$
