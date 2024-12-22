@@ -343,7 +343,7 @@ La **Famiglia degli eventi** = **Famiglia dei sottoinsiemi di S**.
 >    P(\bigcup^{\infty}_{i=1} E_{i})=\sum\limits_{i=1}^{\infty}P(E_{i}) 
 > $$
 >    
->    Questo quando $\forall i\neq j$ e $E_{i}\cap E_{j}\neq \emptyset$
+>    Questo quando $\forall i\neq j$ e $E_{i}\cap E_{j} = \emptyset$
 >    Ovvero $\forall i\neq j$ abbiamo $E_{i}$ e $E_{j}$ incompatibili.
 >    
 >    Terminologia: Dato $E$ evento, $P(E)$ si dice probabilità dell'evento E.
@@ -1400,7 +1400,7 @@ $$
 
 ## Funzione di Distribuzione (o Ripartizione)
 
-Data una variabile aleatoria $X$, la sua funzione di distribuzione è definiti come:
+Data una variabile aleatoria $X$, la sua funzione di distribuzione è definita come:
 
 $$
 F_{X}:\mathbb{R}\to[0,1] \text{ con } F_{X}(a)=P(X\leq a) \ \forall a\in \mathbb{R}
@@ -2711,7 +2711,7 @@ Prendiamo ad esempio $i=3$, abbiamo $f(x_{1},x_{2},x_{3},\dots ,x_{n})=\{ x_{3},
 
 _Esempio_
 
-Scegliamo 5 studenti da inter rogare e definiamo:
+Scegliamo 5 studenti da interrogare e definiamo:
 - E = Il secondo e il terzo studente scelto sono maschi.
 - F = Il quarto e il quinto studente scelto sono maschi.
 
@@ -3388,7 +3388,7 @@ X=\begin{cases}
 \end{cases}
 $$
 
-Come spazio campionario abbiamo il mazzo di carte e quindi esiti, quindi calcoliamo:
+Come spazio campionario abbiamo il mazzo di carte e quindi esiti equiprobabili, quindi calcoliamo:
 
 $$
 P(X=1)=\frac{1}{2} \qquad P(X=0)=\frac{1}{2}
