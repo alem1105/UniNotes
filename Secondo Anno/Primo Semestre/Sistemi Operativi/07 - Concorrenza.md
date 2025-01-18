@@ -173,4 +173,334 @@ Prendendo l'esempio precedente, vediamo una possibile violazione che può accade
 
 ![[Pasted image 20250117195057.png]]
 
-_Slide 26+_ 
+# Mutua Esclusione: Supporto Hardware
+Iniziamo a vedere qualche soluzione funzionante che garantisce la mutua esclusione.
+
+## Disabilitazione delle Interruzioni
+Ci troviamo sempre nel loop dove si cerca di accedere ad una sezione critica, prima di entrarci disabilitiamo gli interrupt e prima di uscire li riabilitiamo. In questo modo togliamo al dispatcher la possibilità di alternare i processi sul processore.
+
+Quindi:
+
+```c
+while (true) {
+	/* prima della sezione critica */;
+	disabilita_interrupt();
+	/* sezione critica */;
+	riabilita_interrupt();
+	/* rimanente */;
+}
+```
+
+E otteniamo una situazione come questa:
+
+![[Pasted image 20250118114759.png]]
+
+Quindi se disabilitiamo gli interrupt niente interrompe l'esecuzione del processo, ma questo ha dei problemi:
+- Se un processo abusa di questa funzione, farà calare il livello di multiprogrammazione.
+- Inoltre questo funziona solo in sistemi con un solo processore, infatti non disabilitiamo gli interrupt su tutti i processori quindi magari un processore é bloccato mentre un altro no e quindi processi in esecuzione su questo possono entrare nella sezione critica.
+- Di solito quindi si può fare solo in _kernel_mode_
+
+## Istruzioni Macchina Speciali
+Questo é un altro tipo di soluzione, possiamo semplificarle in due:
+
+- Istruzione `exchange`
+
+```c
+void exchange(int register, int memory) 
+{
+	int temp;
+	temp = memory;
+	memory = register;
+	register = temp;
+}
+```
+
+Ovviamente va fatta a livello macchina quindi questa é una soluzione in pseudocodice.
+Questa prende un registro e un indirizzo di memoria e scambia questi elementi.
+
+Queste sono speciali perché sono atomiche, quindi non verranno mai interrotte da altri processi, questo é garantito dall'hardware.
+
+Come risolviamo il problema della mutua esclusione con questa funzione?
+
+```c
+/* program mutualexclusion */
+const int n = /* number of processes */
+int bolt;
+void P(int i)
+{
+	while (true) {
+		int keyi = 1;
+		do exchange(keyi, bolt) while (keyi != 0)
+		/* critical section */
+		bolt = 0;
+		/* remainder */
+	}
+}
+void main()
+{
+	bolt = 0;
+	parbegin (P(1), P(2), ..., P(n));
+}
+```
+
+Quindi c'è uno scambio di valori fra `keyi, bolt` fintanto `keyi` non diventa 0 a quel punto si va nella sezione critica.
+
+Da notare che l'assegnamento di `keyi = 1` va fatto dentro al while altrimenti se abbiamo un solo processo questo rimarrà bloccato
+
+- Istruzione `compare_and_swap`
+
+```c
+int compare_and_swap(int word, int testval, int newval)
+{
+	int oldval;
+	oldval = word;
+	if (word == testval) word = newval;
+	return oldval;
+}
+```
+
+Se il valore presente in `word` é uguale a quello presente in `testval` allora cambiamo il valore presente in `word` con quello presente in `newval`. In ogni caso la funzione ritorna il valore `oldval`.
+
+Come risolviamo la mutua esclusione con questa funzione?
+
+```c
+/* program mutualexclusion */
+const int n = /* number of processes */
+int bolt;
+void P(int i)
+{
+	while (true) {
+		while (compare_and_swap(bolt, 0, 1) == 1)
+		{
+			/* do nothing */
+		}
+		/* critical section */
+		bolt = 0;
+		/* remainder */
+	}
+}
+void main()
+{
+	bolt = 0;
+	parbegin (P(1), P(2), ..., P(n));
+}
+```
+
+La funzione prende la variabile bolt, se vale 0 gli assegna 1 ma ritorna il vecchio valore quindi ritorna 0 ed entra nella sezione critica.
+Adesso se il dispatcher manda in esecuzione un altro processo, per lui bolt adesso vale 1 quindi la funzione non ne cambia il valore e ritorna 1 quindi entra nel while e non va nella sezione critica.
+
+Quando il primo processo eseguirà `bolt = 0` allora il secondo processo potrà uscire dal loop ed entrare nella sezione critica.
+
+### Vantaggi
+Queste funzioni sono applicabili ad un qualsiasi numero di processi e sia su sistemi multiprocessore che con un solo. Sono molto semplici da verificare e inoltre possono essere usate per gestire più di una sezione critica.
+
+### Svantaggi
+Si basano sul concetto di **busy-waiting** ovvero uno spreco del tempo di computazione, ad esempio i cicli while con i quali blocchiamo i processi.
+Il problema è che il ciclo di busy-waiting non viene distinto dal sistema operativo, non riesce quindi a distinguere chi sta aspettando di entrare nella sezione critica e chi sta facendo cose utili, per lui sono tutti _ready_.
+
+Un altro svantaggio é che é possibile sia la **starvation** che il **deadlock**, questo solo se a questi meccanismi viene abbinata la priorità fissa, ovvero se un processo con bassa priorità viene interrotto nella sezione critica ed entra uno ad alta priorità rimarrà bloccato perché il primo processo deve sbloccare la zona critica.
+
+# Semafori
+Una soluzione tipica per evitare i busy waiting sono i semafori, questi sono essenzialmente delle strutture dati che permettono 3 operazioni:
+- Inizializzazione - `initialize`
+- `decrement o semWait`: diminuisce il valore di un intero presente nel semaforo che mette in stato di blocket il processo, quindi non si spreca CPU come con il busy waiting
+- `increment o semSignal`, aumenta il valore dell'intero e mette in stato di ready il processo
+
+Queste operazioni sono delle syscall e vengono quindi eseguite in kernel mode e agiscono direttamente sui processi.
+
+_Pseudocodice per semaforo:_
+
+```c
+struct semaphore {
+	int count;
+	queueType queue;
+};
+
+void semWait(semaphore s)
+{
+	s.count--;
+	if (s.count < 0) {
+		/* place this process in s.queue */
+		/* block this process */
+	}
+}
+
+void semSignal(semaphore s) 
+{
+	s.count++;
+	if (s.count <= 0) {
+		/* remove a process P from s.queue */
+		/* place process P on ready list */
+	}
+}
+```
+
+Notiamo quindi che hanno, oltre ad un intero, una coda di processi.
+
+Se chiamiamo una wait su un semaforo allora decrementiamo l'intero e se questo ha valore negativo allora il processo che ha fatto la chiamata va messo in blocked e aggiunto alla coda del semaforo.
+
+Se viene invece chiamata una signal viene incrementato il contatore e se il valore é negativo o 0 allora c'è da sbloccare qualcosa, si sceglie un processo dalla coda si toglie da questa e si dichiara ready.
+
+Esistono anche semafori binari dove al posto dell'intero count abbiamo una variabile che assume soltanto 0 ed 1, count infatti ci dà informazioni aggiuntive ad calcolandone il valore assoluto possiamo capire quanti processi ci sono in coda.
+
+I semafori non sono istruzioni macchina come `exchange o compare_and_swap` ma sono syscall offerte dal sistema operativo. Inoltre per evitare che vengano bloccate possono far uso delle istruzioni macchina `exchange o compare_and_swap`.
+
+---
+
+Quando c'è una `signal` e dobbiamo quindi decidere quale processo sbloccare, in che modo lo decidiamo?
+
+## Semafori Deboli e Forti
+Se la politica che utilizziamo è quella "ovvia" cioè la _FIFO_ allora si parla di **strong semaphore**, se invece la politica non viene specificata allora si parla di **weak semaphore**.
+
+Quindi con quelli forti, se usati bene, possiamo evitare la starvation mentre con i deboli no.
+
+_Esempio di Semaforo Forte_
+
+![[Pasted image 20250118170343.png]]
+
+![[Pasted image 20250118170655.png]]
+
+
+**1-2)** Abbiamo A in esecuzione e chiama una wait sul semaforo, quindi questo scende a 0 ma non essendo sceso sotto a 0 non sposta il processo in blocked, A viene quindi rimandato in ready.
+
+**2-3)** B va in esecuzione e chiama una wait, il count del semaforo scende a -1 e quindi B viene messo in blocked.
+
+**3-4)** Va in esecuzione D che chiama una signal infatti s passa a 0 e il processo B viene rimesso in ready.
+
+**4-5-6)** Viene messo in esecuzione C e, saltando dei passaggi nelle foto, vengono chiamate 3 wait una per ogni processo, quindi abbiamo D in esecuzione e tutti gli altri in blocked
+
+**6-7)** A questo punto D chiama una signal che sblocca C e lo manda in ready.
+
+La differenza con un semaforo debole sta nel punto 6-7, il debole avrebbe sbloccato un processo a caso mentre il forte sblocca sempre quello in testa alla coda.
+
+## Mutua Esclusione con Semafori
+
+```c
+coinst int n = /* number of processes */
+semaphore s = 1;
+void P(int i)
+{
+	while (true) {
+		semWait(s);
+		/* critical section */;
+		semSignal(s);
+		/* remainder */;
+	}
+}
+void main()
+{
+	parbegin (P(1), P(2), ..., P(n));
+}
+```
+
+È importante impostare `s = 1` prima di iniziare.
+
+Grafico del funzionamento:
+
+![[Pasted image 20250118171649.png]]
+
+# Problema del Produttore / Consumatore
+Situazione generale:
+- Uno o più processi creano dati (produttori) e li mettono in un buffer
+- Un consumatore prende dati dal buffer uno alla volta
+- Al buffer può accedere un solo processo sia produttore o consumatore
+
+Dobbiamo quindi garantire la mutua esclusione per l'accesso al buffer, ma questa é solo una parte del problema.
+
+Infatti, oltre alla mutua esclusione:
+- Ci si deve assicurare che i produttori non inseriscano dati quando il buffer è pieno
+- Assicurarsi che i consumatori non prendano dati quando il buffer è vuoto
+
+Si potrebbe permettere l'accesso in contemporanea di produttori e consumatori ma per semplicità non consideriamo questo caso.
+
+## Pseudocodici
+Per ora facciamo finta che il buffer abbia spazio infinito, eliminiamo quindi il primo punto, il produttore non ha mai motivo di fermarsi.
+
+```c
+/* Produttore */
+while (true) {
+	/* produce item v */
+	b[in] = v;
+	in++;
+}
+
+/* Consumatore */
+while (true) {
+	while (in <= out)
+	/* do nothing */
+	w = b[out];
+	out++;
+	/* consume item w */
+}
+```
+
+Quindi solo il consumatore deve preoccuparsi di non consumare quando il buffer è vuoto.
+
+Soluzione con semafori binari:
+
+![[Pasted image 20250118175811.png]]
+
+Se vogliamo usare con semafori generali:
+
+![[Pasted image 20250118175908.png]]
+
+Entrambe risolvono il problema dove il consumatore legge da un buffer vuoto.
+
+Nella seconda soluzione essenzialmente ad ogni elemento prodotto incrementiamo il semaforo e ad ogni elemento consumato lo riduciamo.
+
+## Produttori e Consumatori con Buffer Circolare
+Adesso eliminiamo l'ipotesi del buffer infinito, questo adesso é gestito in maniera circolare.
+
+![[Pasted image 20250118180500.png]]
+
+Come prima abbiamo `in` dove il produttore può inserire e `out` dove il consumatore può recuperare oggetti, inoltre in questo caso se le due variabili sono uguali il buffer non è sempre vuoto potrebbe anche essere pieno. Per risolvere questo il nostro buffer in realtà sarà grande `n - 1` e non `n`.
+In questo modo se `in == out` allora il buffer è vuoto. Sarà pieno quando `in + 1 % n == out`.
+
+Adesso le implementazioni diventano:
+
+- Produttori
+
+```c
+while (true) {
+	/* produce item v */
+	while ((in + 1) % n == out)
+	{
+		/* do nothing */
+	}
+	b[in] = v;
+	in = (in + 1) % n
+}
+```
+
+- Consumatori
+
+```c
+while (true) {
+	while (in == out)
+	{
+		/* do nothing */
+	}
+	w = b[out];
+	out = (out + 1) % n
+	/* Consume item w */
+}
+```
+
+Ricordiamo che vogliamo:
+- Mutua esclusione sul buffer
+- Consumatore non deve mai consumare se buffer vuoto
+- Produttore mai produrre se buffer pieno
+
+Possiamo modificare la soluzione di prima con poche righe:
+
+![[Pasted image 20250118182527.png]]
+
+Aggiungiamo un terzo semaforo `e` grande quanto il buffer. Nel produttore facciamo subito una wait su `e`, in questo modo se facciamo un numero di operazioni pari alla grandezza del buffer veniamo bloccati.
+
+Ovviamente se un elemento viene consumato allora chiamiamo una signal su `e`.
+
+_Slide 62 - 70 ci sono degli esempi con i semafori_
+
+# Mutua Esclusione: Soluzioni Software
+
+_Slide 71 - Video Part2 1:14:00_
