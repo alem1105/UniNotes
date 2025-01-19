@@ -503,4 +503,190 @@ _Slide 62 - 70 ci sono degli esempi con i semafori_
 
 # Mutua Esclusione: Soluzioni Software
 
-_Slide 71 - Video Part2 1:14:00_
+Abbiamo visto la soluzione tramite semafori, vediamo un altro tipo di soluzione. Queste non useranno istruzioni macchina o altro, non si appoggiano su niente.
+
+Facciamo quindi affidamento soltanto a variabili o altri strumenti software.
+
+## Algoritmo di Dekker
+
+![[Pasted image 20250119114921.png]]
+
+I due processi impostano la variabile `wants_to_enter` a `true` dichiarando quindi di voler entrare nella sezione critica.
+
+Con `if turn = (0,1)` a seconda del processo, controlliamo se è il suo turno di entrare nella sezione critica, se non tocca a lui impostiamo a falso il `wants_to_enter` e facciamo un'attesa attiva finché l'altro processo non ha finito e quindi `turn` cambia valore.
+
+Questa soluzione vale soltanto per 2 processi, l'estensione a più processi è possibile ma non banale.
+
+- Garantisce la non starvation grazie a `turn`
+- Garantisce il non deadlock ma è busy-waiting, quindi se ci sono le priorità fisse può accadere.
+- Non richiede nessun supporto dal SO, anche se in alcune architetture ci sono delle ottimizzazioni che riordinano le istruzioni e gli accessi in memoria, è necessario disabilitarle
+
+## Algoritmo di Peterson
+Questo algoritmo risolve il problema in maniera più semplice.
+
+![[Pasted image 20250119115712.png]]
+
+Anche qui il processo che vuole entrare nella sezione critica lo segnala impostando `flag` a true.
+Ognuno dei due processi imposta `turn` per l'altro, come se gli cedesse il posto, poi se l'altro è interessato allora loro aspettano.
+
+- Anche questo vale soltanto per 2 processi e l'estensione a più processi è più semplice ma comunque non banale.
+- Per starvation e deadlock è come il Dekker
+- Bounded-Waiting: Un processo può aspettare l'altro al più una volta.
+- Stesso discorso per ottimizzazioni che riordinano gli accessi.
+
+# Passaggio di Messaggi
+Per ora abbiamo visto lo scambio di informazioni fra processi tramite variabili globali, adesso vediamo come un processo può mandare un messaggio direttamente ad un altro processo.
+
+Questo scambio funziona con due primitive:
+- `send(destination, message)`
+- `receive(source, message)`
+- Spesso abbiamo anche dei test di ricezione
+- Da notare che `message` in send è un input mentre in receive è un output
+
+Lo scambio di messaggi richiede la **sincronizzazione**, infatti il mittente deve inviare prima che il ricevente riceva.
+Cosa succede ai processi quando usano queste syscall? Queste operazioni possono essere sia bloccanti che non, da notare che il test di ricezione non è mai bloccante.
+
+## Send e Receive Bloccanti
+In questo caso sia mittente che destinatario sono bloccati finché il messaggio non è completamente ricevuto, tipicamente si chiama **rendezvous** e richiede una sincronizzazione molto stretta.
+
+Quello che succede, molto banalmente, è che chi chiama una send rimane bloccato finché qualcuno non riceve, stessa cosa se qualcuno chiama una receive rimane bloccato finché non riceve qualcosa.
+
+## Send / Receive non Bloccante
+Spesso si utilizza una send non bloccante e una receive bloccante.
+
+> [!info] Terminologia
+> Se scriviamo `send o receive` le indichiamo bloccanti, se invece inseriamo `nb` davanti sono non bloccanti quindi `nbsend o nbreceive`.
+
+Con una send non bloccante accade che:
+- Il mittente manda il messaggio e non si preoccupa se questo arriva o no, non viene bloccato
+- Il destinatario se parte prima dell'arrivo del messaggio rimane bloccato finché questo non arriva, se invece é partito dopo non viene bloccato dato che il messaggio viene ricevuto subito.
+
+Quindi se mittente parte prima non si blocca nessuno, altrimenti si blocca il destinatario.
+
+C'è anche una versione con receive non bloccante, anche se molto rara, in questo caso la syscall può essere utilizzata anche per capire se è avvenuta o meno la ricezione.
+
+Queste sono **sempre atomiche**, un solo processo per volta le esegue.
+
+## Indirizzamento
+Il mittente deve poter dire a quale processo o processi vuole mandare il messaggio, lo stesso vale per il destinatario anche se non sempre.
+
+Per fare questo si utilizza:
+- **Indirizzamento Diretto**
+- **Indirizzamento Indiretto**
+
+### Indirizzamento Diretto
+Nella primitiva `send` abbiamo come parametro l'identificatore per il destinatario o un gruppo di destinatari.
+
+Per la `receive` questo può accadere oppure no per ricevere messaggi solo da determinati mittenti oppure per ricevere da chiunque.
+
+Ogni processo ha una sua coda di messaggi, una volta piena solitamente il messaggio si perde o viene ritrasmesso.
+
+### Indirizzamento Indiretto
+I messaggi sono inviati in una **mailbox** ovvero una zona di memoria dove altri processi vanno a prendere questi messaggi.
+
+Ovviamente possono esserci più di una mailbox e serve anche un processo che la inizializza.
+
+Inoltre se più processi hanno fatto una receive su quella mailbox e vengono tutti bloccati perché vuota, nel momento in cui questa riceve un messaggio verrà sbloccato un solo processo e non tutti quelli in attesa. Notiamo che se la mailbox è piena allora anche i processi che inviano a lei si bloccano.
+
+_Vari casi d'uso_
+
+![[Pasted image 20250119152307.png]]
+
+## Formato dei Messaggi
+Quando inviamo un messaggio, non si manda soltanto il corpo ma anche dei metadati:
+
+![[Pasted image 20250119152405.png]]
+
+- Message Type: Dipende dall'applicazione
+- Destination / Source ID: ID del destinatario e mittente
+- Message Length: Grandezza della zona _Message Contents_
+- Control Information: Se il messaggio è troppo grande, questa zona contiene informazioni sulle parti, ad esempio se è la prima parte o un'altra.
+
+## Mutua Esclusione con i Messaggi
+
+```c
+const message null = /* null message */;
+mailbox box ;
+void P ( int i ) {
+	message msg\;
+	while ( true ) {
+		receive ( box , msg ) ;
+		/* critical section */;
+		nbsend ( box , msg ) ;
+		/* remainder */;
+	} 
+}
+void main () {
+	box = create_mailbox () ;
+	nbsend ( box , null ) ;
+	parbegin ( P (1) , P (2) , . . . , P ( n ) ) ;
+}
+```
+
+Inizializziamo la mailbox e mandiamo subito un messaggio in modo non bloccante, in questo modo anche se abbiamo più processi soltanto il primo che lo riceve entra nella zona critica e una volta finito manda un messaggio alla mailbox andando a sbloccare un altro processo.
+
+## Produttore / Consumatore con Messaggi
+Ricordiamo la situazione generale:
+- Uno o più processi produttori inseriscono dati in un buffer
+- Un consumatore prende i dati uno alla volta
+- Al buffer può accedere un solo processo sia produttore che consumatore.
+
+Dobbiamo fare in modo che:
+- I produttori non inseriscano i dati quando il buffer è pieno
+- I consumatori non prendano dati quando il buffer è vuoto
+- Mutua esclusione sul buffer.
+
+```c
+const in t capacity = /* buffering capacity */ ;
+mailbox mayproduce , mayconsume ;
+const message null = /* null message */;
+
+void main ()
+{
+	mayproduce = create_mailbox () ;
+	mayconsume = create_mailbox () ;
+	for ( in t i = 1; i <= capacity ; i ++)
+		nbsend ( mayproduce , null ) ;
+	parbegin ( producer , consumer ) ;
+}
+```
+
+Abbiamo due mailbox.
+
+Ricordiamo con i semafori, inizializzavamo il valore alla grandezza del buffer, qui facciamo la stessa cosa, inviamo nella mailbox `mayproduce` tanti messaggi quanti la grandezza del buffer.
+
+In questo modo possiamo:
+
+```c
+void producer () {
+	message pmsg ;
+	while ( true ) {
+		receive ( mayproduce , pmsg ) ;
+		pmsg = produce () ;
+		nbsend ( mayconsume , pmsg ) ;
+	} 
+}
+
+void consumer () {
+	message cmsg ;
+	while ( true ) {
+		receive ( mayconsume , cmsg ) ;
+		consume ( cmsg ) ;
+		nbsend ( mayproduce , null ) ;
+	} 
+}
+```
+
+Il produttore prima di inviare qualcosa a `mayconsume` riceve da `mayproduce`. Il consumatore fa l'opposto quindi riceve da `mayconsume` e poi invia a `mayproduce`.
+
+Quando inviamo `null` è perché non ci interessa del messaggio ma lo usiamo solo a scopo di misurare quanto possiamo produrre.
+
+Da notare inoltre che si usano `send` bloccanti e `receive` non bloccanti.
+
+Con questa soluzione abbiamo:
+- Risolto Mutua Esclusione
+- Niente deadlock
+- Niente starvation ma solo se le code di processi bloccati su una receive sono gestite in modo forte ovvero usando FIFO.
+- Funziona anche con più di 1 produttore e più di 1 consumatore.
+
+# Problema dei Lettori / Scrittori
