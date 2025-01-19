@@ -62,3 +62,42 @@ _Dimostrazione_
 Abbiamo quindi dimostrato che le due condizioni di 3NF sono equivalenti.
 
 ## Decomposizioni che preservano le dipendenze.
+Quando si decompone uno schema è importante che questa decomposizioni preservi tutte le dipendenze presenti in $F^+$ ovvero la chiusura di $F$. Come si calcola questo insieme? Introduciamo un altro insieme $F^A$.
+
+Sia $R$ uno schema di relazione e $F$ un insieme di dipendenze funzionali, sia $F^A$ l'insieme di dipendenze funzionali definito nel modo seguente:
+- se $f\in F$ allora $f\in F^A$
+- se $Y\subseteq X \subseteq R$ allora $X\to Y\in F^A$ **riflessivitá**
+- se $X\to Y\in F^A$ allora $XZ\to YZ\in F^A$ per ogni $Z\subseteq R$ **aumento**
+- se $X\to Y\in F^A$ e $Y\to Z\in F^A$ allora $X\to Z\in F^A$ **transitività**
+
+Dimostreremo che $F^+=F^A$ ovvero che la chiusura di insieme di dipendenze può essere ottenuta applicando ricorsivamente gli  assiomi di Armstrong, sono utili inoltre altre regole utile che ci permettono di ricavare da delle dipendenze in $F^A$ altre dipendenze di $F^A$:
+- se $X\to Y\in F^A$ e $X\to Z\in F^A$ allora $X\to YZ\in F^A$ **unione**
+- se $X\to Y\in F^A$ e $Z\subseteq Y$ allora $X\to Z\in F^A$ **decomposizione**
+- se $X\to Y\in F^A$ e $WY\to Z\in F^A$ allora $WX\to Z\in F^A$ **pseudotransitività**
+
+**Teorema 2**: Sia $F$ un insieme di dipendenze funzionali, valgono le 3 regole viste sopra.
+
+_Dimostrazione_
+
+- Unione: Se $X\to Y\in F^A$, per l'aumento si ha che $X\to XY\in F^A$. Analogamente se $X\to Z\in F^A$ sempre per aumento si ha che $XY\to YZ\in F^A$ quindi dato che abbiamo $X\to XY;XY\to YZ\in F^A$ per transitività possiamo dire che $X\to YZ\in F^A$.
+
+- Decomposizione: Se $Z\subseteq Y$ allora per riflessività si ha che $Y\to Z\in F^A$ quindi poiché $X\to Y\in F^A$ e $Y\to Z\in F^A$ per transitività abbiamo che $X\to Z\in F^A$.
+
+- Pseudotransitività: Se $X\to Y\in F^A$, per l'aumento possiamo dire che $WX\to WY\in F^A$ quindi poiché $WX\to WY\in F^A$ e $WY\to Z\in F^A$ per transitività abbiamo che $WX\to Z\in F^A$.
+
+**Definizione 6**: Siano $R$ uno schema di relazione, $F$ un insieme di dipendenze funzionali su $R$ e $X$ un sottoinsieme di $R$. La chiusura di $X$ rispetto ad $F$ denotata con $X^+_{F}$ è definito come $X^+_{F}=\{ A:X\to A\in F^A \}$
+
+**Lemma 1**: Siano $R$ uno schema di relazione ed $F$ un insieme di dipendenze funzionali su $R$. Si ha che $X\to Y\in F^A$ se e solo se $Y\subseteq X^+$.
+
+_Dimostrazione_: Sia $Y=A_{1},A_{2},\dots,A_{n}$.
+
+- Parte SE: Poiché $X\to Y\in F^A$, per la decomposizione possiamo dire che $\forall i=1,\dots ,n$ si ha che $X\to A_{i}\in F^A$ e questo significa che $A_{i}\in X_+$. Dove $A_{i}$ per ogni $i$ sono gli attributi presenti in $Y$ e quindi $Y\subseteq X^+$.
+
+- Parte SOLO SE: Dato che $Y\subseteq X^+$, per ogni $i=1,\dots,n$ si ha che $X\to A_{i}\in F^A$ pertanto per l'unione $X\to Y\in F^A$.
+
+**Teorema 3**: Siano $R$ uno schema di relazione ed $F$ un insieme di dipendenze funzionali su $R$ si ha $F^+=F^A$.
+
+_Dimostrazione_
+
+
+
