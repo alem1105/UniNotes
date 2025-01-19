@@ -3555,3 +3555,8 @@ $$
 \pi_{H}(g)=1_{G/H}=H\Leftrightarrow gH=H\Leftrightarrow g\in H
 $$
 
+---
+
+/ff
+
+Prendeteli da [Aglaia](https://github.com/AglaiaNorza/notes-ig)
