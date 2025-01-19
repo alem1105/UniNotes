@@ -690,3 +690,119 @@ Con questa soluzione abbiamo:
 - Funziona anche con più di 1 produttore e più di 1 consumatore.
 
 # Problema dei Lettori / Scrittori
+Qui abbiamo un'area dati condivisa fra molti processi, alcuni leggono da questa e altri scrivono.
+
+Cosa vogliamo:
+- Più lettori possono leggere contemporaneamente
+- Può scrivere un solo scrittore alla volta
+- Se uno scrittore sta scrivendo, nessun lettore può leggere.
+
+A differenza del caso produttori / consumatori l'area condivisa si accede per intero quindi non ci sono i problemi del buffer pieno o vuoto. Come detto prima però è importante permettere l'accesso a più lettori contemporaneamente.
+
+## Soluzione con Precedenza ai Lettori
+
+![[Pasted image 20250119161837.png]]
+
+Questo significa che se abbiamo un lettore che sta leggendo ed arriva uno scrittore, poi arrivano altri lettori allora quei lettori vanno avanti per primi.
+
+Lo scrittore ha un semaforo `wsem` e molto semplicemente prima di scrivere fa una wait e dopo aver scritto una signal. In questo modo un solo scrittore alla volta riesce a scrivere.
+
+Il lettore usa una variabile condivisa `readCount` per capire quanti stanno leggendo, per modificarla in sicurezza usiamo un altro semaforo `x`. Se il lettore entra chiama una wait anche sul semaforo degli scrittori per bloccarli dato che lui sta leggendo.
+
+Dopo che ha letto decrementa il valore dei lettori e se era l'ultimo riabilita gli scrittori.
+
+Quindi per questo è precedenza ai lettori, se ci sono lettori continuano a leggere avendo la precedenza sugli scrittori, questo significa che potrebbe esserci starvation per gli scrittori.
+
+## Soluzione con Precedenza agli Scrittori
+
+![[Pasted image 20250119162529.png]]
+![[Pasted image 20250119162656.png]]
+
+Con questa soluzione, anche se abbiamo una sequenza di lettori che vogliono leggere e arriva uno scrittore possono al massimo finire quelli già in lista per leggere, gli altri dovranno aspettare lo scrittore.
+
+## Soluzione con Messaggi
+Utilizziamo sia comunicazione diretta che indiretta.
+
+```c
+void reader ( int i )
+{
+	while ( true ) {
+		nbsend ( readrequest , null ) ;
+		receive ( controller_pid , null ) ;
+		READUNIT () ;
+		nbsend ( finished , null ) ;
+	} 
+}
+
+void writer ( int j )
+{
+	while ( true ) {
+		nbsend ( writerequest , null ) ;
+		receive ( controller_pid , null ) ;
+		WRITEUNIT () ;
+		nbsend ( finished , null ) ;
+	} 
+}
+```
+
+Le mailbox sono `readrequest, writerequest, finished`.
+
+Nel caso dei messaggi non abbiamo soltanto i processi reader e writer ma anche un terzo processo controller, questo decide quando uno scrittore può scrivere e quando un lettore può leggere:
+
+```c
+void controller () {
+	int count = MAX_READERS ;
+	while ( true ) {
+		if ( count > 0) {
+			if (! empty ( finished ) ) { /* da reader ! */
+				receive ( finished , msg ) ;
+				count ++;
+			}
+			else if (! empty ( writerequest ) ) {
+				receive ( writerequest , msg ) ;
+				writer_id = msg.sender ;
+				count = count - MAX_READERS ;
+			}
+			else if (! empty ( readrequest ) ) {
+				receive ( readrequest , msg ) ;
+				count--;
+				nbsend ( msg.sender , " OK " ) ;
+			} 
+		}
+		if ( count == 0) {
+			nbsend ( writer_id , " OK " ) ;
+			receive ( finished , msg ) ; /* da writer ! */
+			count = MAX_READERS ;
+		}
+		while ( count < 0) {
+			receive ( finished , msg ) ; /* da reader ! */
+			count ++;
+		} /* while ( count < 0) */
+	} /* while ( true ) */
+} /* controller */
+```
+
+Sia reader che writer "chiedono" il permesso con invii non bloccanti e receive bloccanti al controller. Una volta finito segnalano anche questo.
+
+Cosa deve fare il controller?
+
+La variabile locale `count` conta il numero di lettore attualmente in lettura. Vedremo che può anche essere negativo e in quel caso indica altro.
+
+Supponiamo sia positivo, quindi siamo nel primo if, lui prova a vedere se c'è qualcosa da ricevere da `finished`, se così lo riceve e aumenta il `count`.
+
+Fa la stessa cosa con tutte le altre mailbox e notiamo che nella mailbox `readrequest` mandiamo un lettore a leggere quindi decrementiamo count e inoltre inviamo una conferma di lettura a chi ha mandato questo messaggio.
+
+Quindi finché ci sono lettori che leggono continuiamo a stare nel primo if.
+
+Se arriva uno scrittore, prendiamo la sua richiesta e il suo PID, sottraiamo da `count` `MAX_READERS`. Questo significa che se ci sono lettori andiamo sotto zero, se non ci sono andiamo a 0.
+
+Se andiamo a 0 non ci sono lettori e quindi lo scrittore può andare e reimpostiamo il numero di lettori una volta che lui ha terminato, se invece siamo sotto a 0 aspettiamo che tutti i lettori finiscano.
+
+# Equivalenze
+La condivisione di risorse può quindi essere implementata con questi 3 metodi:
+- Istruzioni Hardware
+- Semafori
+- Messaggi
+
+Se si può implementare un'applicazione con uno qualsiasi dei 3 metodi allora lo si può fare anche con gli altri 2, ovviamente un meccanismo sarà più conveniente degli altri in termini di sviluppo, prestazioni e gestione.
+
