@@ -144,7 +144,7 @@ Per ogni utente c'è un username e un UID, questo è utilizzato ogni volta che o
 
 Sono presenti due file di sistema `/etc/group e /etc/passwd` che contengono informazioni su gruppi e utenti.
 
-Va eseguito un login tramite terminale o tramite rete e richiede la coppia username e password, se queste corrispondono ad una entry nel file di sistema allora viene verificata anche la password tramite algoritmi di crittografia che non vediamo qui.
+Va eseguito un login tramite terminale o tramite rete e richiede la coppia username e password, se queste corrispondono ad una entry nel file di sistema allora viene verificata anche la password tramite algoritmi di crittografia che non vediamo qui (in teoria dopo con approfondimenti sulle passwords).
 
 ---
 
