@@ -122,6 +122,8 @@ Usare linguaggi di programmazione e funzioni sicure, l'overflow è possibile per
 
 Il compilatore inserisce del codice per generare un valore casuale _canary_ a runtime, questo valore viene inserito fra il frame pointer e l'indirizzo di ritorno, se il valore _canary_ viene modificato prima che la funzione ritorni allora interrompiamo l'esecuzione perché significa che è stato sovrascritto da un possibile attacco.
 
+## Durante l'esecuzione
+
 > **Executable Space Protection**
 
 Il sistema marca le pagine/segmenti dello stack e dell'heap come non eseguibili, quindi se un attaccante cerca di eseguire del codice nello stack il sistema termina con un errore. Questo ci protegge quindi da shellcode ma non da return to libc.
