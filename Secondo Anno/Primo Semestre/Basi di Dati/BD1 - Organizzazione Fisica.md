@@ -1,4 +1,4 @@
-![[Pasted image 20241130155717.png|500]]
+p![[Pasted image 20241130155717.png|500]]
 
 Questo è come si presenta un Hard Disk all'interno, a noi non interessa il tempo in cui il disco reperisce le informazioni ma il bensì il numero di accessi in memoria. Il trasferimento avviene sottoforma di blocchi di byte utilizzando dei buffer grandi quanto un blocco.
 

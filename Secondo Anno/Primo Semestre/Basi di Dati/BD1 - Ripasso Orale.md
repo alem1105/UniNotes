@@ -99,5 +99,29 @@ _Dimostrazione_: Sia $Y=A_{1},A_{2},\dots,A_{n}$.
 
 _Dimostrazione_
 
+- Dimostriamo che $F^A \subseteq F^+$
+
+Sia $X\to Y$ una dipendenza funzionale in $F^A$ dimostriamo per induzione sul numero $i$ di applicazioni di uno degli assiomi di Armstrong.
+
+_Base Induzione:_ $i=0$ in questo caso $X\to Y\in F$ e quindi banalmente sarà anche in $F^+$
+
+_Induzione_: Per l'ipotesi induttiva, ogni dipendenza funzionale ottenuta a partire da $F$ applicando armstrong un numero di volte minore o uguale a $i-1$ è in $F^+$, per $i$ si presentano 3 casi:
+
+1) $X\to Y$ è stata ottenuta mediante l'assioma della riflessività, in tal caso $Y\subseteq X$. Quindi sia $r$ un'istanza di $R$ e siano $t_{1},t_{2}$ due tuple di $r$ tali che $t_{1}[X]=t_{2}[X]$ allora banalmente si ha anche che $t_{1}[Y]=t_{2}[Y]$.
+2) $X\to Y$ è stata ottenuta applicando l'aumento ad una dipendenza $V\to W\in F^A$ tale che $X=VZ$ e $Y=WZ$ per qualche $Z\subseteq R$. Sia $r$ un'istanza legale di $R$ e siano $t_{1}$ e $t_{2}$ due tuple di $r$ tali che $t_{1}[X]=t_{2}[X]$ si avrà anche che $t_{1}[V]=t_{2}[V]$ e $t_{1}[Z]=t_{2}[Z]$. Per ipotesi induttiva $t_{1}[V]=t_{2}[V]$ porta a $t_{1}[W]=t_{2}[W]$ e insieme portano a $t_{1}[Z]=t_{2}[Z]$ e quindi otteniamo che $t_{1}[Y]=t_{2}[Y]$.
+3) $X\to Y$ è stata ottenuta applicando la transitività a due dipendenze funzionali $X\to Z,Z\to Y\in F^A$. Sia $r$ un'istanza di $R$ e siano $t_{1},t_{2}$ due tuple di $r$ tali che $t_{1}[X]=t_{2}[X]$ per ipotesi induttiva si ha che $t_{1}[X]=t_{2}[X]\Rightarrow t_{1}[Z]=t_{2}[Z]$ e sempre per ipotesi induttiva $t_{1}[Z]=t_{2}[Z]\Rightarrow t_{1}[Y]=t_{2}[Y]$.
+
+- Dimostriamo che $F^+\subseteq F^A$
+
+Supponiamo per assurdo che esista una dipendenza funzionale $X\to Y\in F^+$ tale che $X\to Y\not\in F^A$. Mostreremo che esiste un'istanza legale di $R$ che non soddisfa $X\to Y$ (contraddice il fatto che $X\to Y\in F^+$).
+
+Consideriamo la seguente istanza $r$:
+
+![[Pasted image 20250125192728.png|250]]
+
+Mostriamo che:
+
+1) $r$ è un'istanza legale di $R$. Sia $V\to W$ una dipendenza funzionale in $F$ e supponiamo per assurdo che non sia soddisfatta da $r$. In tal caso le due tuple devono avere valori uguali su $V$ e diversi per $W$, questo implica che $V\subseteq X^+$ e $W\cap(R-X^+)\neq \emptyset$. Poichè $V\subseteq X^+$, per il lemma 1 si ha che $X\to V\in F^A$ e quindi per transitività si ha che $X\to W\in F^A$ e quindi per il lemma 1 $W\subseteq X^+$ che contraddice quanto detto prima ovvero che $W\cap(R-X^+)\neq \emptyset$.
+2) In quanto istanza legale, $r$ soddisfa tutte le dipendenze in $F^+$, in particolare $X\to Y$. Poichè $X\subseteq X^+$ le due tuple di $r$ coincidono sugli attributi $X$ e quindi poichè soddisfa $X\to Y$ devono coincidere anche gli attributi di $Y$, questo implica che $Y\subseteq X^+$ e quindi per il lemma 1 che $X\to Y\in F^A$.
 
 
