@@ -150,4 +150,67 @@ Mostriamo che è legale, se per assurdo esistesse in $F$ una dipendenza funziona
 
 **Definizione 7** Sia $R$ uno schema di relazione. Una **decomposizione** di $R$ è una famiglia $\rho=\{ R_{1},R_{2},\dots,R_{k} \}$ di sottoinsiemi di $R$ che ricopre $R$ ovvero $\bigcup_{i=1}^k R_{i} =R$.
 
-**Definizione 8**: Siano $F$ e $G$ due insiemi di dipendenze funzionali. $F$ e $G$ sono equivalenti $F\equiv G$ se $F^+=G^+$
+**Definizione 8**: Siano $F$ e $G$ due insiemi di dipendenze funzionali. $F$ e $G$ sono equivalenti $F\equiv G$ se $F^+=G^+$.
+
+Verificare l'equivalenza richiederebbe tempo esponenziale dato che dovremmo calcolare $F^+$, usiamo il seguente lemma.
+
+**Lemma 2** Siano $F$ e $G$ due insiemi di dipendenze funzionali, se $F\subseteq G^+$ allora $F^+ \subseteq G^+$
+
+_Dimostrazione_ Sia $f\in F^+ - F$, poiché per il teorema 3 $f$ è derivabile fa $F$ mediante gli assiomi di Armstrong e ogni dipendenza funzionale in $F$ è derivabile da $G$ mediante gli assiomi di armstrong, $f$ è derivabile da $G$ mediante gli assiomi di Armstrong.
+
+Essenzialmente dato che $F\subseteq G^+$ significa che dentro alla chiusura di $G$ ho anche $F$ ma gli assiomi continuo ad applicarli finché posso e quindi all'interno di $G^+$ troverò anche $F^+$
+
+**Definizione 9** Sia $R$ uno schema di relazione, $F$  un insieme di dipendenze funzionali su $R$ e $\rho=\{ R_{1},R_{2},\dots,R_{k} \}$ una decomposizione di $R$ diciamo che $\rho$ preserva $F$ se $F\equiv \bigcup_{i=1}^k \pi_{Ri}(F)$ dove $\pi_{Ri}(F)=\{ X\to Y|X\to Y\in F^+ \wedge XY\subseteq R_{i} \}$
+
+Verificare che una decomposizione preservi $F$ quindi richiede la verifica dell'equivalenza dei due insiemi $F$ e $G=\bigcup_{i=1}^k \pi_{Ri}(F)$. Per definizione $G\subseteq F^+$ quindi ci basta verificare che $F\subseteq G^+$.
+
+**Algoritmo 2**
+
+![[Pasted image 20250126165342.png]]
+
+L'algoritmo richiede che venga calcolato $X^+_{G}$ ma noi non conosciamo $G$, usiamo il prossimo algoritmo:
+
+**Algoritmo 3**
+
+![[Pasted image 20250126165501.png]]
+
+**Teorema 5**: Sia $R$ uno schema di relazione, $F$ un insieme di dipendenze funzionali su $R$ e $\rho=\{ R_{1},R_{2},\dots,R_{k} \}$ una decomposizione di $R$ e $X$ un sottoinsieme di $R$. L'algoritmo 3 calcola correttamente $X^+_G$.
+
+_Dimostrazione_
+
+Indichiamo con $Z^0$ il valore iniziale di $Z(=X)$ e con $Z^i$ il valore dopo la i-esima iterazione dell'assegnazione $Z=Z\cup S$, quindi si nota che $Z^i\subseteq Z^{i+1}$ per ogni $i$. Inoltre indichiamo con $Z^f$ il valore di $Z$ quando l'algoritmo termina.
+
+Mostriamo  che $X^+_{G}\subseteq Z^f \Leftrightarrow Z^f \subseteq X^+_{G}$
+
+Dimostriamo per induzione soltanto $Z^f \subseteq X^+_{G}$.
+
+_Base Induzione_: Abbiamo che $Z^0\subseteq X^+_{G}$ infatti $Z^0=X$ e quindi è vero per riflessività.
+
+_Ipotesi Induttiva_: Fino a $i-1$ quello che abbiamo in $Z^{i-1} \subseteq X^+_{G}$ (questo significa che $X\to Z^{i-1}\in G^+$).
+
+_Passo Induttivo:_ Banalmente abbiam che $Z^{i-1}\subseteq Z^i$ e per ipotesi induttiva quelli in $Z^{i-1}$ sono già nella chiusura di $G$. Controlliamo quindi le $A\in Z^i - Z^{i-1}$ ovvero aggiunte al passo $i$.
+
+Questo significa che esiste un $j$ tale che $A\in(Z^{i-1} \cap R_{j})^+_{ F} \cap R_{ j}$, questo significa dire che $A$ appartiene ad entrambi i pezzi dell'intersezione, quindi:
+
+$$
+A\in (Z^{i-1}\cap R_{ j})^+_{F} \wedge A\in R_{j}
+$$
+
+La parte a destra per ora non ci interessa, la parte a sinistra implica che:
+
+$$
+Z^{i-1}\cap R_{j} \to A \in F^+
+$$
+
+Adesso siccome sappiamo che $A\in R_{ j}$, poi sappiamo che $(Z^{i-1}\cap R_{ j})\subseteq R_{j}$ e inoltre la dipendenza si trova in $F^+$, ricordando la definizione di $G$ possiamo dire che la dipendenza si trova anche in $G$, infatti:
+
+$$
+(Z^{i-1}\cap R_{j}\to A)\in \pi_{Rj}(F) \Rightarrow (Z^{i-1}\cap R_{ j}\to A)\in G
+$$
+
+Adesso, abbiamo:
+- Per ipotesi $X\to Z^{i-1}\in G^+$
+- $Z^{i-1}\to Z^{i-1}\cap R_{j}$ per riflessività
+- Applicando la transitività otteniamo $X\to Z^{i-1}\cap R_{ j}$
+- Applicando di nuovo la transitività con $Z^{i-1}\cap R_{j}\to A$ otteniamo che $X\to A\in G^+$
+
