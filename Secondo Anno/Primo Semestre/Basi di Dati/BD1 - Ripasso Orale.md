@@ -121,7 +121,33 @@ Consideriamo la seguente istanza $r$:
 
 Mostriamo che:
 
-1) $r$ è un'istanza legale di $R$. Sia $V\to W$ una dipendenza funzionale in $F$ e supponiamo per assurdo che non sia soddisfatta da $r$. In tal caso le due tuple devono avere valori uguali su $V$ e diversi per $W$, questo implica che $V\subseteq X^+$ e $W\cap(R-X^+)\neq \emptyset$. Poichè $V\subseteq X^+$, per il lemma 1 si ha che $X\to V\in F^A$ e quindi per transitività si ha che $X\to W\in F^A$ e quindi per il lemma 1 $W\subseteq X^+$ che contraddice quanto detto prima ovvero che $W\cap(R-X^+)\neq \emptyset$.
-2) In quanto istanza legale, $r$ soddisfa tutte le dipendenze in $F^+$, in particolare $X\to Y$. Poichè $X\subseteq X^+$ le due tuple di $r$ coincidono sugli attributi $X$ e quindi poichè soddisfa $X\to Y$ devono coincidere anche gli attributi di $Y$, questo implica che $Y\subseteq X^+$ e quindi per il lemma 1 che $X\to Y\in F^A$.
+1) $r$ è un'istanza legale di $R$. Sia $V\to W$ una dipendenza funzionale in $F$ e supponiamo per assurdo che non sia soddisfatta da $r$. In tal caso le due tuple devono avere valori uguali su $V$ e diversi per $W$, questo implica che $V\subseteq X^+$ e $W\cap(R-X^+)\neq \emptyset$. Poiché $V\subseteq X^+$, per il lemma 1 si ha che $X\to V\in F^A$ e quindi per transitività si ha che $X\to W\in F^A$ e quindi per il lemma 1 $W\subseteq X^+$ che contraddice quanto detto prima ovvero che $W\cap(R-X^+)\neq \emptyset$.
+2) In quanto istanza legale, $r$ soddisfa tutte le dipendenze in $F^+$, in particolare $X\to Y$. Poiché $X\subseteq X^+$ le due tuple di $r$ coincidono sugli attributi $X$ e quindi poiché soddisfa $X\to Y$ devono coincidere anche gli attributi di $Y$, questo implica che $Y\subseteq X^+$ e quindi per il lemma 1 che $X\to Y\in F^A$.
 
+---
 
+Calcolare $F^+$ richiede tempo esponenziale in $F$, più precisamente esponenziale sul numero di attributi in $R$. Per i nostri scopi è sufficiente determinare se una dipendenza $X\to Y$ appartiene ad $F^+$, questo si fa calcolando $X^+$ e verificando se $Y\subseteq X^+$, il calcolo di $X^+$ può essere fatto tramite un algoritmo.
+
+**Algoritmo 1**: Prende come input uno schema $R$, un insieme $F$ di dipendenze su $R$ e un sottoinsieme $X$ di $R$. Come output fornisce la chiusura di $X$ rispetto ad $F$ all'interno della variabile $Z$.
+
+![[Pasted image 20250126110326.png]]
+
+**Teorema 4**: L'algoritmo 1 calcola correttamente la chiusura di un insieme di attributi $X$ rispetto ad un insieme $F$ di dipendenze funzionali.
+
+_Dimostrazione_: Indichiamo con $Z^0$ il valore iniziale di $Z$ ($Z^0=X$) e con $Z^i$ ed $S^i$, $i\geq 1$ i valori di $Z$ ed $S$ dopo l'i-esima esecuzione del ciclo, si vede ad occhio che $Z^i \subseteq Z^{i+1}$, proveremo che esiste $i$ tale che $A\in Z^i$ se e solo se $A\in X^+$.
+
+- Parte SE, mostriamo per induzione su $i$ che $Z^i\subseteq X^+$ per ogni $i$.
+
+_Base Induzione:_ se $i=0$ dato che $Z^0=X$ e $X\subseteq X^+$ si ha che $Z^0\subseteq X^+$.
+
+_Induzione:_ $i>0$, per ipotesi abbiamo che $Z^{i-1}\subseteq X^+$. Sia $A$ un attributo in $Z^i-Z^{i-1}$, significa che lo abbiamo aggiunto all'ultima iterazione e quindi deve esistere una dipendenza $Y\to V\in F$ tale che $Y\subseteq Z^{i-1}$ e $A\in V$. Dato che $Y\subseteq Z^{i-1}$ otteniamo per ipotesi induttiva che $Y\subseteq X^+$ e per il lemma 1 possiamo dire che $X\to Y\in F^A$, inoltre dato che $Y\to V\in F$ possiamo dire per transitività che $X\to V\in F^A$ e quindi per il lemma 1 otteniamo $V\subseteq X^+$, quindi per ogni $A\in Z^i-Z^{i-1}$ si ha $A\in X^+$, e quindi per l'ipotesi induttiva $Z^i\subseteq X^+$.
+
+- Parte SOLO SE: Sia $A$ un attributo in $X^+$ e sia $j$ tale che $S^j=Z^j$ ($Z^j$ è il valore di $Z$ quando l'algoritmo termina). Mostreremo che $A\in Z^j$. Poiché $A\in X^+$ si ha $X\to A\in F^+$ per il teorema 3, pertanto $X\to A$ deve essere soddisfatta da ogni istanza legale di $R$. Consideriamo le seguente istanza $r$:
+
+![[Pasted image 20250126115211.png]]
+
+Mostriamo che è legale, se per assurdo esistesse in $F$ una dipendenza funzionale $V\to W$ non soddisfatta da $r$, si dovrebbe avere $V\subseteq Z^j$ e $W\cap(R-Z^j)\neq \emptyset$ ma in tal caso si avrebbe $S^j\neq Z^j$ (contraddizione, significa che non siamo ancora arrivati all'ultima iterazione, ma prima o poi aggiungeremo $W$). Poiché $r$ è un'istanza legale di $R$ deve soddisfare $X\to A$ che si trova in $F^A$ e per il teorema 3 in $F^+$, ma allora poiché $X=Z^0 \subseteq Z^j$, $A$ deve essere in $Z^ j$.
+
+**Definizione 7** Sia $R$ uno schema di relazione. Una **decomposizione** di $R$ è una famiglia $\rho=\{ R_{1},R_{2},\dots,R_{k} \}$ di sottoinsiemi di $R$ che ricopre $R$ ovvero $\bigcup_{i=1}^k R_{i} =R$.
+
+**Definizione 8**: Siano $F$ e $G$ due insiemi di dipendenze funzionali. $F$ e $G$ sono equivalenti $F\equiv G$ se $F^+=G^+$
