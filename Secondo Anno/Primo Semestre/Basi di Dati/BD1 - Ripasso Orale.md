@@ -289,3 +289,19 @@ Abbiamo i 3 casi dell'algoritmo da dimostrare.
 3) Se invece $XA\in \rho$ siccome $F$ è minimale non ci possono essere dipendenze $X'\to A$ tali che $X'\subseteq X$ e quindi $X$ è chiave in $XA$. Prendendo quindi una qualsiasi dipendenza $Y\to B$ tale che $YB\subseteq XA$ abbiamo che se $B=A$ allora $Y=X$ e quindi è superchiave e non viola la 3NF se invece $B\neq A$ allora necessariamente $B\in X$ e quindi è primo e non viola la 3NF.
 
 Se vogliamo ottenere un join senza perdita ci basta aggiungere un sottoschema che contiene una chiave, non facciamo la dimostrazione.
+
+---
+
+**Definizione 12**: Uno schema è in forma normale Boyce-Codd se per ogni dipendenza funzionale $X\to A\in F^+$ tale che $A\not\in X$ si ha che $X$ è una superchiave.
+
+Se uno schema è in 3NF Boyce Codd allora è anche in 3NF ma non è vero il contrario.
+
+Non esiste sempre una decomposizione che:
+- Tutti schemi in Boyce Codd
+- preserva F
+- Join senza perdita
+
+Invece esiste sempre:
+- Tutti schemi in Boyce Codd
+- Join Senza perdita.
+Ed esiste anche un algoritmo che genera tale decomposizione.
