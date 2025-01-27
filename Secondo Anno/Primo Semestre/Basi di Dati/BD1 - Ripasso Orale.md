@@ -214,3 +214,78 @@ Adesso, abbiamo:
 - Applicando la transitività otteniamo $X\to Z^{i-1}\cap R_{ j}$
 - Applicando di nuovo la transitività con $Z^{i-1}\cap R_{j}\to A$ otteniamo che $X\to A\in G^+$
 
+---
+
+**Definizione 10**: Sia $R$ uno schema di relazione. Una decomposizione $\rho$ dio $R$ ha un join senza perdita se per ogni istanza legale $r$ di $R$ si ha $r=\pi_{R_{1}}(r)\bowtie \dots \bowtie \pi_{Rk}(r)$.
+
+**Teorema 6**: Sia $R$ uno schema di relazione e $\rho$ una decomposizione di $R$. Per ogni istanza legale di $R$, indicato con $m_{p}(r)=\pi_{R_{1}}(r)\bowtie\dots\bowtie \pi_{Rk}(r)$ si ha:
+
+- $r\subseteq m_{p}(r)$ questa è la parte importante, ovvero finché abbiamo $\subseteq$ significa che abbiamo perdita nel join, ovvero il join contiene più tuple dell'istanza, nel momento in cui sono $=$ allora abbiamo join senza perdita. (per ogni istanza legale)
+- $\pi_{Ri}(m_{p}(r))=\pi_{Ri}(r)$
+- $m_{p}(m_{p}(r))=m_{p}(r)$
+
+Possiamo capire se una decomposizione ha un join senza perdita tramite il seguente algoritmo:
+
+**Algoritmo 4** (Quello con cui costruiamo la tabella):
+![[Pasted image 20250127131639.png]]![[Pasted image 20250127131646.png]]
+**Teorema 7**: Sia $R$ uno schema di relazione, $F$ un insieme di dipendenze funzionali su $R$ e $\rho$ una decomposizione di $R$, l'algoritmo 4 funziona.
+
+_Dimostrazione_: Dobbiamo dimostrare che ha un join senza perdita se e solo se quando l'algoritmo termina la tabella ha una tupla con tutte `a`.
+
+- Dimostriamo soltanto che se la decomposizione ha un join senza perdita allora la tabella deve avere una riga con tutte `a`.
+
+Supponiamo per assurdo che $\rho$ abbia un join senza perdita e che con l'algoritmo terminato la tabella $r$ non abbia una tupla con tutte `a`.
+
+La tabella possiamo vederla come un'istanza legale di $R$ dato che l'algoritmo termina quando non ci sono più violazioni delle dipendenze in $F$.
+
+Poiché nessun simbolo `a` che compare nella tabella iniziale viene modificato dall'algoritmo, per ogni $i=1,\dots,k$ abbiamo che $\pi_{Ri}(r)$ contiene una tupla con tutte `a`, quindi questo significa che $m_{\rho}(r)$ contiene una tupla con tutte `a` dato che prima o poi quelle tuple iniziali si incontreranno. Questo significa che $m_{\rho}(r)\neq r$ almeno per questa istanza infatti abbiamo detto che la tabella non ha una riga con tutte `a` come ipotesi ma abbiamo trovato un'istanza legale che invece le ha.
+
+---
+
+Esiste sempre una decomposizione che:
+- È in 3NF
+- Preserva $F$
+- ha un join senza perdita
+
+Possiamo calcolarla in tempo polinomiale tramite un algoritmo ma ci serve il concetto di copertura minimale di un insieme di dipendenze
+
+**Definizione 11** Sia $F$ un insieme di dipendenze funzionali, una **copertura minimale** di $F$ è un insieme $G$ di dipendenze funzionali equivalente ad $F$ e tale che:
+- Ogni dipendenza in $G$ ha la parte a destra singleton
+- Per nessuna dipendenza $X\to A\in G$ esiste $X'\subseteq X$ tale che $G\equiv G-\{ X\to A \}\cup \{ X'\to A \}$ (gli attributi a sinistra non devono essere ridondanti)
+- Per nessuna dipendenza $X\to A\in G$ deve accadere $G\equiv G-\{ X\to A \}$ (ogni dipendenza non è ridondante).
+
+La copertura non è unica.
+
+
+Possiamo calcolare una copertura in tempo polinomiale con il seguente algoritmo
+
+**Algoritmo 5**: Prende in input $R$, $F$ e permette di calcolare una decomposizione che:
+- Preserva $F$
+- Ogni sottoschema è 3NF
+
+![[Pasted image 20250127180729.png]]
+
+**Teorema 8**: L'algoritmo funziona
+
+_Dimostrazione_
+
+ - $\rho$ preserva $F$
+
+Se preserva la copertura minimale allora preserva anche l'insieme di partenza dato che sono equivalenti.
+
+Sia $G=\bigcup_{i=1}^k=\pi_{Ri}(F)$. Per ogni dipendenza funzionale $X\to A\in F$ otteniamo un sottoschema $XA\in \rho$ (l'algoritmo lo ha creato), quindi queste dipendenze saranno sicuramente in $G$ quindi $F\subseteq G\Rightarrow F^+\subseteq G^+$.
+
+Invece $G\subseteq F^+$ per definizione, quindi $\rho$ preserva $F$.
+
+- Ogni schema è in 3NF
+
+Abbiamo i 3 casi dell'algoritmo da dimostrare.
+
+1) Se $S\in \rho$ allora ogni attributo in $S$ fa parte della chiave di quel sottoschema e quindi $S$ è in 3NF, non ci serve controllare sottoschemi dato che stiamo usando una copertura minimale.
+
+2) Se $R\in \rho$ allora esiste una dipendenza funzionale che coinvolge tutti gli attributi in $R$. Siccome $F$ è una copertura minimale tale dipendenza avrà la forma $R-A\to A$ e sempre perché è una copertura minimale non può esistere una dipendenza $X\to A$ con $X\subseteq R-A$, quindi $R-A$ è chiave del sottoschema $R$.
+   Adesso se prendiamo una qualunque dipendenza $Y\to B\in F$, se $B=A$ allora siccome $F$ è minimale otteniamo che $Y=R-A$ dato che é chiave e quindi $Y$ superchiave non viola la 3NF. Se invece $B\neq A$ allora $B\in R-A$ e quindi $B$ è primo e non viola la 3NF.
+
+3) Se invece $XA\in \rho$ siccome $F$ è minimale non ci possono essere dipendenze $X'\to A$ tali che $X'\subseteq X$ e quindi $X$ è chiave in $XA$. Prendendo quindi una qualsiasi dipendenza $Y\to B$ tale che $YB\subseteq XA$ abbiamo che se $B=A$ allora $Y=X$ e quindi è superchiave e non viola la 3NF se invece $B\neq A$ allora necessariamente $B\in X$ e quindi è primo e non viola la 3NF.
+
+Se vogliamo ottenere un join senza perdita ci basta aggiungere un sottoschema che contiene una chiave, non facciamo la dimostrazione.
