@@ -1887,7 +1887,7 @@ Abbiamo una riga con tutte $a$? No quindi la decomposizione non ha join senza pe
 
 ---
 
-**Non so se serve la dimostrazione di questo algoritmo di verifica**
+**Non so se serve la dimostrazione di questo algoritmo di verifica** (spoiler serviva)
 
 ---
 

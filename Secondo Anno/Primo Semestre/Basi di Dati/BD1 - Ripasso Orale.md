@@ -216,7 +216,7 @@ Adesso, abbiamo:
 
 ---
 
-**Definizione 10**: Sia $R$ uno schema di relazione. Una decomposizione $\rho$ dio $R$ ha un join senza perdita se per ogni istanza legale $r$ di $R$ si ha $r=\pi_{R_{1}}(r)\bowtie \dots \bowtie \pi_{Rk}(r)$.
+**Definizione 10**: Sia $R$ uno schema di relazione. Una decomposizione $\rho$ di $R$ ha un join senza perdita se per ogni istanza legale $r$ di $R$ si ha $r=\pi_{R_{1}}(r)\bowtie \dots \bowtie \pi_{Rk}(r)$.
 
 **Teorema 6**: Sia $R$ uno schema di relazione e $\rho$ una decomposizione di $R$. Per ogni istanza legale di $R$, indicato con $m_{p}(r)=\pi_{R_{1}}(r)\bowtie\dots\bowtie \pi_{Rk}(r)$ si ha:
 
@@ -238,7 +238,9 @@ Supponiamo per assurdo che $\rho$ abbia un join senza perdita e che con l'algori
 
 La tabella possiamo vederla come un'istanza legale di $R$ dato che l'algoritmo termina quando non ci sono più violazioni delle dipendenze in $F$.
 
-Poiché nessun simbolo `a` che compare nella tabella iniziale viene modificato dall'algoritmo, per ogni $i=1,\dots,k$ abbiamo che $\pi_{Ri}(r)$ contiene una tupla con tutte `a`, quindi questo significa che $m_{\rho}(r)$ contiene una tupla con tutte `a` dato che prima o poi quelle tuple iniziali si incontreranno. Questo significa che $m_{\rho}(r)\neq r$ almeno per questa istanza infatti abbiamo detto che la tabella non ha una riga con tutte `a` come ipotesi ma abbiamo trovato un'istanza legale che invece le ha.
+Poiché nessun simbolo `a` che compare nella tabella iniziale viene modificato dall'algoritmo, per ogni $i=1,\dots,k$ abbiamo che $\pi_{Ri}(r)$ contiene una tupla con tutte `a`, quindi questo significa che $m_{\rho}(r)$ contiene una tupla con tutte `a` dato che prima o poi quelle tuple iniziali si incontreranno nel join. Questo significa che $m_{\rho}(r)\neq r$ almeno per questa istanza infatti abbiamo detto che la tabella non ha una riga con tutte `a` come ipotesi ma abbiamo trovato un'istanza legale che invece le ha.
+
+Essenzialmente non sappiamo come funziona l'algoritmo perché serve la seconda parte, però, in $m_{\rho}(r)$ ci sarà sempre una riga con tutte $a$ dato che è il join fra i sottoschemi, infatti accade sempre che $r\subseteq m_{\rho}(r)$. Noi però stiamo supponendo che $m_{\rho}(r)=r$ dato che abbiamo join senza perdita e che, per assurdo, in $r$ non ci sia una riga con tutte $a$ ma questo appunto implicherebbe che $r\neq m_{\rho}(r)$. Quindi non stiamo dicendo il "come" funziona l'algoritmo ma soltanto che nel caso di un join senza perdita questo viene rilevato. (Ci ho messo un po' per capirlo spero di ricapirlo leggendo)
 
 ---
 
