@@ -3405,7 +3405,7 @@ $$
 Sia $G$ gruppo in notazione moltiplicativa e $H<G$, introduciamo una relazione su $G$:
 
 $$
-x,x'\in G \qquad x \textasciitilde x' \Leftrightarrow  x(x')^{-1}\in H
+x,x'\in G \qquad x \sim x' \Leftrightarrow  x(x')^{-1}\in H
 $$
 
 **Lemma**: ~ è di equivalenza
@@ -3415,14 +3415,14 @@ _Dimostrazione_
 - Riflessività
 
 $$
-H<G\Rightarrow 1_{G}\in H \text{ ma } 1_{G}=xx^{-1} \ \forall x\in G \text{ quindi } x\textasciitilde x
+H<G\Rightarrow 1_{G}\in H \text{ ma } 1_{G}=xx^{-1} \ \forall x\in G \text{ quindi } x\sim x
 $$
 
 - Simmetria
 
 $$
 \begin{align*}
-&x\textasciitilde x' \Leftrightarrow x(x')^{-1}\in H \\
+&x\sim x' \Leftrightarrow x(x')^{-1}\in H \\
 &\text{Ma } \forall h\in H,h^{-1}\in H \\
 &\text{Quindi } (x(x')^{-1})^{-1}=x'x^{-1}\in H
 \end{align*}
@@ -3438,7 +3438,7 @@ $$
 
 _Domanda_
 
-È possibile costruire su $G/\textasciitilde$ un'operazione binaria in modo tale che $G/\textasciitilde=G/H$ acquisisca una struttura di gruppo? Talvolta si, talvolta no, quali sono le condizioni?
+È possibile costruire su $G/\sim$ un'operazione binaria in modo tale che $G/\sim=G/H$ acquisisca una struttura di gruppo? Talvolta si, talvolta no, quali sono le condizioni?
 
 Vorremmo che questa identità fosse valida per la nuova operazione:
 
@@ -3452,8 +3452,8 @@ Supponiamo:
 
 $$
 \begin{align*}
-&x \textasciitilde y\Leftrightarrow [x]=[y]\Leftrightarrow x(y)^{-1}\in H \\
-&x' \textasciitilde y'\Leftrightarrow [x']=[y']\Leftrightarrow x'(y')^{-1}\in H
+&x \sim y\Leftrightarrow [x]=[y]\Leftrightarrow x(y)^{-1}\in H \\
+&x' \sim y'\Leftrightarrow [x']=[y']\Leftrightarrow x'(y')^{-1}\in H
 \end{align*}
 $$
 
