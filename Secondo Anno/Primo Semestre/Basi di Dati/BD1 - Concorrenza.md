@@ -24,7 +24,7 @@ Se l'operazione O1 precede l'operazione O2 in una transazione allora sarà così
 ### Schedule Seriale
 È uno schedule che si ottiene permutando le transazioni in T, questo corrisponde ad una esecuzione sequenziale delle transazioni queste non vengono quindi interrotte e vengono eseguite una per volta per intero.
 
-Vedremo più avanti che uno schedule accettabile è uno schedule  ovvero equivalente ad uno schedule seriale.
+Vedremo più avanti che uno schedule accettabile è  equivalente ad uno schedule seriale.
 
 ## Problemi dell'Esecuzione Concorrente
 Consideriamo ad esempio le due transazioni:
@@ -149,7 +149,7 @@ In questo caso abbiamo come valore finale di X: $f_{4}(f_{1}(X_{0}),f_{2}(X_{0},
 
 Questo scrive come valore finale di X: $f_{1}(f_{4}(X_{0},Y_{0}))$.
 
-Quindi lo schedule preso inizialmente non è serializzabile dato che non è equivalente ad uno scchedule seriale. Inoltre come detto nella definizione vanno controllati i valori di tutti gli item ma se già ne abbiamo uno sbagliato è inutile andare a controllare gli altri.
+Quindi lo schedule preso inizialmente non è serializzabile dato che non è equivalente ad uno schedule seriale. Inoltre come detto nella definizione vanno controllati i valori di tutti gli item ma se già ne abbiamo uno sbagliato è inutile andare a controllare gli altri.
 
 Quindi:
 - Per verificare che uno schedule è serializzabile controlliamo tutti gli item
