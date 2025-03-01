@@ -58,3 +58,5 @@ Ma perché consideriamo efficiente un algoritmo con complessità $O(n^c)$ con un
 **Tesi di Church-Turing** - I modelli di calcolo realistici sono equivalenti dal punto di vista computazionale, se qualcosa è non calcolabile su una macchina lo resterà su qualunque altra.
 
 **Testi di Church-Turing estesa** - I modelli di calcolo realistici sono tra loro polinomialmente correlati, quindi il concetto di trattabilità è **indipendente dalla macchina**.
+
+- # [[Grafi]]

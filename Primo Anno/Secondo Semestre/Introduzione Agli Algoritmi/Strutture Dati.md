@@ -300,6 +300,9 @@ def dequeue(testa, coda):
 La coda con priorità è una variante della coda, ha le stesse caratteristiche di inserimento ed estrazione ma la posizione di ogni elemento non dipende dal momento in cui è stato inserito ma dal valore di una **determinata grandezza** detta **priorità** ^701282
 
 # Alberi
+
+^b1d110
+
 L'albero è una struttura dati, esistono diversi tipi di alberi.
 
 ## Alberi Radicati
