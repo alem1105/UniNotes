@@ -38,7 +38,7 @@ Altre distinzioni che possiamo fare sono:
 > 
 > ![[actually.png|150]]
 > 
-> Da notare che gli alberi sono un sottoinsieme dei grafi planari
+> Da notare che gli alberi sono un sottoinsieme dei grafi planari, inoltre se un grafo è un albero allora è sicuramente planare ma non è vero il contrario.
 > 
 
 
@@ -62,7 +62,7 @@ _Esempio_:
 Otteniamo la matrice:
 
 $$
-\begin{array}{|c|c|c|c|c|}
+\begin{array}{|c|c|c|c|c|c|}
 \hline 0 & 0 & 1 & 0 & 0 & 1 \\
 \hline 0 & 0 & 0 & 0 & 0 & 1  \\
 \hline 1 & 0 & 0 & 0 & 1 & 1  \\
