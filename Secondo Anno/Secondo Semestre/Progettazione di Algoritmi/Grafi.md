@@ -259,4 +259,4 @@ Avremo che $P[v]$ contiene $-1$ se $v$ non è stato visitato altrimenti contiene
 
 _Esempi applicazione_:
 
-
+_DA FINIRE CON APPUNTI LEZIONE_
