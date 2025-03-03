@@ -50,6 +50,16 @@ Altre distinzioni che possiamo fare sono:
 > Osservando la tabella deduciamo quindi che da $n=5$ in poi esistono di certo grafi non planari, essenzialmente la tabella mi dice che se ad esempio ho 5 nodi e disegno 10 archi è impossibile avere un grafo planare ma se ne disegno 9 ho la possibilità di fare un grafo planare.
 > 
 
+Altre definizioni sui grafi:
+
+> [!info] Grafo Connesso
+> Presa una qualsiasi coppia di nodi questi sono connessi fra loro tramite un qualsiasi percorso, possiamo trovare anche un sottografo di un grafo con questa proprietà, questo prende il nome di **componente connessa**.
+> 
+> Un concetto legato alla connessione è la raggiungibilità ovvero un'operazione tra due nodi che ci dice se da uno possiamo raggiungere l'altro.
+> 
+> Da notare che in futuro introdurremmo la **connessione forte** per i grafi diretti dato che questa semplice non ha molto senso per quest'ultimi infatti se abbiamo un nodo A che porta ad un nodo B non è detto che il nodo B ci porti al nodo A.
+> 
+
 # Grafi tramite Matrici Binarie
 Presi due nodi $i,j$ usati come coordinate per accedere alla matrice, il valore $M[i][j]=1$ se e solo se c'è un arco diretto da $i$ a $j$ altrimenti $0$.
 
@@ -156,8 +166,27 @@ def pozzoU2(M):
 
 Il primo while lascia nella lista L soltanto un candidato a pozzo universale facendo i test visti prima. Una volta trovato si controlla che lui non abbia archi uscenti verso altri nodi e che tutti gli archi escluso se stesso abbiano un arco entrante verso di lui.
 
-# Visite nei Grafi DA COMPLETARE CON APPUNTI A LEZIONE
-Dato un grafo $G$ ed un suo nodo $\mu$ vogliamo sapere quali nodi del grafo sono raggiungibili da $\mu$.
+# Grafi tramite Liste di Adiacenza
+Un altro modo per rappresentare i grafi è quello delle liste di adiacenza, utilizziamo un dizionario che ha come chiavi i nodi e come valore una lista contenente tutti i nodi collegati a quel nodo valore.
+
+Questa a differenza della matrice ci permette di inserire i nodi anche in modo non consecutivo e presenta alcuni vantaggi e svantaggi a seconda del grafo:
+
+Per quanto riguarda lo spazio questa occupa $O(n+m)$ che per grafi sparsi ci fa risparmiare spazio rispetto alla matrice mentre se abbiamo un grafo denso abbiamo lo stesso costo dato che otteniamo $O(n+n^2)=O(n^2)$ uguale alla matrice.
+
+In grafi sparsi non ci costa molto scorrere la lista alla ricerca di un arco ma nel caso peggiore ovvero in grafi densi può costarci anche $O(n)$ mentre per la matrice abbiamo sempre tempo costante anche in grafi densi.
+
+# In generale chi e quando scegliere?
+
+- Matrice
+
+Se abbiamo un numero di archi vicino a $n^2$ ovvero un grafo denso e se dobbiamo controllare frequentemente l'esistenza di archi o in generale vogliamo accessi costanti.
+
+- Lista di adiacenza
+
+Se abbiamo un grafo sparso, vogliamo risparmiare memoria e dobbiamo iterare sui nodi adiacenti di un nodo.
+
+# Visite nei Grafi
+Dato un grafo $G$ ed un suo nodo $u$ vogliamo sapere quali nodi del grafo sono raggiungibili da $u$.
 
 _Esempio_
 
@@ -185,6 +214,7 @@ def DFS(u, M):
 	return [x for x in range(n) if visitati[x]]
 ```
 
+## Visita tramite Liste di Adiacenza
 Possiamo passare poi ad un algoritmo che ha costo $O(n+m)$ ma un costo di spazio di $O(n)$
 
 ```python
@@ -201,6 +231,14 @@ def DFS(u, G):
 	DFSr(u, G, visitati)
 	return [x for x in range(n) if visitati[x]]
 ```
+
+I costi sono dovuti al fatto che la creazione della lista `visitati` costa $\Theta(n)$ mentre la funzione di ricerca costa $\Theta(m)$ dato che stiamo pagando con il `for` un costo pari alla somma fra le cardinalità degli insiemi dei nodi adiacenti a ciascun nodo ovvero il numero totale degli archi $m$. Quindi in totale $O(m+n)$.
+
+Per lo spazio è la lista `visitati` che occupa $n$.
+
+Da notare infatti che calcolare il grado di un nodo con la matrice ci costerà sempre $\Theta(n)$ dato che dobbiamo sommare tutti i valori 1 presenti nella lista di quel nodo mentre per la lista di adiacenza ci costa $\Theta(1)$ nella maggior parte dei casi e solo nel caso pessimo $\Theta(n)$ infatti accediamo alla lista tramite il valore con costo 1 e poi calcoliamo la lunghezza della lista sempre con costo 1.
+
+---
 
 È possibile ovviamente avere anche una versione iterativa:
 
@@ -259,4 +297,4 @@ Avremo che $P[v]$ contiene $-1$ se $v$ non è stato visitato altrimenti contiene
 
 _Esempi applicazione_:
 
-_DA FINIRE CON APPUNTI LEZIONE_
+_Forse va riorganizzato qualcosa sopra :(_
