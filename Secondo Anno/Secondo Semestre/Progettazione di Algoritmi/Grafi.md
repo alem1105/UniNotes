@@ -154,4 +154,109 @@ def pozzoU2(M):
     return True
 ```
 
-Il primo while lascia nella lista L soltanto un candidato a pozzo universale facendo i testi visti prima. Una volta trovato si controlla che lui non abbia archi uscenti verso altri nodi e che tutti gli archi escluso se stesso abbiano un arco entrante verso di lui.
+Il primo while lascia nella lista L soltanto un candidato a pozzo universale facendo i test visti prima. Una volta trovato si controlla che lui non abbia archi uscenti verso altri nodi e che tutti gli archi escluso se stesso abbiano un arco entrante verso di lui.
+
+# Visite nei Grafi DA COMPLETARE CON APPUNTI A LEZIONE
+Dato un grafo $G$ ed un suo nodo $\mu$ vogliamo sapere quali nodi del grafo sono raggiungibili da $\mu$.
+
+_Esempio_
+
+![[Pasted image 20250303095051.png]]
+
+- Raggiungibili da $(0,G)=\{ 0,1,2,3,4,5,6 \}$
+- Raggiungibili da $(6,G)=\{ 2,4,6 \}$
+- Raggiungibili da $(5,G)=\{ 5 \}$
+
+## Visita tramite Matrice di Adiacenza
+Possiamo usare il seguente algoritmo che ha un costo di $O(n^ 2)$, questo scorre in modo ricorsivo la matrice verso i valori che hanno valore 1 ovvero per quei nodi dove abbiamo un arco entrante da parte del nodo $v$
+
+```python
+def DFS(u, M):
+
+	def DFSr(u, M, visitati):
+		visitati[u] = 1
+		for i in range(len(M)):
+			if M[u][i] == 1 and not visitati[i]:
+				DFSr(i, M, visitati)
+
+	n = len(M)
+	visitati = [0] * n
+	DFSr(u, M, visitati)
+	return [x for x in range(n) if visitati[x]]
+```
+
+Possiamo passare poi ad un algoritmo che ha costo $O(n+m)$ ma un costo di spazio di $O(n)$
+
+```python
+def DFS(u, G):
+
+	def DFSr(u, G, visitati):
+		visitati[u] = 1
+		for v in G[u]:
+			if not visitati[v]:
+				DFSr(v, G, visitati)
+
+	n = len(G)
+	visitati = [0] * n
+	DFSr(u, G, visitati)
+	return [x for x in range(n) if visitati[x]]
+```
+
+È possibile ovviamente avere anche una versione iterativa:
+
+```python
+def DFS_iterativo(u,G):
+	visitati = [0] * len(G)
+	pila = [u]
+	while pila:
+		u = pila.pop()
+		if not visitati[u]:
+			visitati[u] = 1
+			for v in G[u]:
+				if not visitati[v]:
+					pila.append(v)
+	return [x for x in range(len(G)) if visitati[x]]
+```
+
+Questo inizializza la pila inserendo il nodo di partenza poi finché nella pila c'è qualcosa e questo non si trova nei nodi visitati allora lo inseriamo nei visitati rimuovendolo dalla pila e andiamo a controllare nella matrice alla lista corrispondente tutti i nodi collegati e li aggiungiamo alla pila.
+
+Con questo tipo di visite gli archi del grafo si bipartiscono in quelli percorsi dalla visita e quelli non, il percorso che effettuiamo andrà a creare un albero detto **albero DFS**.
+
+Ad esempio prendiamo il grafo a sinistra ed eseguendo delle visite dai nodi 9, 4 e 3 otteniamo gli alberi accanto:
+
+![[Pasted image 20250303113247.png]]
+
+Un albero DFS può essere memorizzato tramite il **vettore dei padri**.
+
+> [!info] Vettore dei Padri
+> Il vettore dei padri $P$ di un albero DFS di un grafo di $n$ nodi ha $n$ componenti:
+> - Se $i$ è nodo dell'albero DFS allora $P[i]$ contiene il padre del nodo $i$
+> - Se $i$ non è nodo dell'albero allora $P[i]$ per convenzione contiene $-1$
+
+_Esempi di rappresentazione con vettore dei padri_
+
+![[Pasted image 20250303114411.png]]
+
+È possibile modificare l'algoritmo di visita DFS e fare in modo che restituisca il vettore dei padri radicato nel nodo da cui siamo partiti.
+
+```python
+def Padri(u, G):
+
+	def DFSr(x, G, P):
+		for y in G[x]:
+			if P[y] == -1:
+				P[y] = x
+				DFSr(y, G, P)
+
+	n = len(G)
+	P = [-1] * n
+	P[u] = u
+	DFSr(u,G,P)
+	return P
+```
+
+Avremo che $P[v]$ contiene $-1$ se $v$ non è stato visitato altrimenti contiene il padre di $v$ nell'albero DFS.
+
+_Esempi applicazione_:
+
+
