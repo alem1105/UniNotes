@@ -84,5 +84,57 @@ Possibile esempio di link:
 
 ![[Pasted image 20250227111823.png]]
 
+## Associazioni con Attributi
+Prendiamo come esempio un sistema che gestisce gli esiti dei test superati dagli studenti di vari moduli, se volessimo assegnare un voto a questi non sarebbe adeguato né nella classe Studente dato che il voto non è una caratteristica unica di uno studente ma neanche in modulo per lo stesso motivo. Possiamo aggiungere degli attributi alla relazione che c'è tra Studente e Modulo.
 
+![[Screenshot 2025-03-04 alle 17.44.04.png|350]]
+
+In questo modo lo stesso studente può partecipare più volte alla relazione `test_superato` e possiamo assegnare ad ogni link un voto ed una data diversi.
+
+> [!bug] Att.
+> Aggiungere attributi alla relazione non ci permette comunque di avere più link fra gli stessi oggi, quindi anche nel caso avessimo lo stesso studente in due link con lo stesso modulo e attributi diversi nel link, **non** sarebbe comunque ammesso
+
+Un'associazione di questo tipo è anche chiamata **association class** dato che a sua volta può essere collegata con altre associazioni, e come prima non ci permette comunque di avere due o più link uguali anche se con attributi o relazioni associate diversi, _ad esempio_:
+
+![[Pasted image 20250304175008.png]]
+
+Con questo schema se avessimo due link sullo stesso studente e sullo stesso modulo con `voto,data` e `Docente` diversi non sarebbe comunque ammesso.
+
+## Tipi di dato Concettuali
+Per ogni attributo dobbiamo sempre scegliere un tipo ma ricordiamo che non vogliamo fare scelte tecniche, solo concettuali, quindi scegliamo dei **tipi concettuali** che siano realizzabili in qualsiasi linguaggio / tecnologia.
+
+Quindi useremo dei tipi base come: Stringa, Intero, Reale, Booleano ecc... ma definiamo anche dei nostri tipi.
+
+Ad esempio nello schema usato per i voti non vogliamo poter assegnare un qualsiasi intero o reale dato che potremmo avere anche numeri negativi o con la virgola.
+
+### Tipi di dato specializzati
+Forniamo un range di valori ammessi, ad esempio `Intero > 0, Reale <= 0, 18..30, 0..100` ecc...
+
+### Tipi Enumerativi
+Se abbiamo un insieme piccolo e finito di valori ammessi allora possiamo usare gli enumerativi che definisce in modo esplicito l'insieme dei valori ammessi. Ad esempio: `{maschio, femmina}, {Africa, America, Antartide, Asia, Europa, Oceania}` ecc...
+
+Dobbiamo però fare attenzione ad utilizzarli dati che se in futuro abbiamo bisogno di altri valori potrebbe essere difficile modificare la base di dati.
+
+### Definiti dall'utente
+UML ci permette di definire dei tipi da usare liberamente nello schema, ad esempio possiamo creare il tipo `Genere = {maschio, femmina}` e usarlo in uno schema in questo modo:
+
+![[Pasted image 20250304180827.png|350]]
+
+Possiamo inoltre creare anche dei tipi di dato composti da più campi chiamati **tipi record**, ad esempio possiamo definire:
+
+- `Indirizzo = (via:Stringa, civico:Intero>0, cap:Intero>0)`
+- `Genere = {maschio, femmina}`
+
+ed usarli in uno schema:
+
+![[Screenshot 2025-03-04 alle 18.10.45.png|350]]
+
+---
+
+
+> [!info] Molteplicità degli Attributi
+> Anche gli attributi possono avere una molteplicità, pensiamo ad esempio ad un sito web che per ogni utente ci permette di memorizzare più di un indirizzo email o numero di telefono. Si utilizza la seguente sintassi:
+> 
+> ![[Screenshot 2025-03-04 alle 18.12.45.png|350]]
+> 
 
