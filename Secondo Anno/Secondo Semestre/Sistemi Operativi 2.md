@@ -57,7 +57,7 @@ Per creare utenti usiamo il comando
 
 - `adduser nuovoutente`
 
-Di base questo non farà parte del gruppo sudo, possiamo aggiungere l'utente al gruppo sudoer con il comando
+Di base questo non farà parte del gruppo sudo, possiamo aggiungere l'utente al gruppo sudoer con il comando, il gruppo dei sudoer si chiama `sudo`
 
 - `adduser nuovoutente gruppo`
 
