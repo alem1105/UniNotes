@@ -97,21 +97,6 @@ In questo caso il grafo non è diretto quindi troviamo se c'è un arco in genera
 > Da notare che nella diagonale sono presenti soltanto $0$ dato che non ci sono archi che nascono e muoiono su se stessi.
 > 
 
-Possiamo memorizzare queste matrici con una lista di liste $G$ che ha tanti elementi quanti sono i nodi del grafo dove $G[x]$ è una lista contenente i nodi adiacenti al nodo $x$ ovvero quelli raggiunti a partire da $x$. Quindi:
-
-```python
-G = [
-	[2,5],
-	[5],
-	[0,4,5],
-	[4],
-	[2,3,5],
-	[0,1,2,4]
-]
-```
-
-Questo tipo di rappresentazione ci fa risparmiare molto spazio nel caso di grafi sparsi, inoltre vedere se due nodi sono connessi o no può costare anche $O(n)$
-
 ## Trovare un Pozzo
 In un grafo un pozzo è un **nodo senza archi uscenti**, inoltre si dice **pozzo universale** se un nodo è un pozzo e inoltre tutti gli altri nodi hanno un arco che punta verso di lui.
 
@@ -174,6 +159,19 @@ Questa a differenza della matrice ci permette di inserire i nodi anche in modo n
 Per quanto riguarda lo spazio questa occupa $O(n+m)$ che per grafi sparsi ci fa risparmiare spazio rispetto alla matrice mentre se abbiamo un grafo denso abbiamo lo stesso costo dato che otteniamo $O(n+n^2)=O(n^2)$ uguale alla matrice.
 
 In grafi sparsi non ci costa molto scorrere la lista alla ricerca di un arco ma nel caso peggiore ovvero in grafi densi può costarci anche $O(n)$ mentre per la matrice abbiamo sempre tempo costante anche in grafi densi.
+
+Un esempio di rappresentazione (senza uso di dizionario, non possiamo quindi inserire in modo sparso i nodi) è quindi:
+
+```python
+G = [
+	[2,5],
+	[5],
+	[0,4,5],
+	[4],
+	[2,3,5],
+	[0,1,2,4]
+]
+```
 
 # In generale chi e quando scegliere?
 
