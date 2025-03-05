@@ -67,3 +67,18 @@ Se invece vogliamo cambiare utente utilizziamo:
 
 Che tipicamente viene utilizzato per diventare root con, ad esempio: `su -l root`
 
+---
+
+Un altro comando che possiamo utilizzare per creare utenti è:
+
+- `useradd utente`
+
+Questo non crea una cartella per quest'ultimo e non chiede di impostare una password.
+
+Possiamo impostare la password in un secondo momento con:
+
+- `passwd utente`
+
+Non è molto comodo dal punto di vista della sicurezza dato che un utente dovrebbe poter accedere soltanto alla sua cartella
+
+- # [[SO2 - File System]]
