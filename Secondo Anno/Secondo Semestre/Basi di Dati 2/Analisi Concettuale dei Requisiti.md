@@ -138,3 +138,58 @@ ed usarli in uno schema:
 > ![[Screenshot 2025-03-04 alle 18.12.45.png|350]]
 > 
 
+## Vincoli di Identificazione di Classe
+A volte potrebbe servirci definire ulteriori vincoli, ad esempio abbiamo visto per i **vincoli di integrità**, i vincoli di molteplicità sulle associazioni.
+
+Un'altra tipologia di vincolo è il **vincolo di identificazione di classe**, questo ci permette di scegliere un insieme da attributi per i quali non possono esistere due o più istanze che hanno simultaneamente dei valori uguali su questi attributi. Prendiamo questo schema come esempio:
+
+![[Pasted image 20250306090412.png|250]]
+
+In questo caso non possiamo avere due o più istanze di Persona che hanno simultaneamente uguali il campo `cf` e neanche gli attributi `nome, cognome, nascita` (a gruppo). Inoltre ogni attributo può partecipare a più gruppi identificativi.
+
+### Vincolo di identificazione con ruolo
+Un vincolo di identificazione di classe può coinvolgere anche i ruoli della classe.
+
+Prendiamo questo schema come esempio:
+
+![[Pasted image 20250306092329.png|350]]
+
+In questo caso possono esistere due o più studenti con la stessa matricola ma non all'interno della stessa Università.
+
+> [!danger] Attenzione
+> Non possiamo definire come ID degli attributi o ruoli se questi non hanno molteplicità 1..1
+
+## Relazione is-a tra classi
+Molte volte è necessario rappresentare il fatto che due classi abbiano una relazione di **sottoinsieme**, possiamo farlo con il concetto di **relazione is-a** tra classi.
+
+![[Pasted image 20250306092640.png|250]]
+
+Questo significa che ogni istanza della classe Studente è anche istanza della classe Persona, dove Studente è sottoclasse e Persona è superclasse. Non è vero il viceversa, non tutte le persone sono studenti.
+
+### Ereditarietà
+In presenza della relazione **is-a** esiste il meccanismo dell'ereditarietà questo significa che ogni sottoclasse avrà anche gli attributi presenti nella superclasse.
+
+Quindi per esempio nello schema sopra avremo che ogni Studente ha anche i campi per gli attributi `nome, genere` oltre che a `matricola`.
+
+Inoltre possiamo avere anche relazione is-a a più livelli usando il concetto di **transititivà**.
+
+![[Pasted image 20250306101017.png|350]]
+
+In questo caso abbiamo che ogni Persona ha i campi `nome, genere`, inoltre ogni Studente eredita questi campi e memorizza in più anche `matricola`, StudenteStraniero invece non aggiunge nulla di nuovo ma eredita sia da Persona che da Studente.
+
+Inoltre stiamo rappresentando anche le relazione delle varie sottoclassi, ovvero, ad ogni Persona è associata una città di nascita questo significa che anche Studente e StudenteStraniero parteciperanno ad un link di `nascita`. Poi abbiamo studente che partecipa a `tutor_stud` e quindi ci parteciperà anche StudenteStraniero ma **non Persona**.
+
+StudenteStraniero infine partecipa da solo a `naz_stud` (da solo nel senso non le sue superclassi).
+### Classi Specifiche di un Oggetto
+Un oggetto quindi può essere istanza di più classi. (ma una classe non può essere sottoclasse di più classi)
+
+Possiamo quindi indicare le **classi più specifiche** di un oggetto, queste sono le classi di cui l'oggetto è istanza che non sono a loro volta superclassi di atre classi dell'oggetto.
+
+_Esempio_
+
+![[Screenshot 2025-03-06 alle 10.17.36.png|350]]
+
+In questo caso abbiamo che l'oggetto `anna` è istanza di Persona, Studente e Lavorate mentre l'insieme delle classi specifiche è formato da: Studente e Lavoratore in quanto non sono superclassi di altre classi di cui `anna` è istanza.
+
+
+
