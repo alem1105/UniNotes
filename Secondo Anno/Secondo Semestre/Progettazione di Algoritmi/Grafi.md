@@ -293,6 +293,157 @@ def Padri(u, G):
 
 Avremo che $P[v]$ contiene $-1$ se $v$ non è stato visitato altrimenti contiene il padre di $v$ nell'albero DFS.
 
-_Esempi applicazione_:
+---
 
-_Forse va riorganizzato qualcosa sopra :(_
+> [!danger] Percorsi diversi
+> Ovviamente in base all'ordinamento dei nodi all'interno delle liste le visite che faremo produrranno grafi e vettori dei padri diversi, ovvero se il nodo 2 ha come nodi adiacenti i nodi 3,4,5 a seconda di come troviamo questi nella lista otterremo diversi nodi. Infatti potremmo visitare prima 3 oppure 4 oppure 5.
+
+---
+
+Tramite il vettore dei padri possiamo trovare **un** percorso che ci porta dal nodo che abbiamo usato come radice fino al nodo scelto. Infatti se il nodo scelto non ha valore -1 nel vettore dei padri allora significa che è raggiungibile dalla radice, ci basta percorrere i padri dal vettore e poi invertire il percorso ottenuto ovvero il percorso foglia - radice.
+
+_Esempio_
+
+![[Pasted image 20250306172732.png]]
+
+Il grafo a sinistra è quello originale e a destra abbiamo il grafo DFS che ha come radice 9.
+
+Otteniamo come vettore dei padri:
+
+![[Pasted image 20250306172916.png]]
+
+Quindi ad esempio se cerchiamo un percorso per 5 e 6 non avremo risposta dato che questi non sono raggiungibili (hanno -1 come valore).
+
+Per gli altri nodi invece seguiamo il percorso che ci indica il vettore, ad esempio:
+
+- 7 -> 2 -> 9 Quindi come percorso abbiamo 9 - 2 - 7
+- 1 -> 0 -> 9 Quindi otteniamo 9 - 0 - 1
+
+Ovviamente questo **non è garantito essere il percorso migliore.**
+
+Vediamo due procedura, una iterativa e una ricorsiva per trovare il percorso dato un vettore dei padri:
+
+```python
+def Cammino(u, P):
+	if P[u] == -1: return []
+	path = []
+	while P[u] != u:
+		path.append(u)
+		u = P[u]
+	path.append(u)
+	path.reverse()
+	return path
+```
+
+```python
+def Cammino(u, P):
+	if P[u] == -1: return []
+	if P[u] == u: return [u]
+	return CamminoR(P[u], P) + [u]
+```
+
+Sia la versione iterativa che quella ricorsiva hanno complessità di $O(n)$ se si dispone del vettore dei padri.
+
+# Colorazione di Grafi
+Dato un grafo connesso un intero $k$ vogliamo sapere se è possibile colorare i nodi del grafo in modo che i nodi fra loro adiacenti abbiano sempre colori distinti.
+
+> [!info] Teorema 4 colori - Curiosità
+> Questo teorema afferma che un **grafo planare** richiede al più 4 colori per essere colorato.
+> La dimostrazione è stata difficile da trovare anche perché doveva accontentare i matematici (🤓) che non si fidavano di una dimostrazione che sfruttava un calcolatore. Successivamente negli anni 2000 è stata proposta una dimostrazione che usa la teoria dei gruppi.
+
+Nel peggiore dei casi ovvero un grafo completo, sono richiesti fino a $\Theta(n)$ colori.
+
+Per ora non esistono algoritmi che dato un grafo planare ci dicono se questo è 3-colorabile ma esistono invece degli algoritmi che ci dicono se un grafo è 2-colorabile.
+
+Infatti un grafo è 2-colorabile **se e solo se non contiene cicli di lunghezza dispari**, infatti lungo il ciclo i colori devono alternarsi e arriveremo alla fine con gli ultimi due colori che si toccano.
+
+---
+
+Spiegazione algoritmo: Questo prova che un grafo **senza cicli dispari** può essere sempre 2-colorato:
+- Coloriamo il nodo 0 con il colore 0
+- Effettuiamo una visita in profondità a partire dal nodo 0 e ciascun nodo che incontriamo assegnamo uno dei due colori 0 o 1 in modo tale che questo sia diverso dal colore del nodo che ci ha portato a quello che stiamo colorando in quel momento.
+
+Siano $x$ e $y$ due nodi adiacenti possono verificarsi due casi:
+- L'arco $(x,y)$ viene attraversato nella visita e quindi i nodi hanno colori distinti
+- L'arco $(x,y)$ non viene attraversato nella visita, allora sia $x$ il nodo visitato per primo esiste un cammino che ci porta da $x$ a $y$ che forma un ciclo con l'arco $(x,y)$, questo ciclo è di lunghezza pari per ipotesi (abbiamo un grafo senza cicli dispari) quindi il cammino ha lunghezza dispari e questo significa che i colori su questo cammino si alterneranno.
+
+_Algoritmo per bicolorare grafi connessi senza cicli dispari_:
+
+```python
+def Colora(G):
+
+	def DFSr(x, G, Colore, c):
+		Colore[x] = c
+		for y in G[x]:
+			if Colore[y] == -1:
+				DFSr(y, G, Colore, 1-c)
+
+	Colore = [-1] * len(G)
+	DFSr(0, G, Colore, 0)
+	return Colore
+```
+
+Quindi inizializza una lista dei nodi con tutti valori -1 per indicare che non sono ancora colorati. Entra nel nodo 0 e lo colora con il colore 0 poi passa ai suoi adiacenti e li colora con 1, continua iterando in questo modo invertendo sempre il colore ad ogni nodo che attraversa.
+
+- Da notare che se il grafo contiene cicli dispari allora colorerà in modo errato. Ma questo si può perfezionare, infatti vediamo un algoritmo che in quel caso restituisce una lista vuota.
+
+```python
+def Colora1(G):
+
+	def DFSr(x, G, Colore, c):
+		Colore[x] = c
+		for y in G[x]:
+			if Colore[y] == -1:
+				if not DFSr(y, G, Colore, 1-c):
+					return False
+				elif Colore[y] == Colore[x]:
+					return False
+			return True
+
+	Colore = [-1] * len(G)
+	if DFSr(0, G, Colore, 0):
+		return Colore
+	return []
+```
+
+Quindi se non entriamo nei controlli aggiuntivi di adiacenza fra i colori che ci fanno ritornare False completeremo la costruzione della lista `Colore` altrimenti ne restituiremo una vuota.
+
+La complessità è quella di una visita quindi $O(n+m)$ ma siccome abbiamo un grafo connesso e quindi $m\geq n-1$ possiamo dire $O(m)$.
+
+# Componente Connessa 
+Una componente connessa di un grafo è un sottografo composto da un insieme di nodi connessi con dei cammini. Un grafo **si dice connesso se ha una sola componente connessa**.
+
+_Esempio di grafo con più componenti connesse:_
+
+![[Pasted image 20250307092506.png]]
+
+È possibile calcolare il vettore $C$ delle componenti connesse di un grafo, vale a dire un vettore che tanti elementi quanti i nodi del grafo e tale che se due nodi $x,y$ appartengono alla stessa componente allora $C[x]=C[y]$, quindi se prendiamo come esempio il grafo sopra otteniamo:
+
+- $C=[2,1,2,3,4,5,2,1,1,1,2,3,5,1,5,1,2,5,3]$ (se non ho sbagliato qualche numero 🤡)
+
+Nel vettore troveremo in totale $N$ valori in base a quante $N$ visite abbiamo fatto.
+
+È possibile progettare un algoritmo che ci fa costruire questo vettore:
+
+```python
+def Componenti(G):
+
+	def DFSr(x, G, C, c):
+		C[x] = c
+		for y in G[x]:
+			if C[y] == 0:
+				DFSr(y, G, C, c)
+
+	C = [0] * len(G)
+	c = 0
+	for x in range(len(G)):
+		if C[x] == 0:
+			c += 1
+			DFSr(x, G, C, c)
+	return C
+```
+
+Questo algoritmo scorre tutti i nodi nella liste di adiacenza, inizia con un valore $c = 1$ per il primo nodo e tutti quelli collegati a lui prenderanno il valore 1, quando non ci sarà più nessun nodo collegato a lui che ha valore 0 allora si passa al successivo nodo di un'altra componente (se esiste) aumentando il valore di $c$ di 1.
+
+## Componente Fortemente Connessa
+
