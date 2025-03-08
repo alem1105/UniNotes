@@ -446,4 +446,155 @@ def Componenti(G):
 Questo algoritmo scorre tutti i nodi nella liste di adiacenza, inizia con un valore $c = 1$ per il primo nodo e tutti quelli collegati a lui prenderanno il valore 1, quando non ci sarà più nessun nodo collegato a lui che ha valore 0 allora si passa al successivo nodo di un'altra componente (se esiste) aumentando il valore di $c$ di 1.
 
 ## Componente Fortemente Connessa
+Le componenti **fortemente connesse**, invece, le troviamo nei grafi diretti, queste sono dei sottografi composti da un insiemi di nodi connessi fra loro tramite dei cammini.
 
+Anche in questo caso un grafo si dice **fortemente connesso** se ha una sola componente fortemente connessa.
+
+Vogliamo trovare la componente fortemente connessa a partire da un nodo, in questo caso però l'algoritmo visto precedentemente non funziona questo perché se abbiamo un cammino da $x$ a $y$ non è detto che esista anche un cammino che da $y$ ci porta a $x$.
+
+**Progettiamo l'algoritmo**:
+1) Calcolare l'insieme $A$ dei nodi di $G$ raggiungibili da $u$
+2) Calcolare l'insieme $B$ dei nodi di $G$ che portano a $u$
+3) Restituire l'intersezione di questi due insiemi
+
+- Per il passo 1 utilizziamo una semplice visita DFS quindi $O(n+m)$
+- Per il passo 2 ci serve il concetto di **grafo trasposto**
+- Il passo 3 costa $O(n)$
+
+### Grafo Trasposto
+Dato un grafo diretto $G$ il **grafo trasposto** di $G$ denotato con $G^T$ ha gli stessi nodi di $G$ ma archi con direzione opposta, _esempio_:
+
+![[Pasted image 20250308110643.png]]
+
+Quindi i nodi che in $G$ ci portano ad $u$, in $G^T$ diventano i nodi che sono raggiungibili da $u$.
+
+Costruire questo grafo costa $O(n+m)$.
+
+---
+
+In totale quindi abbiamo:
+- Passo 1 che costa $O(n+m)$ - Calcolare insieme $A$
+- Passo 2 che costa $O(n+m)$ - Calcolare grafo trasposto
+- Passo 3 che costa $O(n+m)$ - Calcolare insieme $B$ con una ricerca nel grafo trasposto
+- Passo 4, intersezione che costa $O(n)$
+
+In totale $O(n+m)$
+
+Vediamo un possibile algoritmo per costruire il vettore delle componenti fortemente connesse:
+
+```python
+def ComponenteFC(x, G):
+	visitati1 = DFS(x ,G)
+	G1 = Trasposto(G)
+	visitati2 = DFS(x, G1)
+	componente = []
+	for i in range(len(G)):
+		if visitati1[i] == visitati2[i] == 1:
+			componente.append(i)
+	return componente
+
+def Trasposto(G):
+	GT = [[] for _ in G]
+	for i in range(len(G)):
+		for v in G[i]:
+			GT[v].append(i)
+	return GT
+```
+
+Se vogliamo ottenere il **vettore delle componenti fortemente connesse** possiamo usare l'algoritmo `ComponenteFC` come subroutine e ottenere:
+
+```python
+def compFC(G):
+	FC = [0] * len(G)
+	c = 0
+	for i in range(len(G)):
+		if FC[i] == 0:
+			E = ComponenteFC(i, G)
+			c += 1
+			for x in E:
+				FC[x] = c
+	return FC
+```
+
+Questo algoritmo ha complessità:
+- $\Theta(n)$ per il for
+- $O(n+m)$ costo della funzione `ComponenteFC`
+
+Quindi in totale $\Theta(n)\cdot O(n+m)=O(n^2+nm)=O(n^3)$ dato che al caso peggiore $O(m)=n^2$
+
+Per verificare questo costo del caso peggiore possiamo pensare al grafo diretto $G$ avente un arco da $u$ a $v$ per ogni coppia di nodi $u,v$ tali che $u\leq v$
+
+Questo grafo ha $n^2$ archi e $n$ componenti fortemente connesse ovvero una per ogni nodo, infatti:
+
+![[IMG_0223.png]]
+
+Ogni nodo equivale ad una componente connessa.
+
+# Ordinamento Topologico
+
+_Stesso concetto di [[BD1 - Concorrenza#Ordinamento Topologico]]_
+
+Spesso un grafo diretto cattura relazioni di propedeuticità fra i nodi, ovvero se ad esempio abbiamo un arco che va dal nodo $a$ al nodo $b$ allora $a$ è propedeutico a $b$ ovvero va svolto prima di $b$.
+
+In un grafo è possibile rispettare tutte le propedeuticità se riusciamo ad ordinare i nodi del grafo in modo che gli archi vadano tutti da sinistra verso destra, questo è detto **ordinamento topologico**.
+
+Un grafo può avere da $0$ a $n!$ ordinamenti topologici
+
+_Esempio_
+
+![[Pasted image 20250308140216.png]]
+
+Tentare tutte le combinazioni di un grafo e vedere se sono un ordinamento topologico costa troppo, ovvero $\Omega(n!)$. Possiamo però fare delle osservazioni.
+
+Affinché $G$ possa avere un ordinamento topologico è necessario che sia un DAG ovvero un Grafo Diretto Aciclico. Infatti se abbiamo un ciclo è impossibile avere tutte le frecce in una sola direzione, una andrà sicuramente nella direzione opposta.
+
+Possiamo dimostrare che questa condizione, ovvero essere DAG è anche **sufficiente** per far si che esista un ordinamento topologico.
+
+---
+
+Un DAG ha sempre un **nodo sorgente** ovvero un nodo in cui non entrano archi, possiamo sfruttare questo per costruire l'ordinamento:
+
+1) Iniziamo da una sorgente
+2) Cancelliamo questa sorgente dal grafo e gli archi che partono da lui ottenendo così un nuovo DAG
+3) Iteriamo in questo modo finché non abbiamo ordinato tutti i nodi
+
+Un possibile algoritmo è il seguente:
+
+```python
+def sortTop(G):
+
+    n = len(G)
+    gradoEnt = [0] * n 
+    for i in range(n): 
+        for j in G[i]:
+            gradoEnt[j] += 1 # posso fare len(G[i]) senza for ?? 
+    sorgenti = [ i for i in range(len(G)) if gradoEnt[i] == 0 ]
+    ST = []
+    
+    while sorgenti:
+        u=sorgenti.pop()
+        ST.append(u)
+        for v in G[u]:
+            gradoEnt[v] -= 1
+            if gradoEnt[v] == 0:
+                sorgenti.append(v)
+                
+    if len(ST)==len(G): return ST
+    return []
+
+```
+
+Se esiste un ordinamento questo viene restituito altrimenti viene restituita una lista vuota.
+
+_Spiegazione_
+
+- Con il primo `for` creiamo un array che per ogni nodo ha assegnato un valore uguale a quanti archi entranti ha quel nodo. Questo ci costa $O(m)$, insieme all'inizializzazione del vettore che ha costo $\Theta(n)$ abbiamo un costo totale di $O(m+n)$
+- Creiamo l'array `sorgenti` prendendo quei nodi che hanno valore 0 nell'array precedente ovvero che non hanno archi entranti. Costo di $O(n)$
+- Con il `while` andiamo a creare l'ordinamento vero e proprio, finché ci sono delle sorgenti ne togliamo una e la inseriamo nell'ordinamento, a questo punto riduciamo di uno il grado  di tutti i nodi collegati a questa sorgente e controlliamo se ci sono nuove sorgenti da aggiungere. Nel caso peggiore controlliamo tutto il grafo e quindi abbiamo un costo di $O(m)$
+- Infine controlliamo se l'ordinamento comprende tutti i nodi, se si ne abbiamo trovato uno altrimenti restituiamo una lista vuota.
+
+Analizzando meglio i costi abbiamo:
+- Inizializzazione vettore dei gradi ovvero la creazione vera e propria e l'assegnamento dei valori - $O(n+m)$
+- Creazione vettore delle sorgenti - $O(n)$
+- Il ciclo while itera $O(n)$ volte ma il for al suo interno, nel caso peggiore, scorre tutto il grafo come detto prima, quindi $O(m)$
+- Costo totale di $O(n+m)$
