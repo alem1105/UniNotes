@@ -598,3 +598,149 @@ Analizzando meglio i costi abbiamo:
 - Creazione vettore delle sorgenti - $O(n)$
 - Il ciclo while itera $O(n)$ volte ma il for al suo interno, nel caso peggiore, scorre tutto il grafo come detto prima, quindi $O(m)$
 - Costo totale di $O(n+m)$
+
+---
+
+Possiamo usare un algoritmo alternativo che si basa sulla **DFS**, questa DFS però inserirà i nodi in una lista soltanto quando la visita su questi sarà terminata, l'algoritmo restituisce il reverse della lista. Questa DFS va effettuata su tutti i nodi a partire dal nodo 0.
+
+_Esempio_
+
+![[Pasted image 20250310161809.png]]
+
+In questo caso se effettuiamo una visita sul nodo 0 otteniamo:
+- $[2, 5, 6, 0, 4, 3]$ Perché siamo partiti dal nodo 0 e una volta terminato abbiamo continuato ad effettuare visite sui nodi rimanente ovvero 3 e 4.
+Ovviamente non viene restituita quella lista ma il suo inverso, quindi $[3,4,0,6,5,2]$.
+
+Perché funziona? - Siano $x$ e $y$ due nodi in $G$ con un arco che va da $x$ a $y$ dimostriamo i possibili casi:
+- Se l'arco viene attraversato durante la visita allora $y$ finirà nella lista prima di $x$ e quindi facendo il reverse otteniamo un giusto ordinamento
+- Se l'arco non viene attraversato allora significa che durante la visita di $x$ il nodo $y$ è già stato visitato e la sua visita è anche già terminata dato che da $y$ non può esserci un cammino che ci porta ad $x$ altrimenti non avremmo un DAG. Anche in questo caso quindi $y$ finisce nella lista prima di $x$.
+
+Implementiamo l'algoritmo:
+
+```python
+def sortTop1(G):
+
+	def DFSr(u, G, visitati, lista):
+		visitati[u] = 1
+		for v in G[u]:
+			if visitati[v] == 0:
+				DFSr(v, G, visitati, lista)
+		lista.append(u)
+
+	visitati = [0] * len(G)
+	lista = []
+	for u in range(len(G)):
+		if visitati[u] == 0:
+			DFSr(u, G, visitati, lista)
+	lista.reverse()
+	return lista
+```
+
+Che ha una complessità di $O(n+m)+O(n)=O(n+m)$ 
+
+---
+
+> [!info] Grafo Parzialmente Orientato
+> Un grafo $G$ si dice parzialmente orientato se contiene sia archi orientati che archi non orientati
+> 
+> ![[Pasted image 20250310163215.png]]
+> 
+
+# Cicli
+Dato un grafo $G$ diretto o non diretto ed un suo nodo $u$ vogliamo sapere se da $u$ è possibile raggiungere un ciclo in $G$.
+
+_Esempio_
+
+![[Pasted image 20250310163545.png]]
+
+Da questo grafo se partiamo dal nodo 1 possiamo raggiungere un ciclo ad esempio 2,4,6. Mentre se partiamo dal nodo 3 non è possibile raggiungere un ciclo dato che possiamo arrivare soltanto al nodo 5.
+
+Una prima idea è quella di visitare il grafo e se durante la visita incontriamo un nodo già visto allora la interrompiamo e restituiamo True altrimenti se la visita viene portata a termina restituiamo False. Ma questa idea è sbagliata nel caso di grafi non diretti infatti se $x,y$ sono due nodi collegati allora appariranno ciascuno nella lista di adiacenza dell'altro e questo viene interpretato come un ciclo di lunghezza 2 facendo terminare il nostro algoritmo sempre con True.
+
+Per risolvere questo problema devo distinguere per ciascun nodo $y$ che incontro, il nodo $x$ che mi ha portato a visitarlo, quindi:
+
+```python
+def ciclo(u, G):
+	visitati = [0] * len(G)
+	return DFSr(u, u, G, visitati)
+
+def DFSr(u, padre, G, visitati):
+	visitati[u] = 1
+	for v in G[u]:
+		if visitati[v] == 1:
+			if v != padre:
+				return True
+		else:
+			if DFSr(v, u, G, visitati):
+				return True
+	return False
+```
+
+Che ha una complessità di $O(n)$ perché se il grafo non contiene cicli allora ha al più $n-1$ archi e quindi $O(n+m)=O(n)$. Se invece contiene cicli ne scopriamo uno dopo aver considerato al più $n$ e l'algoritmo termina.
+
+---
+
+Anche nel caso di grafi diretti l'algoritmo non è corretto perché incontrare un nodo già visitato in un grafo diretto non significa necessariamente che ci sia un ciclo, quindi la procedura potrebbe terminare con True anche in assenza di cicli
+
+Durante la visita DFS posso incontrare nodi già visitati in tre modi diversi:
+- **archi in avanti** ovvero le frecce che da un antenato puntano ad un discendente
+- **archi all'indietro** ovvero le frecce che da un discendente vanno ad un antenato
+- **archi di attraversamento**
+
+_Esempi_
+
+![[Pasted image 20250310174428.png]]
+
+Che effettuando una visita DFS a partire da 0 otteniamo:
+
+![[Pasted image 20250310181140.png|250]]
+
+- 6 - 1 è un arco all'indietro perché ci porta in un nodo che abbiamo già visitato quindi 1 è antenato di 6 che è suo discendente.
+- 3 - 5 è un arco in avanti perché lo percorriamo durante la visita infatti ci porta da un antenato ad un discendente
+- 2 - 3 è un arco di attraversamento, non rientra nelle due precedenti categorie
+
+Soltanto la presenza di archi all'indietro testimonia la presenza di un ciclo. Dobbiamo quindi distinguere la scoperta di nodi già visitati grazie ad un arco all'indietro rispetto agli altri tipi di archi.
+
+Possiamo individuarli notando che soltanto nel caso di archi all'indietro andiamo a visitare un nodo già visitato ma che non ha ancora finito la sua ricorsione, ad esempio nel grafo sopra abbiamo 6 che ci porta ad 1, un nodo già visitato e 1 non ha ancora finito la sua ricorsione.
+
+Progettiamo un algoritmo per il vettore V dei visitati:
+- In V un nodo vale 0 se il nodo non è stato ancora visitato
+- In V un nodo vale 1 se il nodo è stato visitato ma la ricorsione su quel nodo non è ancora finita
+- In V un nodo vale 2 se il nodo è stato visitato e ha terminato la sua ricorsione
+
+In questo modo se troviamo un arco diretto verso un nodo che ha valore 1 abbiamo trovato un ciclo.
+
+```python
+def DFSr(u, G, visitati):
+	visitati[u] = 1
+	for v in G[u]:
+		if visitati[v] == 1:
+			return True
+		if visitati[v] == 0:
+			if DFSr(v, G, visitati):
+				return True
+	visitati[u] = 2
+	return False
+
+def cicloD(u, G):
+	visitati = [0] * len(G)
+	return DFSr(u, G, visitati)
+```
+
+Questo algoritmo ha complessità $O(n+m)$ e restituisce True se è presente un ciclo, False altrimenti.
+
+--- 
+
+Se vogliamo sapere se c'è un ciclo o no in un grafo diretto o non diretto possiamo modificare la procedura in questo modo:
+
+```python
+def cicloD(G):
+	visitati = [0] * len(G)
+	for u in range(len(G)):
+		if visitati[u] == 0:
+			if DFSr(u, G, visitati):
+				return True
+	return False
+```
+
+Che si basa sempre su impostare i valori nel vettore a 0,1,2 come stabilito prima.
