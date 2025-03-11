@@ -682,10 +682,10 @@ Che ha una complessità di $O(n)$ perché se il grafo non contiene cicli allora 
 
 Anche nel caso di grafi diretti l'algoritmo non è corretto perché incontrare un nodo già visitato in un grafo diretto non significa necessariamente che ci sia un ciclo, quindi la procedura potrebbe terminare con True anche in assenza di cicli
 
-Durante la visita DFS posso incontrare nodi già visitati in tre modi diversi:
+Durante la visita DFS posso incontrare **nodi già visitati** in tre modi diversi:
 - **archi in avanti** ovvero le frecce che da un antenato puntano ad un discendente
 - **archi all'indietro** ovvero le frecce che da un discendente vanno ad un antenato
-- **archi di attraversamento**
+- **archi di attraversamento** ovvero quelle frecce che ci portano da un sottoalbero ad un altro
 
 _Esempi_
 
@@ -695,9 +695,10 @@ Che effettuando una visita DFS a partire da 0 otteniamo:
 
 ![[Pasted image 20250310181140.png|250]]
 
-- 6 - 1 è un arco all'indietro perché ci porta in un nodo che abbiamo già visitato quindi 1 è antenato di 6 che è suo discendente.
-- 3 - 5 è un arco in avanti perché lo percorriamo durante la visita infatti ci porta da un antenato ad un discendente
-- 2 - 3 è un arco di attraversamento, non rientra nelle due precedenti categorie
+In questa ricerca finiamo in un nodo già visitato in 3 casi:
+- 3 -> 5 questo è un arco in avanti dato che 3 è antenato di 5
+- 6 -> 1 arco indietro perché 1 e antenato di 6
+- 2 -> 3 è di attraversamento dato che ci porta in un altro sottoalbero (o comunque non è ne avanti ne indietro)
 
 Soltanto la presenza di archi all'indietro testimonia la presenza di un ciclo. Dobbiamo quindi distinguere la scoperta di nodi già visitati grazie ad un arco all'indietro rispetto agli altri tipi di archi.
 

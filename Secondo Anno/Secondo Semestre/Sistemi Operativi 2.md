@@ -67,6 +67,12 @@ Se invece vogliamo cambiare utente utilizziamo:
 
 Che tipicamente viene utilizzato per diventare root con, ad esempio: `su -l root`
 
+Se vogliamo invece soltanto modificare il gruppo di un utente, ad esempio aggiungendone uno allora usiamo:
+
+- `sudo uesrmod -a -G groupName userName`
+
+Dove l'opzione `a` è essenziale per appendere il nome del gruppo alla fine e non perdere i precedenti mentre `G` ci permette di dare in input una lista di gruppi separati da `,`.
+
 ---
 
 Un altro comando che possiamo utilizzare per creare utenti è:
@@ -80,5 +86,7 @@ Possiamo impostare la password in un secondo momento con:
 - `passwd utente`
 
 Non è molto comodo dal punto di vista della sicurezza dato che un utente dovrebbe poter accedere soltanto alla sua cartella
+
+---
 
 - # [[SO2 - File System]]
