@@ -126,5 +126,36 @@ Pezzo storia internet, misà non si mette 😼
 ---
 
 # Modello TCP-IP
+Introduciamo il livello di applicazione, qui troviamo applicazioni come server web e HTTP, oppure anche server di posta elettronica con SMTP, POP3 o anche server DNS.
 
-Slide 39
+Questo livello serve ad offrire dei servizi agli utenti finali.
+
+La comunicazione viene eseguita sempre tramite collegamenti logici, quindi i due livelli applicazione che comunicano penseranno di star parlando tramite un canale unico.
+
+---
+
+I protocolli usati ormai sono veramente tanti dato che anche la flessibilità della rete permette di aggiungerne sempre di nuovi con molta facilità. Possiamo individuare:
+
+- Protocolli Standard - Sono diversi protocolli standardizzati e documentati dagli enti responsabili della gestione Internet. Ognuno di questi protocolli è costituito da una coppia di programmi che interagiscono con l'utente e con il livello di trasporto per offrire un servizio. Troviamo ad esempio applicazioni web con protocollo HTTP.
+- Protocolli non standard - È possibile scrivere applicazioni non standard scrivendo due programmi che forniscono servizi agli utenti facendo uso dei servizi di trasporto. in questo caso non serve  chiedere autorizzazioni dato che ogni azienda può sviluppare il proprio software che utilizza il proprio protocollo di comunicazione.
+
+## Creare applicazioni di Rete
+Dobbiamo scrivere programmi in grado di girare su sistemi diversi e che comunichino attraverso la rete.
+
+Se vogliamo crearne una dobbiamo porci delle domande:
+- Che tipo di architettura si vuole creare? Vogliamo un'app client-server o peer-to-peer?
+- Come comunicano i processi dell'applicazione?
+- Che tipo di servizi di rete richiede l'applicazione? Abbiamo bisogno di più banda o di più sicurezza?
+- I due programmi devono essere entrambi in grado di richiedere ed offrire servizi? Oppure ciascuno ha un solo compito?
+
+### Paradigma Client - Server
+Troviamo due entità:
+- Client - È il componente che richiede il servizio, può essercene più di uno e vanno in esecuzione soltanto quando richiesto.
+- Server - È quello che offre i servizi, è quindi sempre in esecuzione in attesa di richieste.
+
+In questo caso quindi il ruolo delle due entità è ben distinto e una non può svolgere il ruolo dell'altra.
+
+> [!info] Svantaggi
+> Abbiamo bisogno di un server molto potente dato che è lui che gestirà tutto il carico di lavoro e per avere dei server potenti abbiamo bisogno di server farm costose.
+
+
