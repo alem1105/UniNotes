@@ -320,3 +320,4 @@ Alcuni comandi:
 
 - `umask` setta la maschera dei file a mode, ovvero imposta i diritti di accesso che avranno i file alla loro creazione. Da notare che la umask non funziona per quanto riguarda i permessi di esecuzione sui file ma per le directory si.
 
+- `ln` - un link è un nuovo file che punta al file destinazione, questo collegamento è soltanto un puntatore. Con i soft link creiamo un nuovo file con un inode diverso, gli hard link invece non hanno il concetto di puntatore e puntato ma abbiamo direttamente lo stesso inode.
