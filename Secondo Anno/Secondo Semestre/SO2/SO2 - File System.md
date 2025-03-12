@@ -312,3 +312,11 @@ Con l'opzione `-R` lo facciamo in modo ricorsivo sulle sottocartelle.
 
 Questi comandi possono essere utilizzati solo da `root`.
 
+# Altri Comandi
+
+![[Pasted image 20250312105001.png]]
+
+Alcuni comandi:
+
+- `umask` setta la maschera dei file a mode, ovvero imposta i diritti di accesso che avranno i file alla loro creazione. Da notare che la umask non funziona per quanto riguarda i permessi di esecuzione sui file ma per le directory si.
+
