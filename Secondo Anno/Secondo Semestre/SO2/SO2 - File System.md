@@ -220,3 +220,95 @@ Quindi una possibile terna è:
 In generale:
 
 ![[Screenshot 2025-03-11 alle 11.34.38.png|500]]
+
+## Permessi di Accesso a Directory
+
+![[Pasted image 20250312090628.png]]
+
+### Permessi Speciali
+Questo tipo di permessi può essere applicato sia a file che directory, troviamo:
+- sticky bit `t`
+- setuid bit `s`
+- setgid bit `s`
+
+**Stricky bit** - È inutile sui file, se invece è applicato su una directory corregge il comportamento di `w+x` in modo da non permettere la cancellazione di file anche senza permessi sul file stesso.
+
+Siano:
+- D una directory
+- U e U' due utenti diversi
+- D appartiene a U
+- D non appartiene a U' ne al gruppo di U'
+- f un file in D
+
+Se U' cerca di cancellare f allora:
+- Senza sticky bit su D, sarà sufficiente avere i diritti di scrittura su D anche se non si hanno i permessi di scrittura su f.
+- Con lo sticky bit sono necessari anche i permessi di scrittura su f per cancellare f.
+
+**setuid bit** - Si usa solo per i file eseguibili, quando un file viene eseguito questo agisce avendo i permessi del suo proprietario e non dell'esecutore quindi se il proprietario è root il programma viene eseguito con privilegi di root indipendentemente dall'esecutore.
+
+Un esempio è il comando `passwd`che permette a tutti gli utenti di essere eseguito soltanto sulla loro password, il comando infatti appartiene a root e lui può eseguirlo su tutti gli utenti.
+
+**setgid bit** - Analogo al setuid ma per i gruppi, questo però può essere applicato anche alle directory.
+Quando creiamo un file di base gli viene assegnato come gruppo il nostro gruppo, se invece applichiamo il setgid ad una directory ovvero le assegnamo un gruppo, allora tutti i file creati al suo interno avranno come gruppo non quello del proprietario del file ma quello della directory.
+
+_Visualizzare gli attributi_
+
+Possiamo farlo con `ls` o `stat`
+
+![[Pasted image 20250312093044.png|500]]
+
+I permessi speciali vengono visualizzati al posto del bit di esecuzione:
+- il `setuid` nella terna user
+- il `setgid` nella terna group
+- lo `sticky` nella terna other
+
+Siccome sostituiamo il bit della `x`, se questo permesse c'era allora la `s`o la `t`saranno minuscoli altrimenti saranno maiuscoli.
+
+## Cambiare i Permessi di un File
+Usiamo il comando `chmod` che ha una sintassi:
+- `chmod mode[, mode...] filename`
+
+Usiamo il formato ottale (Casalicchio's favorite):
+- 4 numeri tra 0 e 7 come la tabella vista prima
+- il primo numero indica setuid(4), setgid(2) e sticky(1)
+- gli altri sono per utente, gruppo e other
+- Si possono fornire 3 numeri se si assume setuid, setgid e sticky settati
+
+Quindi dobbiamo effettuare somme in binario per decidere i permessi, quelli speciali infatti valgono appunto 4,2,1 e se vogliamo impostare ad esempio setuid e setgid scriveremo come primo numero 6.
+
+Se vogliamo impostare tutti i permessi per il proprietario avremo come secondo numero 111 ovvero 7 oppure se vogliamo impostare soltanto lettura ed esecuzione 101 ovvero 5.
+
+Possiamo usare la modalità simbolica:
+- Usa la sintassi `chmod [ugoa][+-=][perms...]`
+- Dove perms è zero o una o più lettere `rwxXst` per i permessi oppure una lettera dei gruppi.
+
+_Esempi_
+
+- Per settare `rws r-S -w-` usiamo `chmod 6742 filename`
+- Per settare `rwx r-- -wT` usiamo `chmod 1742 filename`
+
+Con la versione simbolica:
+
+- Per settare `rws r-S -w-` dobbiamo eseguire
+	- `chmod g+rwsx filename`
+	- `chmod u+rs filename`
+	- `chmod o+w filename`
+
+Ovviamente vanno tolti eventuali permessi aggiuntivi con `-`
+
+- Per settare `rwx r-- -wT` eseguiamo:
+	- `chmod g+rwx filename`
+	- `chmod u+r filename`
+	- `chmod o+wt filename`
+
+Possiamo impostarli tutti insieme con `=` ad esempio `u=rwx` imposta tutti i permessi all'utente.
+
+## Cambiare owner e gruppo di un file
+Possiamo usare rispettivamente i comandi:
+- `chown [-R] proprietario {file}`
+- `chgrp [-R] gruppo {file}`
+
+Con l'opzione `-R` lo facciamo in modo ricorsivo sulle sottocartelle.
+
+Questi comandi possono essere utilizzati solo da `root`.
+
