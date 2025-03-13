@@ -197,7 +197,7 @@ Altre opzioni che possiamo utilizzare sono:
 - `-n` per visualizzare gli ID degli utenti e gruppi e non il loro nome esteso
 - Per vedere i timestamp dobbiamo usare `-l` ma anche:
 	- `-c` per ctime
-	- `-u` per atimr
+	- `-u` per atime
 	- niente per mtime
 
 ---
@@ -231,7 +231,7 @@ Questo tipo di permessi può essere applicato sia a file che directory, troviamo
 - setuid bit `s`
 - setgid bit `s`
 
-**Stricky bit** - È inutile sui file, se invece è applicato su una directory corregge il comportamento di `w+x` in modo da non permettere la cancellazione di file anche senza permessi sul file stesso.
+**Sticky bit** - È inutile sui file, se invece è applicato su una directory corregge il comportamento di `w+x` in modo da non permettere la cancellazione di file anche senza permessi sul file stesso.
 
 Siano:
 - D una directory
