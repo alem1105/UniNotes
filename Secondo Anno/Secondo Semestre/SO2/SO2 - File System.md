@@ -197,7 +197,7 @@ Altre opzioni che possiamo utilizzare sono:
 - `-n` per visualizzare gli ID degli utenti e gruppi e non il loro nome esteso
 - Per vedere i timestamp dobbiamo usare `-l` ma anche:
 	- `-c` per ctime
-	- `-u` per atimr
+	- `-u` per atime
 	- niente per mtime
 
 ---
@@ -231,7 +231,7 @@ Questo tipo di permessi può essere applicato sia a file che directory, troviamo
 - setuid bit `s`
 - setgid bit `s`
 
-**Stricky bit** - È inutile sui file, se invece è applicato su una directory corregge il comportamento di `w+x` in modo da non permettere la cancellazione di file anche senza permessi sul file stesso.
+**Sticky bit** - È inutile sui file, se invece è applicato su una directory corregge il comportamento di `w+x` in modo da non permettere la cancellazione di file anche senza permessi sul file stesso.
 
 Siano:
 - D una directory
@@ -246,7 +246,7 @@ Se U' cerca di cancellare f allora:
 
 **setuid bit** - Si usa solo per i file eseguibili, quando un file viene eseguito questo agisce avendo i permessi del suo proprietario e non dell'esecutore quindi se il proprietario è root il programma viene eseguito con privilegi di root indipendentemente dall'esecutore.
 
-Un esempio è il comando `passwd`che permette a tutti gli utenti di essere eseguito soltanto sulla loro password, il comando infatti appartiene a root e lui può eseguirlo su tutti gli utenti.
+Un esempio è il comando `passwd` che permette a tutti gli utenti di essere eseguito soltanto sulla loro password, il comando infatti appartiene a root e lui può eseguirlo su tutti gli utenti.
 
 **setgid bit** - Analogo al setuid ma per i gruppi, questo però può essere applicato anche alle directory.
 Quando creiamo un file di base gli viene assegnato come gruppo il nostro gruppo, se invece applichiamo il setgid ad una directory ovvero le assegnamo un gruppo, allora tutti i file creati al suo interno avranno come gruppo non quello del proprietario del file ma quello della directory.
