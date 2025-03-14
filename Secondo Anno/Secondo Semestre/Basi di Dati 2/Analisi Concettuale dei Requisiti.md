@@ -191,5 +191,167 @@ _Esempio_
 
 In questo caso abbiamo che l'oggetto `anna` è istanza di Persona, Studente e Lavorate mentre l'insieme delle classi specifiche è formato da: Studente e Lavoratore in quanto non sono superclassi di altre classi di cui `anna` è istanza.
 
+### Generalizzazioni
+Tramite il costrutto della generalizzazione possiamo definire istanze di una classe che sono istanze di più classi figlie secondo **uno stesso criterio concettuale**.
 
+_Esempio_
+
+![[Pasted image 20250313090147.png|350]]
+
+Otteniamo quindi:
+- Studente is-a Persona
+- Lavoratore is-a Persona
+- Il concetto secondo cui una Persona è uno Studente o un Lavoratore è quello dell'occupazione.
+
+Resta possibile per un oggetto essere istanza sia di Studente che di Lavoratore, vediamo come modificare queste cose.
+
+---
+
+Possiamo avere più di un criterio per ogni classe:
+
+![[Pasted image 20250313090410.png|350]]
+
+- Secondo il criterio del **genere** le persone possono essere uomo e/o donna
+- Secondo il criterio dell'**occupazione** le persone possono essere Studente e/o Lavoratore
+
+Possiamo fare alcune considerazioni per introdurre i successivi vincoli:
+- Una Persona può essere sia Uomo che Studente? Si
+- Una Persona può essere istanza né di Uomo né di Donna? Si
+- Una Persona può essere istanza sia di Uomo che di Donna? Si
+
+Vediamo come risolvere questi comportamenti indesiderati.
+
+#### Vincoli Generalizzazioni - disjoint
+Se rendiamo una generalizzazione disgiunta stiamo dicendo che un oggetto può essere istanza soltanto di una classe fra quelle della generalizzazione.
+
+_Esempio_
+
+![[Pasted image 20250313090957.png|350]]
+
+Adesso in questo schema **non** è più possibile avere una Persona che è istanza di Uomo e Donna contemporaneamente, ma è ancora possibile avere una Persona istanza né di Uomo né di Donna.
+
+#### Vincoli Generalizzazioni - Complete
+Con questo vincoli andiamo a evitare che un oggetto possa essere istanza di nessuna classe della generalizzazione.
+
+_Esempio_
+
+![[Pasted image 20250313091305.png|350]]
+
+In questo caso abbiamo che un'istanza di Persona deve essere istanza almeno di una classe della generalizzazione genere. Quindi non possiamo più avere classi che sono istanza né di Uomo né di Donna. (Ma, in questo caso, è possibile averla sia di Uomo che di Donna).
+
+#### Vincoli uniti - complete e disjoint
+Possiamo unire i vincoli visti prima per risolvere i casi ambigui.
+
+_Esempio_
+
+![[Pasted image 20250313091533.png|350]]
+
+Quindi in questo modo un'istanza di Persona deve essere **almeno** istanza di **una soltanto** delle classi delle due generalizzazioni.
+
+---
+
+> [!info] In generale possiamo avere queste situazioni in base al vincolo sulla generalizzazione
+> 
+> ![[Image 13-03-25 at 09.17.jpg]]
+> 
+> - Foto rubata a [Exyss](https://github.com/Exyss)
+
+### Ereditarietà Multipla
+In UML possiamo rappresentare anche questo concetto, ovvero una classe può essere sottoclasse di più classi:
+
+![[Pasted image 20250313092348.png|350]]
+
+I linguaggi di programmazione però, in generale, non permettono di rappresentare questo concetto, infatti se siamo giunti ad una situazione simili probabilmente stiamo sbagliando qualcosa nel nostro schema.
+
+## Operazione di Classe
+Finora abbiamo utilizzato sempre proprietà statiche per le classi ovvero i cui valori cambiano soltanto dopo una esplicita modificati dei dati, in UML possiamo però definire delle **operazioni di classe** che sono delle **proprietà dinamiche** i cui valori vengono calcolati ogni volta che servono a partire da valori di altre proprietà. Possiamo quindi vederle come delle funzioni.
+
+In generale una operazione della classe C indica che su ogni oggetto della classe C si può eseguire un calcolo per:
+- Ricavare valore da altri dati
+- Effettuare cambiamenti di stato, oltre alle proprietà dell'oggetto anche i link in cui è coinvolto e/o degli oggetti a lui collegati
+
+_Esempio_
+
+![[Screenshot 2025-03-13 alle 09.41.12.png|350]]
+
+In generale come sintassi si usa:
+- `nome_operazione(argomenti) : tipo_ritorno`
+	- `argomenti` è una lista di elementi con la forma `nome_argomento : tipo_argomento`
+	- `tipo_tirono` è il tipo del valore restituito dall'operazione
+- I tipi di ritorno e degli argomenti possono essere tipi concettuali o anche classi del diagramma
+- Un'operazione di classe può essere invocata solo su un oggetto di classe, in questo modo: `oggetto.operazione(argomenti)`
+
+---
+
+Il concetto di ereditarietà si applica anche alle operazioni di classe, quindi ad esempio:
+
+![[Screenshot 2025-03-13 alle 09.47.19.png|350]]
+
+In questo caso possiamo chiamare:
+- `ss.media_fino_a(2/6/2023)` che restituisce `28.3`
+
+Dato che StudenteStraniero essendo sottoclasse di Studente eredita anche le operazioni.
+
+---
+
+> [!info] Specifiche delle operazioni
+> Il diagramma delle classi non definisce cosa calcolano le operazioni e nemmeno il come modificano i dati. Ad ogni diagramma andrà affiancato un documento che specifica per queste informazioni.
+
+## Specializzazioni di Attributi
+In una generalizzazione, una sottoclasse oltre ad avere proprietà aggiuntive potrebbe anche **specializzare** le proprietà ereditate dalla superclasse andando a **restringerne** il dominio (non può estenderlo).
+
+_Esempio_
+
+![[Pasted image 20250313095616.png]]
+
+Lo schema a sinistra è ammesso perché l'articolo nuovo riduce il dominio di `anni_garanzia` richiedendo una garanzia di almeno 2 anni, la classe a destra non è ammessa perché estende il dominio da Interi a Reali.
+
+## Specializzazione di Associazioni
+Un'associazione con degli attributi abbiamo detto che si chiama **association class** ed essendo quindi una classe può anche essere radice di relazioni is-a e generalizzazioni.
+
+_Esempio_
+
+![[Pasted image 20250313095850.png|450]]
+
+È importante che l'associazione `vend_nuovo` sia compatibile con l'associazione `venditore`, ovvero deve mettere in relazione oggetti che hanno lo stesso tipo degli oggetti messi in relazione dalla relazione padre (`venditore`). In questo caso è ok perché ArticoloNuovo è un ArticoloInVendita e un VenditoreProfessionale è anche un Utente.
+
+_Esempio_
+
+![[Pasted image 20250313100438.png|350]]
+
+In questo caso il sistema deve rappresentare impiegati e il dipartimento a cui afferisce ogni impiegato con data di inizio del lavoro e il direttore del dipartimento (che è un impiegato). I direttori devono afferire al dipartimento che dirigono.
+
+### Condizioni per la Correttezza
+Le specializzazioni di associazioni hanno bisogno di particolare attenzione per quanto riguarda i vincoli di molteplicità.
+
+_Esempio di prima modificato_
+
+![[Pasted image 20250313101009.png]]
+
+In questo caso stiamo dicendo che ArticoloNuovo può partecipare a infiniti link di vend_nuovo, ma questo va in contraddizione con l'associazione venditore che limita i link di ArticoloInVendita ad 1.
+
+Ricordiamo infatti che un link vend_nuovo **è** un link venditore a tutti gli effetti.
+
+Anche in questo caso quindi vogliamo soltanto restringere il vincolo, non possiamo espanderlo.
+
+_Altri casi_
+
+![[Pasted image 20250313101201.png]]
+
+In questo caso siamo obbligati ad avere due link di vend_nuovo ma l'associazione venditore ci limita ad 1 e quindi non vanno in contraddizione.
+
+## Specializzazione di Operazioni di classe
+Anche le operazioni possono essere oggetto di specializzazioni in sottoclassi.
+
+Prendiamo come esempio uno schema per degli articoli in vendita, questi avranno un'operazione per calcolare il prezzo in base ad alcuni parametri, poi abbiamo una sottoclasse ArticoloInOfferta che eredita la stessa operazione ma la modifica ad esempio applicandoci uno sconto:
+
+![[Pasted image 20250313101657.png|350]]
+
+Anche in questo caso le operazioni devono essere **compatibili**:
+- Stesso numero e tipo di argomenti
+- Il tipo di ritorno dell'operazione nella sottoclasse è dello stesso tipo o sotto-tipo di quello dell'operazione nella superclasse.
+
+Come detto prima avremo bisogno di un documento per specificare le operazioni che in questo caso saranno:
+
+![[Pasted image 20250313101837.png|450]]
 
