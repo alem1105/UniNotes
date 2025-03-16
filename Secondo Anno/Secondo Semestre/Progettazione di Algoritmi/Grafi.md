@@ -903,3 +903,71 @@ In questo caso, partiamo da 0 ed inseriamo tutti i nodi nella coda, ad ogni for 
 ---
 
 Possiamo fare delle modifiche e ottenere una ricerca con costo $O(n+m)$.
+
+È possibile farlo se nella coda invece di eliminare gli elementi usiamo un puntatore che incrementiamo di volta in volta:
+
+```python
+def BFS(x, G):
+	visitati = [0] * len(G)
+	visitati[x] = 1
+	coda = [x]
+	i = 0
+	while len(coda) > i:
+		u = coda[i]
+		i += 1
+		for y in G[u]:
+			if visitati[y] == 0:
+				visitati[y] = 1
+				coda.append(y)
+	return visitati
+```
+
+In Python è possibile farlo anche tramite la struttura **deque**.
+
+---
+
+Adesso modifichiamo questa ricerca per fare in modo che restituisca il vettore dei padri
+
+```python
+def BFSpadri(x, G):
+	P = [-1] * len(G)
+	P[x] = x
+	coda = [x]
+	i = 0
+	while len(coda) > i:
+		u = coda[i]
+		i += 1
+		for y in G[u]:
+			if P[y] == -1:
+				P[y] = u
+				coda.append(y)
+	return P
+```
+
+---
+
+> [!info] Proprietà
+> La **distanza minima** di un vertice $x$ da $s$ nel grafo $G$ equivale alla profondità di $x$ nell'albero BFS. È grazie a questa proprietà che l'albero BFS è anche detto **albero dei cammini minimi**
+
+---
+
+Modifichiamo ulteriormente l'algoritmo per fare in modo che restituisca il vettore delle distanze $D$:
+
+```python
+def BFSdistanza(x, G):
+	D = [-1] * len(G)
+	D[x] = 0
+	coda = [x]
+	i = 0
+	while len(coda) > i:
+		u = coda[i]
+		i += 1
+		for y in G[u]:
+			if D[y] == -1:
+				D[y] = D[u] + 1
+				coda.append(y)
+	return D
+```
+
+Se in un nodo abbiamo come valore $-1$ allora significa che non abbiamo raggiunto quel nodo.
+
