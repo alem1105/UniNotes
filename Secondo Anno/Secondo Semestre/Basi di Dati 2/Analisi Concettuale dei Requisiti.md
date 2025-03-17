@@ -44,7 +44,7 @@ Creiamo adesso un link di prenota.
 
 ![[Pasted image 20250227104545.png]]
 
-Cosa accade se alice volesse prenotare una seconda volta presso h1? Non potremmo permetterlo perché avremmo due link uguali e quindi indistinguibili ma non permettere una seconda prenotazione sarebbe inadeguato, come risolviamo?
+Cosa accade se Alice volesse prenotare una seconda volta presso h1? Non potremmo permetterlo perché avremmo due link uguali e quindi indistinguibili ma non permettere una seconda prenotazione sarebbe inadeguato, come risolviamo?
 
 Creiamo una nuova classe prenotazione in modo da rendere le prenotazione con "vita propria".
 
@@ -54,7 +54,7 @@ In questo modo ogni utente effettuerà delle prenotazioni che avranno sempre un 
 
 Ad esempio se Alice prenota due volte presso "La pergola" una prenotazione avrà identificativo p1 mentre la seconda p2.
 
-## Vincoli di molteplicità sulle Associazioni e Attributi
+## Vincoli di molteplicità sulle Associazioni e sugli Attributi
 
 UML permette di definire dei **vincoli di integrità** in un diagramma delle classi ovvero ulteriori restrizioni, vediamo quelle di molteplicità.
 
@@ -92,13 +92,13 @@ Prendiamo come esempio un sistema che gestisce gli esiti dei test superati dagli
 In questo modo lo stesso studente può partecipare più volte alla relazione `test_superato` e possiamo assegnare ad ogni link un voto ed una data diversi.
 
 > [!bug] Att.
-> Aggiungere attributi alla relazione non ci permette comunque di avere più link fra gli stessi oggi, quindi anche nel caso avessimo lo stesso studente in due link con lo stesso modulo e attributi diversi nel link, **non** sarebbe comunque ammesso
+> Aggiungere attributi alla relazione non ci permette comunque di avere più link fra gli stessi oggetti, quindi anche nel caso avessimo lo stesso studente in due link con lo stesso modulo e attributi diversi nel link, **non** sarebbe comunque ammesso
 
 Un'associazione di questo tipo è anche chiamata **association class** dato che a sua volta può essere collegata con altre associazioni, e come prima non ci permette comunque di avere due o più link uguali anche se con attributi o relazioni associate diversi, _ad esempio_:
 
 ![[Pasted image 20250304175008.png]]
 
-Con questo schema se avessimo due link sullo stesso studente e sullo stesso modulo con `voto,data` e `Docente` diversi non sarebbe comunque ammesso.
+Con questo schema se avessimo due link sullo stesso studente e sullo stesso modulo con `voto, data` e `Docente` diversi non sarebbe comunque ammesso.
 
 ## Tipi di dato Concettuali
 Per ogni attributo dobbiamo sempre scegliere un tipo ma ricordiamo che non vogliamo fare scelte tecniche, solo concettuali, quindi scegliamo dei **tipi concettuali** che siano realizzabili in qualsiasi linguaggio / tecnologia.
@@ -111,7 +111,7 @@ Ad esempio nello schema usato per i voti non vogliamo poter assegnare un qualsia
 Forniamo un range di valori ammessi, ad esempio `Intero > 0, Reale <= 0, 18..30, 0..100` ecc...
 
 ### Tipi Enumerativi
-Se abbiamo un insieme piccolo e finito di valori ammessi allora possiamo usare gli enumerativi che definisce in modo esplicito l'insieme dei valori ammessi. Ad esempio: `{maschio, femmina}, {Africa, America, Antartide, Asia, Europa, Oceania}` ecc...
+Se abbiamo un insieme piccolo e finito di valori ammessi allora possiamo usare gli enumerativi che definiscono in modo esplicito l'insieme dei valori ammessi. Ad esempio: `{maschio, femmina}, {Africa, America, Antartide, Asia, Europa, Oceania}` ecc...
 
 Dobbiamo però fare attenzione ad utilizzarli dati che se in futuro abbiamo bisogno di altri valori potrebbe essere difficile modificare la base di dati.
 
@@ -141,7 +141,7 @@ ed usarli in uno schema:
 ## Vincoli di Identificazione di Classe
 A volte potrebbe servirci definire ulteriori vincoli, ad esempio abbiamo visto per i **vincoli di integrità**, i vincoli di molteplicità sulle associazioni.
 
-Un'altra tipologia di vincolo è il **vincolo di identificazione di classe**, questo ci permette di scegliere un insieme da attributi per i quali non possono esistere due o più istanze che hanno simultaneamente dei valori uguali su questi attributi. Prendiamo questo schema come esempio:
+Un'altra tipologia di vincolo è il **vincolo di identificazione di classe**, questo ci permette di scegliere un insieme di attributi per i quali non possono esistere due o più istanze che hanno simultaneamente dei valori uguali su questi attributi. Prendiamo questo schema come esempio:
 
 ![[Pasted image 20250306090412.png|250]]
 

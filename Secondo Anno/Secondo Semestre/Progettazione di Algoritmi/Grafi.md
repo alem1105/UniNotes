@@ -853,3 +853,124 @@ Come detto prima abbiamo il costo di una ricerca e quindi $O(n+m)$
 > 
 > Il grafo a sinistra non è un cactus dato che l'arco $1-2$ appartiene a due cicli. Il grafo a destra invece è un cactus dato che non ci sono archi in comune fra cicli.
 
+<<<<<<< HEAD
+=======
+---
+
+# La Visita in Ampiezza BFS
+Dati due nodi $a$ e $b$ di un grafo $G$ definiamo distanza minima in $G$ di $a$ da $b$ il numero minimo di archi che bisogna attraversare per raggiungere $b$ a partire da $a$, per convenzione poniamo la distanza a $+\infty$ se $b$ non è raggiungibile.
+
+Adesso dato un grafo $G$ ed un suo nodo $x$ vogliamo conoscere le distanze di tutti i nodi di $G$ da $x$, vogliamo quindi calcolare il **vettore delle distanze** $D$ dove in $D[y]$ troviamo la distanza di $y$ da $x$.
+
+Con la visita in ampiezza esploriamo i nodi del grafo partendo da quelli a distanza 1 dalla sorgenti poi a quelli a distanza 2 e così via. In questo modo generiamo un albero chiamato **albero BFS**.
+
+Per fare questa visita manteniamo in una coda i nodi visitati i cui adiacenti non sono ancora stati esplorati, ad ogni passo preleviamo dalla coda ed esaminiamo i suoi adiacenti, se scopriamo un nuovo nodo lo visitiamo e lo aggiungiamo alla coda.
+
+![[Pasted image 20250316122347.png]]
+
+Vediamo l'implementazione:
+
+```python
+def BFS(x, G):
+	visitati = [0] * len(G)
+	visitati[x] = 1
+	coda = [x]
+	while coda:
+		u = coda.pop(0)
+		for y in G[u]:
+			if visitati[y] == 0:
+				visitati[y] = 1
+				coda.append(y)
+	return visitati
+```
+
+A fine algoritmo avremo che `visitati[u]` contiene 1 soltanto se da $x$ possiamo raggiungere $u$.
+
+Per quanto riguarda la complessità abbiamo che un nodo finisce nella coda al più una volta quindi il while viene eseguito $O(n)$ volte.
+
+Le liste di adiacenza dei nodi verranno scorse al più una volta quindi il costo totale dei for sarà $O(m)$
+
+In totale quindi se le operazioni sulla coda hanno costo 1 abbiamo $O(n+m)$ però abbiamo la coda tramite una lista dove inseriamo in coda e cancelliamo in testa, quindi:
+- Inserimento costa 1
+- Estrazione costa in base a quanti elementi ci sono nella coda che possono essere anche $O(n)$
+
+Come costo totale otteniamo quindi $O(n^2)$
+
+Possiamo notare questo costo un esempio:
+
+![[Pasted image 20250316123628.png]]
+
+In questo caso, partiamo da 0 ed inseriamo tutti i nodi nella coda, ad ogni for ne estraiamo uno e alla prima iterazione paghiamo $n-1$, alla seconda $n-2$ e così via.
+
+---
+
+Possiamo fare delle modifiche e ottenere una ricerca con costo $O(n+m)$.
+
+È possibile farlo se nella coda invece di eliminare gli elementi usiamo un puntatore che incrementiamo di volta in volta:
+
+```python
+def BFS(x, G):
+	visitati = [0] * len(G)
+	visitati[x] = 1
+	coda = [x]
+	i = 0
+	while len(coda) > i:
+		u = coda[i]
+		i += 1
+		for y in G[u]:
+			if visitati[y] == 0:
+				visitati[y] = 1
+				coda.append(y)
+	return visitati
+```
+
+In Python è possibile farlo anche tramite la struttura **deque**.
+
+---
+
+Adesso modifichiamo questa ricerca per fare in modo che restituisca il vettore dei padri
+
+```python
+def BFSpadri(x, G):
+	P = [-1] * len(G)
+	P[x] = x
+	coda = [x]
+	i = 0
+	while len(coda) > i:
+		u = coda[i]
+		i += 1
+		for y in G[u]:
+			if P[y] == -1:
+				P[y] = u
+				coda.append(y)
+	return P
+```
+
+---
+
+> [!info] Proprietà
+> La **distanza minima** di un vertice $x$ da $s$ nel grafo $G$ equivale alla profondità di $x$ nell'albero BFS. È grazie a questa proprietà che l'albero BFS è anche detto **albero dei cammini minimi**
+
+---
+
+Modifichiamo ulteriormente l'algoritmo per fare in modo che restituisca il vettore delle distanze $D$:
+
+```python
+def BFSdistanza(x, G):
+	D = [-1] * len(G)
+	D[x] = 0
+	coda = [x]
+	i = 0
+	while len(coda) > i:
+		u = coda[i]
+		i += 1
+		for y in G[u]:
+			if D[y] == -1:
+				D[y] = D[u] + 1
+				coda.append(y)
+	return D
+```
+
+Se in un nodo abbiamo come valore $-1$ allora significa che non abbiamo raggiunto quel nodo.
+
+>>>>>>> origin/main
