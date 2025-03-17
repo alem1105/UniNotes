@@ -853,10 +853,7 @@ Come detto prima abbiamo il costo di una ricerca e quindi $O(n+m)$
 > 
 > Il grafo a sinistra non è un cactus dato che l'arco $1-2$ appartiene a due cicli. Il grafo a destra invece è un cactus dato che non ci sono archi in comune fra cicli.
 
-<<<<<<< HEAD
-=======
 ---
-
 # La Visita in Ampiezza BFS
 Dati due nodi $a$ e $b$ di un grafo $G$ definiamo distanza minima in $G$ di $a$ da $b$ il numero minimo di archi che bisogna attraversare per raggiungere $b$ a partire da $a$, per convenzione poniamo la distanza a $+\infty$ se $b$ non è raggiungibile.
 
@@ -972,5 +969,3 @@ def BFSdistanza(x, G):
 ```
 
 Se in un nodo abbiamo come valore $-1$ allora significa che non abbiamo raggiunto quel nodo.
-
->>>>>>> origin/main
