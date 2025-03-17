@@ -853,5 +853,3 @@ Come detto prima abbiamo il costo di una ricerca e quindi $O(n+m)$
 > 
 > Il grafo a sinistra non è un cactus dato che l'arco $1-2$ appartiene a due cicli. Il grafo a destra invece è un cactus dato che non ci sono archi in comune fra cicli.
 
-
-
