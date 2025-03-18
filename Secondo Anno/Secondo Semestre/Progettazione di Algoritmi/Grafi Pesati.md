@@ -29,3 +29,153 @@ Un'idea potrebbe essere quella di inserire dei **nodi dummy** ovvero fasulli neg
 ![[Pasted image 20250316170220.png]]
 
 Questa soluzione è possibile però soltanto quando i costi degli archi sono interi e abbastanza piccoli altrimenti non è scalabile come soluzione.
+
+---
+
+Esiste un algoritmo che permette di trovare i cammini minimi quando si lavora su grafi pesati, questo funziona anche con pesi non interi ma non è detto che funzioni con pesi negativi.
+
+# Algoritmo di Dijkstra
+L'algoritmo si basa sulla tecnica greedy, quindi fa di volta in volta la scelta migliore in quel momento e in futuro non cambia decisioni già prese.
+
+L'algoritmo parte da un nodo sorgente e ad ogni passo aggiunge all'albero della ricerca l'arco che produce il nuovo cammino più economico per raggiungere un nuovo nodo, a questo nodo assegna il costo che abbiamo pagato per raggiungerlo.
+
+_Esempio_
+
+![[Pasted image 20250318100007.png]]
+
+Come detto prima è importante notare che in caso di pesi negativi non è garantita la correttezza dell'algoritmo:
+
+![[Pasted image 20250318100600.png]]
+
+L'algoritmo percorrerebbe la soluzione centrale quando in realtà i percorsi minimi sono quelli sulla destra.
+
+## Dimostrazione
+In pseudocodice possiamo vedere l'algoritmo in questo modo:
+- $P[0\dots n-1]$ vettore dei padri inizializzato a -1
+- $D[0\dots n-1]$ vettore delle distanze inizializzato a infinito
+- Nodo $s$ come sorgente quindi $D[s]=0$
+- `while` esistono archi `{x,y}` con `P[x] != -1` e `P[y] == -1`:
+	- Sia `{x,y}` quello per cui è minimo `D[x] + peso(x,y)` allora `D[y], P[y] = D[x] + peso(x,y), x`
+- return `P,D`
+
+Dato che ad ogni iterazione del while viene assegnata una nuova distanza ad uno dei nodi del grafo, dimostriamo per induzione sul numero di iterazioni che la distanza assegnata è quella minima.
+
+- Caso Base: La sorgente ha come distanza 0 dato che banalmente non possono esserci percorsi inferiori. (Sempre considerando grafi senza pesi negativi)
+
+![[Pasted image 20250318103510.png]]
+
+Abbiamo $T_{i}$ l'albero costruito dalla ricerca al passo $i$.
+
+- Al passo $i+1$ l'algoritmo aggiunge l'arco $(u,v)$, mostriamo che $D[v]$ appena ottenuta è quella minore considerando un possibile percorso alternativo $C$.
+- Sia $C$ un qualsiasi cammino da $s$ a $v$ alternativo a quello presente nell'albero e $(x,y)$ il primo arco che incontriamo percorrendo $C$ tale che $x$ è nell'albero $T_{i}$ e $y$ no.
+
+Questo arco deve esistere perché l'algoritmo percorre in ordine: $(s,u),(s,x)$ e secondo l'ipotesi $(u,v)$ quindi se esiste un percorso alternativo sicuramente non è $(x,v)$ altrimenti sarebbe stato scelto, deve esistere quindi un arco che ci porta fuori $T_{i}$ ovvero $(x,y)$ e che poi ci porta a $u$ ovvero $(y,v)$.
+
+- Adesso per ipotesi induttiva sappiamo che $\text{costo(C)} \geq D[x]+\text{peso(x,y)}$ dato che $C$ è composto anche da un altro arco.
+- Ma se l'algoritmo ha preferito percorrere $(u,v)$ significa che $D[x]+p(x,y)\geq D[u]+p(u,v)$
+- Da cui  segue che $\text{costo(C)}\geq D[x]+p(x,y)\geq D[u]+p(u,v)=D[v]$
+- Quindi abbiamo appena mostrato che il cammino alternativo ha costo maggiore al percorso trovato dall'algoritmo.
+
+---
+
+## Implementazione
+Per rappresentare un grafo pesato avremo che se un arco $(x,y)$ costa $c$ nella lista di adiacenza di $x$ avremo, associato insieme ad $y$, il costo $c$. Quindi avremo le liste di adiacenza composte da delle coppie.
+
+Inoltre, utilizziamo un **vettore lista**, dove per ogni nodo $x$ memorizziamo una terna formata da `(definitivo, costo, origine)` dove:
+- Definitivo: Un flag che assume 1 se il costo per raggiungere $x$ è stato definitivamente stabilito. Se 0 allora il costo per $x$ è ancora in aggiornamento
+- Costo: Rappresenta il costo minimo in quel momento per raggiungere $x$ dalla sorgente. Inizialmente vale infinito per tutti i nodi tranne che per la sorgente dove vale 0.
+- Origine: Indica il nodo padre lungo il cammino dalla sorgente ad $x$, se non è ancora stato trovato un percorso e quindi un padre per $x$ allora vale -1.
+
+Questa lista inizialmente sarà quindi in questo stato:
+
+$$
+lista[x] = \begin{cases}
+(1,0,s) \quad \text{se } x=s \\
+(0,costo,s) \quad \text{ se } (costo,x) \in G[s] \\
+(0, +\infty, -1) \quad \text{altrimenti}
+\end{cases}
+$$
+
+Si avranno poi delle iterazioni dove:
+1) Si scorre l'intera Lista per individuare il nodo $x$ con il flag a 0 ovvero con il percorso non ancora stabilito e che ha il costo minimo, questo sarà il candidato per il quale il cammino minimo dalla sorgente è noto.
+2) Se il costo minimo che troviamo è infinito significa che non ci sono altri nodi raggiungibili, il ciclo si interrompe
+3) Il nodo $x$ trovato viene aggiornato impostando il flag 1 e impostando quindi il suo costo come definitivo, questo non verrà più modificato.
+4) Aggiorniamo tutti i vicini di $x$, per ogni nodo $y$ vicino ad $x$ se $y$ non è ancora definitivo e il nuovo costo ottenuto passando per $x$ è inferiore al costo attuale memorizzato per $y$ allora si aggiorna il costo di $y$.
+
+```python
+def dijkstra(s, G):
+	n = len(G)
+	Lista = [(0, float('inf'), -1)] * n
+	Lista[s] = (1, 0, s)
+	for y, costo in G[s]:
+		Lista[y] = (0, costo, s)
+	while True:
+		minimo, x = float('inf'), -1
+		for i in range(n):
+			if Lista[i][0] == 0 and Lista[i][1] < minimo:
+				minimo, x = Lista[i][1], i
+		if minimo == float('inf'):
+			break
+		definitivo, costo_x, origine = Lista[x]
+		Lista[x] = (1, costo_x, origine)
+		for y, costo_arco in G[x]:
+			if Lista[y][0] == 0 and minimo + costo_arco < Lista[y][1]:
+				Lista[y] = (0, minimo + costo_arco, x)
+
+
+	D,P = [costo for _, costo, _ in lista], [origine for _, _, origine in Lista]
+	return D,P
+```
+
+- Le operazioni fuori dal while costano $\Theta(n)$
+- Il while lo eseguiamo al più $O(n-1)$ volte e all'interno abbiamo:
+	- Il primo for che viene iterato $n$ volte
+	- Il secondo for che viene eseguito al più $n$ volte
+- Il while costa quindi $\Theta(n^2)$ che è anche la complessità dell'implementazione
+
+Questa è quindi ottima nel caso di grafi densi dove si ha che $m=\Theta(n^2)$.
+
+Infatti notiamo che se si potesse evitare di scorrere ogni volta il vettore Lista alla ricerca del minimo, eviteremmo di pagare $\Theta(n)$ ad ogni iterazione del while, possiamo farlo sostituendo Lista con un heap minimo che ci fornisce il minimo in tempo logaritmico
+
+```python
+def dijkstra1(s, G):
+
+    n = len(G)
+    D = [float('inf')] * n  # Distanze inizialmente infinite
+    P = [-1] * n  # Predecessori inizializzati a -1
+    # la sorgente dista 0 da se stessa
+    D[s] = 0
+    # La sorgente è la radice dell'albero delle distanze
+    P[s] = s
+    H = []  # Min-heap
+    # Inizializziamo l'heap con i vicini della sorgente
+    for y, costo in G[s]:
+        heappush(H, (costo, s, y))  # (costo, x=s, y)
+    
+    while H:
+        # Estrai il nodo con distanza minore
+        costo, x, y = heappop(H)
+        if P[y] == -1:
+            # inserisci y nel vettore dei padri come figlio di x
+            P[y] = x
+            # setta la distanza minima di y
+            D[y] = costo
+            for v, peso in G[y]:
+                # Esplora i vicini di y
+                if P[v] == -1:
+                    # Se v non è ancora stato aggiunto all'albero
+                    heappush(H, (D[y] + peso, y, v))
+    
+    # Restituisce le distanze e i predecessori
+    return D, P
+
+```
+
+Con questa implementazione otteniamo un costo di $O(n\log n)+O(m\log n)+O(m\log n)=O((n+m)\log n)$
+
+Quindi possiamo dire che:
+- L'implementazione $O(n^2)$ è ottimale in grafi densi
+- La seconda è ottimale in grafi sparsi ma andrebbe evitata in grafi densi dato che otteniamo $O(n^2\log n)$
+
+Da notare che esistono altre implementazioni più efficienti che utilizzano altre strutture come l'**heap di Fibonacci** e dove il tempo d'esecuzione scende a $O(m+n\log n)$
+
