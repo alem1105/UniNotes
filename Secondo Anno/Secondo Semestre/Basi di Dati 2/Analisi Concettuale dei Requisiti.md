@@ -338,7 +338,7 @@ _Altri casi_
 
 ![[Pasted image 20250313101201.png]]
 
-In questo caso siamo obbligati ad avere due link di vend_nuovo ma l'associazione venditore ci limita ad 1 e quindi non vanno in contraddizione.
+In questo caso siamo obbligati ad avere due link di vend_nuovo ma l'associazione venditore ci limita ad 1 e quindi vanno in contraddizione.
 
 ## Specializzazione di Operazioni di classe
 Anche le operazioni possono essere oggetto di specializzazioni in sottoclassi.

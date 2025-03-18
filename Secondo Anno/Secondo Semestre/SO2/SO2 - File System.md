@@ -322,6 +322,10 @@ Alcuni comandi:
 
 - `ln` - un link è un nuovo file che punta al file destinazione, questo collegamento è soltanto un puntatore. Con i soft link creiamo un nuovo file con un inode diverso, gli hard link invece non hanno il concetto di puntatore e puntato ma abbiamo direttamente lo stesso inode, cancellare il file quindi non è permesso se ci sono hard link collegati.
 
----
-
 Con `rm` non rimuoviamo completamente un dato dal disco ma rimuoviamo il suo inode, per pulire completamente un'area di memoria possiamo usare il comando `dd` e scrivere quella zona ad esempio con tutti `0`.
+
+- `touch` modifica i timestamp di un file e se non esiste lo crea, può essere usato anche su directory
+- `du` fa il conto di tutte le dimensioni dei file e directory dati come argomento
+- `df`  mostra la dimensione e l'uso attuale del filesystem
+- `dd` Serve per creare file in modo più elaborato ovvero gestendo in modo specifico i blocchi. Possiamo usarlo infatti per copiare anche dei file speciali che non sono copiabili con `cp`. Può tornare utile anche nel caso visto sopra per cancellare completamente una zona di memoria.
+- `mkfs` serve a creare un filesystem su un device, esegua una formattazione dato che prepara quella memoria a memorizzare i dati in un certo modo. Possiamo poi montarli con `mount`.
