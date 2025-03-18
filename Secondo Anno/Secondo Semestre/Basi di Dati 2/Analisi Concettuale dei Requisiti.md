@@ -183,13 +183,13 @@ StudenteStraniero infine partecipa da solo a `naz_stud` (da solo nel senso non l
 ### Classi Specifiche di un Oggetto
 Un oggetto quindi può essere istanza di più classi. (ma una classe non può essere sottoclasse di più classi)
 
-Possiamo quindi indicare le **classi più specifiche** di un oggetto, queste sono le classi di cui l'oggetto è istanza che non sono a loro volta superclassi di atre classi dell'oggetto.
+Possiamo quindi indicare le **classi più specifiche** di un oggetto, queste sono le classi di cui l'oggetto è istanza che non sono a loro volta superclassi di altre classi dell'oggetto.
 
 _Esempio_
 
 ![[Screenshot 2025-03-06 alle 10.17.36.png|350]]
 
-In questo caso abbiamo che l'oggetto `anna` è istanza di Persona, Studente e Lavorate mentre l'insieme delle classi specifiche è formato da: Studente e Lavoratore in quanto non sono superclassi di altre classi di cui `anna` è istanza.
+In questo caso abbiamo che l'oggetto `anna` è istanza di Persona, Studente e Lavoratore mentre l'insieme delle classi specifiche è formato da: Studente e Lavoratore in quanto non sono superclassi di altre classi di cui `anna` è istanza.
 
 ### Generalizzazioni
 Tramite il costrutto della generalizzazione possiamo definire istanze di una classe che sono istanze di più classi figlie secondo **uno stesso criterio concettuale**.
@@ -211,7 +211,7 @@ Possiamo avere più di un criterio per ogni classe:
 
 ![[Pasted image 20250313090410.png|350]]
 
-- Secondo il criterio del **genere** le persone possono essere uomo e/o donna
+- Secondo il criterio del **genere** le persone possono essere Uomo e/o Donna
 - Secondo il criterio dell'**occupazione** le persone possono essere Studente e/o Lavoratore
 
 Possiamo fare alcune considerazioni per introdurre i successivi vincoli:
@@ -277,7 +277,7 @@ _Esempio_
 In generale come sintassi si usa:
 - `nome_operazione(argomenti) : tipo_ritorno`
 	- `argomenti` è una lista di elementi con la forma `nome_argomento : tipo_argomento`
-	- `tipo_tirono` è il tipo del valore restituito dall'operazione
+	- `tipo_ritorno` è il tipo del valore restituito dall'operazione
 - I tipi di ritorno e degli argomenti possono essere tipi concettuali o anche classi del diagramma
 - Un'operazione di classe può essere invocata solo su un oggetto di classe, in questo modo: `oggetto.operazione(argomenti)`
 
@@ -338,7 +338,7 @@ _Altri casi_
 
 ![[Pasted image 20250313101201.png]]
 
-In questo caso siamo obbligati ad avere due link di vend_nuovo ma l'associazione venditore ci limita ad 1 e quindi vanno in contraddizione.
+In questo caso siamo obbligati ad avere due link di vend_nuovo ma l'associazione venditore ci limita ad 1 e quindi non vanno in contraddizione.
 
 ## Specializzazione di Operazioni di classe
 Anche le operazioni possono essere oggetto di specializzazioni in sottoclassi.
