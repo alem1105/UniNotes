@@ -32,4 +32,79 @@ Per quanto riguarda le aree di memoria abbiamo:
 - Stack: Chiamate a funzioni e corrispondenti dati dinamici
 - Memory Mapping Segment: Librerie esterne dinamiche usate dal processo.
 
-Da notare che alcune aree di memoria
+Da notare che alcune aree di memoria potrebbero essere condivise fra più processi come ad esempio la zona contenente il codice magari condivisa fra più istanze dello stesso processo.
+
+# Stato di un Processo
+I processi in Linux possono trovarsi in vari stati:
+- Running: In esecuzione su un processore
+- Runnable: Pronto per essere eseguito
+- Sleep: In attesa di un qualche evento per riandare in esecuzione
+- Zombie: Processo terminato ma PCB ancora mantenuto dal kernel perché il padre non ha ancora terminato
+- Stopped: Caso particolare di sleeping, ricevuto STOP e in attesa di CONT
+- Traced: Esecuzione in debug o in attesa di un segnale, anche questo un particolare caso di Sleep
+- Uninterruptible sleep: Come lo sleep ma sta facendo IO su dischi lenti e quindi non può essere interrotto.
+
+# Modalità di Esecuzione di un Processo
+Ci sono due modalità:
+- **Foreground**: La usano praticamente tutti i processi visti finora, finché il processo non termina la shell non viene restituita e non si possono inviare altri comandi. Il comando può leggere input da tastiera
+- **Background**: Il comando non può leggere input da tastiera ma può restituire output. In questo caso la shell viene restituita immediatamente e mentre il processo viene eseguito si possono inviare altri comandi.
+
+- `sleep` comando che ci permette di generare un processo che si mette in pausa per un tempo specificato nell'argomento.
+
+Se usiamo il comando possiamo scegliere la modalità, di base viene lanciato in foreground ma se inseriamo `&` viene lanciato in background.
+
+Quindi ad esempio `sleep 15s &`.
+
+Possiamo visualizzare una lista dei job in esecuzione con `jobs`
+
+---
+
+Alcuni comandi
+
+- `bg` serve a portare un processo in background
+- `fg` serve a portare un processo in foreground.
+- Ad entrambi forniamo il processo con il numero `n` del job tramite `%n`.
+
+---
+
+Possiamo eseguire un job composto da più comandi contemporaneamente tramite il **pipelining**:
+- `comando1 | comando2 | ... comando n`
+
+In questo modo lo standard output del comando $i$ diventa l'input del comando $i+1$. Se invece usiamo `|&` è lo standard error che viene ridirezionato sullo standard input del successivo.
+
+Non siamo comunque obbligati a far prendere come input al comando `i+1` l'output del precedente.
+
+---
+
+Altri comandi
+
+- `ps` mostra le informazioni dei processi in esecuzione dall'utente attuale.
+	- `-e` tutti i processi di tutti gli utenti
+	- `-u {lista di utenti,}` tutti i processi degli utenti specificati
+	- `-p {pid,}` tutti i processi con i PID nella lista specificata
+	- `-o {field,}` visualizzare solo alcuni campi
+
+I campi hanno diversi significati:
+- PPID: è il parent PID ovvero il PID del processo che ha creato questo processo.
+- C: parte intera della percentuale di uso della CPU
+- STIME: l'ora o la data in cui è stato invocato il comando
+- TIME: Tempo di uso della CPU finora
+- CMD: Comando con argomenti
+- F: Flags associati al processo
+- S: modalità del processo
+- UID: Utente che ha lanciato il processo
+- PRI: Attuale priorità del processo
+- NI: Valore di nice da aggiungere alla priorità
+- ADDR: Indirizzo di memoria del processo
+- SZ: Dimensione totale del processo in numero di pagine sia in memoria che su disco
+- WCHAN: Se il processo è in attesa di un qualche segnale o in sleep
+
+- `top` è un `ps` interattivo:
+	- `-b` non accetta più comandi interattivi ma continua a fare refresh ogni pochi secondi
+	- `-n num` fa `num` refresh e basta
+	- `-p` come in `ps`
+
+Una volta aperto in modo interattivo premiamo `?` per avere una lista dei comandi accettati.
+
+- `kill` invia segnali ad un processo, non solo la terminazione. Con `-l` mostriamo la lista dei segnali
+I segnali che invia verranno accettati solo se chi li invia è lo stesso possessore del processo
