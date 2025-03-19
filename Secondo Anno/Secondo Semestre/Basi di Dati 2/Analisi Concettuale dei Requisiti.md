@@ -355,3 +355,80 @@ Come detto prima avremo bisogno di un documento per specificare le operazioni ch
 
 ![[Pasted image 20250313101837.png|450]]
 
+# Diagramma UML degli use - case
+Questi modellano le funzionalità che il sistema deve realizzare, in termini di use - case ovvero gli scenari di utilizzo.
+
+> [!info] Use - Case
+> Cattura un insieme omogeneo di funzionalità utilizzate da un gruppo omogeneo di utenti. Coinvolge concetti rappresentati da più classi e associazioni.
+
+> [!info] Attore
+> Ruolo che un utente assume interagendo con il sistema.
+> - Lo stesso utente può essere rappresentato da più attori (assume più ruoli)
+> - Più utenti possono essere rappresentati dallo stesso attore
+
+Un diagramma UML degli use-case è un grafo in cui:
+- I nodi rappresentano attori e use - case
+- Gli archi rappresentano:
+	- Possibilità per un attore di invocare uno use - case
+	- Possibilità per uno use - case di invocare un altro use - case
+	- Generalizzazione tra attori e tra use - case
+
+![[Pasted image 20250319182410.png|500]]
+
+
+> [!danger] Nota
+> L'esistenza dell'attore Utente non implica l'esistenza della classe Utente nel diagramma delle classi, questa infatti la avremo solo se il sistema ha bisogno di rappresentare i dati degli utenti.
+
+_Esempio_
+
+Vogliamo un sistema che permette agli studenti di iscriversi ai corsi offerti. La segreteria deve essere in grado di assegnare i docenti ai singoli corsi e i docenti devono poter inserire i risultati dei testi degli studenti. I test vengono somministrati agli studenti tramite il sistema.
+
+![[Pasted image 20250319182910.png]]
+
+Da notare che in questo modo stiamo garantendo accesso completo ai test anche agli studenti e questo non va bene.
+
+Si possono usare le **dipendenze tra use - case**
+
+## Dipendenze tra use - case: Inclusione
+Alcune funzionalità dello use - case A hanno bisogno di usare alcune funzionalità dello use - case B
+
+![[Pasted image 20250319183109.png|500]]
+
+In questo modo ad esempio abbiamo separato le funzioni permesse agli attori Studenti e Docenti
+
+## Dipendenze tra use - case: Estensione
+Alcune funzionalità dello use - case A sono estese con le funzionalità dello use - case B
+
+![[Pasted image 20250319184813.png|500]]
+
+In questo caso gli studenti possono iscriversi online e hanno l'opzione di poter pagare online.
+
+## Generalizzazione tra use - case
+Alcune funzionalità dello use - case A sono rimpiazzate con le funzionalità dello use - case B
+
+![[Pasted image 20250319185221.png]]
+
+In questo caso gli studenti devono potersi identificare online usando la password e in presenza tramite il tornello per la scansione biometrica.
+
+Da notare che nei diagrammi degli use - case non possiamo usare generalizzazioni uniche che coinvolgono più use - case né vincoli come disjoint e complete.
+
+## Generalizzazione tra Attori
+L'attore B può fare le veci dell'attore A e ne eredita tutte le associazioni.
+
+![[Pasted image 20250319185901.png|400]]
+
+In questo caso i manager possono fare le veci della segreteria e quindi accedere alla gestione docenti.
+
+Da notare che questo non implica che nel diagramma delle classi esistano le due classi Segreteria e Manager né tantomeno che Manager sia sottoclasse di Segreteria.
+
+---
+
+In generale quindi il diagramma degli use - case serve a dare una visione ad alto livello di:
+- Chi può usare il sistema (attori)
+- Quali funzioni sono accessibili ai diversi attori
+
+Definisce come vanno modularizzate queste funzionalità in modo da gestire correttamente i permessi.
+
+Inoltre non deve dare specifiche dettagliate, non deve definire le operazioni degli use - case e deve rimanere semplice da comprendere anche per il committente.
+
+Per dettagliarlo andrà affiancato da un **documento di specifica**.
