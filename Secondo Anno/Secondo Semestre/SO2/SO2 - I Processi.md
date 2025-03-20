@@ -107,4 +107,34 @@ I campi hanno diversi significati:
 Una volta aperto in modo interattivo premiamo `?` per avere una lista dei comandi accettati.
 
 - `kill` invia segnali ad un processo, non solo la terminazione. Con `-l` mostriamo la lista dei segnali
-I segnali che invia verranno accettati solo se chi li invia è lo stesso possessore del processo
+
+I segnali che invia verranno accettati solo se chi li invia è lo stesso possessore del processo.
+
+Alcuni segnali inviabili:
+- `SIGSTOP, SIGSTP` sospensione processo
+- `SIGCONT` continuazione di processi stoppati
+- `SIGKILL, SIGINT` terminazione processi
+
+Esistono anche alcune combinazioni da tastiera per inviare segnali:
+- `CTRL z` invia un `SIGSTOP`
+- `CTRL c` invia un `SIGINT`
+
+I segnali `SIGUSR1` e `SIGUSR2`sono impostati per essere usati dall'utente per le proprie necessità, questi consentono una comunicazione fra processi. Ad esempio in un programma P1 possiamo assegnare un pezzo di codice a `SIGUSR1` e se un programma P2 invia un `SIGUSR1` a P1 questo eseguirà quel codice.
+
+---
+
+- `nice [-n num] [comando]`
+
+Se usato senza opzioni dice quant'è il _niceness_ di partenza, questo valore va aggiunto alla priorità del processo e ne aumenta quindi il valore, ovviamente se negativo la diminuisce. Questo varia da -19 a +20 con default a 0.
+
+Serve quindi a lanciare un comando e fornire una valore di niceness.
+
+- `renice priority {pid}`
+
+Si usa su processi già in esecuzione
+
+- `strace [-p pid] [comando]`
+
+Lancia un comando visualizzando tutte le syscall che chiama oppure visualizza le syscall di un processo in esecuzione.
+
+È utile per fare debug di programmi che utilizzano syscall
