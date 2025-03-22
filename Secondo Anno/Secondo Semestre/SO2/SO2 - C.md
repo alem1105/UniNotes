@@ -208,3 +208,53 @@ name_list:
 - lista di nomi di variabili
 
 ## Tipi per Numeri
+
+I tipi che possiamo usare per i numeri sono:
+
+![[Pasted image 20250322101121.png|400]]
+
+
+| Type        | Storage Size | Value Range                   | Precision         |
+| ----------- | ------------ | ----------------------------- | ----------------- |
+| float       | 4 byte       | 1.2E - 38 to<br>3.4E + 38     | 6 decimal places  |
+| double      | 8 byte       | 2.3E - 308 to<br>1.7E + 308   | 15 decimal places |
+| long double | 10 byte      | 3.4E - 4932 to<br>1.1E + 4932 | 19 decimal places |
+
+---
+
+## Caratteri
+Per i caratteri si usa il tipo `char`, questi occupano 1 byte e possiamo rappresentare tutti i caratteri ASCII
+
+## Boolean
+Il tipo `_Bool` può memorizzare soltanto 0 ed 1, qualsiasi cosa diversa da 0 viene considerata 1.
+
+Il tipo `bool` che richiede `<stdbool.h>` memorizza true e false.
+
+In generale 0 corrisponde a false e 1 a true.
+
+## Assegnazioni di valori
+Se dichiariamo una variabile e non la inizializziamo ad un valore questa assume un valore indeterminato.
+
+In generale l'assegnazione di un valore possiamo farla o in fase di dichiarazione:
+- `int x=3, y=2`
+
+Oppure durante l'esecuzione sempre usando l'operatore `=`.
+
+## Output di variabili
+Tramite `printf` possiamo scrivere il valore di una variabile:
+- `printf(format_string, expression_list)`
+
+Dove `format_string` deve contenere dei "placeholder", questi iniziano con `%` e indicano il tipo e quale variabile andrà al loro posto, es:
+- `printf("%d, %l", integerVariable, longVariable);`
+
+Tipi per i placeholder:
+- `%d, %i` Integer
+- `%l` long
+- `%x` per integers in esadecimale
+- `%o` integers in ottale
+- `%f, %e, %g` float, nello specifico:
+	- `f` formato standard
+	- `e` notazione scientifica
+	- `g` automatico
+- `%lf` per double
+

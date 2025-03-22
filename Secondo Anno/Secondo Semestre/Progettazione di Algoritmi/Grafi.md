@@ -396,9 +396,9 @@ def Colora1(G):
 			if Colore[y] == -1:
 				if not DFSr(y, G, Colore, 1-c):
 					return False
-				elif Colore[y] == Colore[x]:
+			elif Colore[y] == Colore[x]:
 					return False
-			return True
+		return True
 
 	Colore = [-1] * len(G)
 	if DFSr(0, G, Colore, 0):
