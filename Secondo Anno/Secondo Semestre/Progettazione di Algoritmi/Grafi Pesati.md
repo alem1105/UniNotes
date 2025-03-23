@@ -179,3 +179,76 @@ Quindi possiamo dire che:
 
 Da notare che esistono altre implementazioni più efficienti che utilizzano altre strutture come l'**heap di Fibonacci** e dove il tempo d'esecuzione scende a $O(m+n\log n)$
 
+# Minimo Albero di Copertura
+Dato un grafo G andiamo a cercare al suo interno un albero (grafo connesso aciclico) che "copre" l'intero grafo e la somma dei costi dei suoi archi sia minima.
+
+Un algoritmo importante per risolvere questo problema è l'algoritmo di **Kruskal**:
+- Parti con il grafo T che contiene tutti i nodi di G e nessun arco
+- Considera uno dopo l'altro gli archi di G in ordine di costo crescente
+- Se l'arco forma ciclo in T con archi già presi allora non lo prendiamo
+- Restituire T
+
+Anche questo algoritmo rientra nel paradigma della tecnica **greedy** ovvero prendere le giuste decisioni in quel momento e non cambiarle mai più.
+
+_Esempio_
+
+![[Pasted image 20250323162216.png|500]]
+
+
+![[Pasted image 20250323162902.png]]
+
+## Prova di correttezza
+Dobbiamo mostrare che se al termine otteniamo T come albero di copertura allora non esiste albero che costa meno.
+
+Dimostrazione che otteniamo un albero un po' meh :(
+
+Mostriamo per assurdo che è l'albero di copertura con costo minore:
+
+Tra tutti gli archi di copertura di costo minimo per G prendiamo quello che differisce meno da T (quello ottenuto dall'algoritmo) e lo chiamiamo $T^*$.
+
+Supponiamo quindi per assurdo che $T$ differisca da $T^*$.
+
+Prendiamo gli archi $e_{1},e_{2},\dots$ nello stesso ordine in cui sono stati presi nel corso dell'algoritmo e sia $e$ il primo arco preso che non compare in $T^*$, questo significa che se lo inseriamo in $T^*$ otteniamo un ciclo $C$.
+
+Allora il ciclo $C$ contiene almeno un arco $e'$ che non appartiene a $T$ infatti non tutti gli archi di $C$ sono in $T$ altrimenti $e$ non sarebbe stato preso dall'algoritmo. Appunto perché in $T$ abbiamo $e$ (dato che non è in $T^*$) quindi deve essercene un altro che non è presente in $T$ (da quanto ho capito io).
+
+Consideriamo adesso l'albero $T'$ che si ottiene da $T^*$ inserendo l'arco $e$ ed eliminando $e'$ e notiamo che il costo di $T'$ è uguale a $\text{costo}(T^*)-\text{costo}(e')+\text{costo}(e)$ e che non può aumentare rispetto a quello di $T^*$ perché $\text{costo(e)}\leq \text{costo}(e')$ infatti fra i due Kruskal ha scelto prima $e$ (credo nella costruzione di $T'$) ma allora $T'$ è un altro albero di copertura ottimo che differisce da $T$ in meno archi di quanto faccia $T^*$ e contraddice l'ipotesi iniziale dove $T^*$ differisce da $T$ nel minor numero di archi.
+
+## Implementazione
+
+```python
+def kruskal(G):
+	E = [(c, u, v) for u in range(len(G)) for v,c in G[u] if u<v]
+	E.sort()
+	T = [[] for _ in G]
+	for c, u, v in E:
+		if not connessi(u, v, T):
+			T[u].append(v)
+			T[v].append(u)
+	return T
+
+
+def connessi(u, v, T):
+	def DFSr(a, b, T, visitati):
+		visitati[a] = 1
+		for z in T[a]:
+			if z == b:
+				return True
+			if not visitati[z]:
+				if DFSr(z, b, T, visitati):
+					return True
+		return False
+
+	visitati = [0] * len(T)
+	return DFSr(u, v, T, visitati)
+```
+
+
+- L'ordinamento esterno al for costa $O(m\log m)=O(m\log n^2)=O(m \log n)$
+- Il for viene iterato $m$ volte e la procedura connessi richiede $O(n)$ quindi in totale il for $O(m\cdot n)$
+
+La complessità totale dell'operazione risulta quindi $O(m\cdot n)$
+
+---
+
+Tramite delle strutture in C chiamate **UNION e FIND** possiamo ridurre la complessità a $O(m\log n)$
