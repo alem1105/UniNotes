@@ -252,3 +252,56 @@ La complessità totale dell'operazione risulta quindi $O(m\cdot n)$
 ---
 
 Tramite delle strutture in C chiamate **UNION e FIND** possiamo ridurre la complessità a $O(m\log n)$
+
+La Union Find è una struttura dati che permette le seguente operazioni:
+- `UNION(a, b, C)` fonde due componenti connesse `a` e `b` in `C` in tempo O(1)
+- `FIND(x, C)` trova in `C` la componente connessa in cui si trova il nodo `x` in tempo $O(\log n)$
+
+```python
+def kruskal1(G):
+	E = [(c,u,v) for u in range(len(G)) for v,c in G[u] if u<v]
+	E.sort()
+	T = [[] for _ in G]
+	C = Crea(T)
+	for c, u, v in E:
+		cu = FIND(u, C)
+		cv = FIND(v, C)
+		if cu != cv:
+			T[u].append(v)
+			T[v].append(u)
+			Union(cu, cv, C)
+	return T
+```
+
+Dove abbiamo:
+
+```python
+def Crea(G):
+	C = [(i, 1) for i in range(len(G))]
+	return C
+
+
+def Find(u, C):
+	while u != C[u]:
+		u = C[u]
+	return u
+
+
+def Union(a, b, C):
+	tota, totb = C[a][1], C[b][1]
+	if tota >= totb:
+		C[a] = (a, tota + totb)
+		C[b] = (a, totb)
+	else:
+		C[b] = (b, tota + totb)
+		C[b] = (a, totb)
+```
+
+- L'ordinamento costa sempre $O(m\log n)$
+- Il for lo iteriamo $m$ volte e al suo interno:
+	- L'estrazione dell'arco minimo richiede $\Theta(1)$
+	- Il FIND costa $O(\log n)$
+	- L'Union costa $\Theta(1)$
+- Quindi in totale il for costa $O(m\log n)$ che sarà anche il costo totale dell'algoritmo
+
+- # [[Struttura Dati per Insiemi Disgiunti]]
