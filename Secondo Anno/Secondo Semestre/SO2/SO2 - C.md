@@ -258,3 +258,5 @@ Tipi per i placeholder:
 	- `g` automatico
 - `%lf` per double
 
+## Scanf
+Vedere scanf e altre funzioni, non so se scrivo tutto dato che sono cose base anche di altri linguaggi.
