@@ -305,3 +305,5 @@ def Union(a, b, C):
 - Quindi in totale il for costa $O(m\log n)$ che sarà anche il costo totale dell'algoritmo
 
 - # [[Struttura Dati per Insiemi Disgiunti]]
+
+- # [[Cammini con Pesi Negativi]]
