@@ -206,4 +206,4 @@ _Esempio_
 7) Il server invia la nuova finestra in un ACK, il client fa scorrere la finestra togliendo da sinistra i segmenti per i quali ha ricevuto ACK e aggiungendo a destra fino a raggiungere 400
 8) Il server consuma altri 200 byte e quindi la finestra passa a 600, invia un ACK al client che allargherà verso destra la finestra di invio per farla combaciare.
 
-# Controllo della Congestione
+# Controllo della Congestion
