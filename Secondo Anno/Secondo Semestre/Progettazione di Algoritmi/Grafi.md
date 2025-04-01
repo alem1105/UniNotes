@@ -608,8 +608,8 @@ _Esempio_
 ![[Pasted image 20250310161809.png]]
 
 In questo caso se effettuiamo una visita sul nodo 0 otteniamo:
-- $[2, 5, 6, 0, 4, 3]$ Perché siamo partiti dal nodo 0 e una volta terminato abbiamo continuato ad effettuare visite sui nodi rimanente ovvero 3 e 4.
-Ovviamente non viene restituita quella lista ma il suo inverso, quindi $[3,4,0,6,5,2]$.
+- $[2, 5, 6,1, 0, 4, 3]$ Perché siamo partiti dal nodo 0 e una volta terminato abbiamo continuato ad effettuare visite sui nodi rimanente ovvero 3 e 4.
+Ovviamente non viene restituita quella lista ma il suo inverso, quindi $[3,4,0,1,6,5,2]$.
 
 Perché funziona? - Siano $x$ e $y$ due nodi in $G$ con un arco che va da $x$ a $y$ dimostriamo i possibili casi:
 - Se l'arco viene attraversato durante la visita allora $y$ finirà nella lista prima di $x$ e quindi facendo il reverse otteniamo un giusto ordinamento
