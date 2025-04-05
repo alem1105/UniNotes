@@ -206,4 +206,143 @@ _Esempio_
 7) Il server invia la nuova finestra in un ACK, il client fa scorrere la finestra togliendo da sinistra i segmenti per i quali ha ricevuto ACK e aggiungendo a destra fino a raggiungere 400
 8) Il server consuma altri 200 byte e quindi la finestra passa a 600, invia un ACK al client che allargherà verso destra la finestra di invio per farla combaciare.
 
-# Controllo della Congestion
+# Controllo della Congestione
+La rete si dice congestionata quando troppe sorgenti inviano troppi dati ad elevata velocità e la rete non riesce a gestirli tutti, questo problema può causare:
+- Pacchetti smarriti (overflow nei buffer dei router)
+- Lunghi ritardi (accodamento nei buffer dei router)
+
+Cosa cambia dalla gestione del flusso? Con la gestione del flusso andiamo solo a fare in modo che il mittente non sovraccarichi il destinatario, modificando la finestra di invio. Questo però non esclude la possibilità che ad esempio i router possano congestionarsi dato che un router riceve dati da più mittenti.
+
+Quando si iniziano a perdere pacchetti perché i router sono pieni questi vengono rispediti e quindi la rete si sovraccarica ulteriormente.
+
+La congestione è un problema che riguarda IP ma viene gestito da TCP.
+
+Ci si approccia in due modi al controllo della congestione:
+- Controllo congestione **end-to-end**: È il metodo che usa TCP e non prevede nessun supporto dalla rete, la congestione viene quindi gestita dagli "estremi" in modo deduttivo andando a osservare perdite e ritardi nei terminali
+- Controllo congestione **assistito dalla rete**: I router forniscono un feedback ai sistemi terminali per indicare il livello della congestione
+
+# Problematiche
+Ci sono vari problemi per garantire un ottimo controllo della congestione:
+1) Come fa il mittente a limitare la frequenza di invio sulla propria connessione?
+2) Come fa il mittente a rilevare la congestione?
+3) Quale algoritmo va usato per limitare la frequenza di invio in funziona della congestione end-to-end
+
+## Finestra di Congestione
+Per controllarla si usa la variabile `CWND` che insieme a `RWND` definisce la dimensione della finestra di invio:
+- CWND: Congestione relativa alla rete
+- RWND: Congestione relativa al ricevente
+
+La dimensione della finestra è data da `min(rwnd, cwnd)`.
+
+## Rilevare la congestione
+Possiamo usare vari segnali:
+- ACK duplicati o timeout posso essere interpretati come delle perdite e quindi ridurre la quantità di segmenti da inviare, la rete potrebbe avere qualche congestione.
+- Se invece gli ACK arrivano in sequenza e con buona frequenza possiamo aumentare la frequenza di invio, la rete sta funzionando bene
+- TCP è **auto-temporizzante** ovvero reagisce in base ai riscontri che ottiene
+
+## Controllo della Congestione
+Abbiamo detto quindi che vogliamo incrementare il rate di trasmissione se non c'è congestione e diminuirlo se c'è.
+
+L'algoritmo di controllo si basa su tre componenti:
+- Slow Start
+- Congestion Avoidance
+- Fast Recovery
+
+### Slow Start - Incremento esponenziale
+La congestion windows CWND è inizializzata a 1 MSS (quanto inviare) e poiché la banda disponibile è molto maggiore lo slow start incrementa di 1 MSS la cwnd per ogni segmento riscontrato.
+
+Quindi:
+- Inizialmente invia 1
+- Se riscontriamo 1 la prossima volta inviamo 2
+- Se riscontriamo 2 la prossima volta inviamo 4
+- Se riscontriamo 4 la prossima volta inviamo 8
+- ...
+
+Quindi `cwnd = cwnd + 1`.
+
+Ma quanto possiamo andare avanti in questo modo? Ci sono due casi
+- Raggiungiamo una soglia prestabilita chiamata **ssthresh** (slow start threshold)
+- Viene perso un pacchetto, in questo caso la threshold ssthresh viene impostata uguale a `cwnd / 2`
+
+Una volta usciti da slow start si entra in **congestion avoidance**
+
+### Congestion Avoidance - Additive Increase
+Qui non abbiamo più un incremento esponenziale ma lineare, quando riscontriamo tutti i pacchetti inviati incrementiamo soltanto di 1 la cwnd. Si continua ad aumentare in modo lineare finché non si rileva una congestione con un timeout o 3 ACK duplicati.
+
+Quando si rileva la congestione si imposta `ssthresh = cwnd / 2` ma anche `cwnd = 1`
+
+### Fast Recovery dopo :P
+
+# Versioni TCP
+Ci sono diverse versioni di TCP che si muovo fra questi metodi in modo diverso.
+
+## TCP Tahoe
+Considera timeout e 3 ACK duplicati come congestione e riparte da `cwnd = 1` con `ssthresh = cwnd / 2`
+
+![[Pasted image 20250405223548.png]]
+
+![[Pasted image 20250405223715.png]]
+
+Come possiamo migliorare questo metodo:
+- In questo metodo 3 ACK duplicati indicano che la rete è comunque in grado di trasmettere qualche segmento (oltre a quello perso sono arrivati altri 3 pacchetti)
+- Un timeout è invece più allarmante di 3 ACK duplicati, significa che non arriva niente
+
+Quindi invece di reagire ad entrambi i segnali allo stesso modo possiamo reagire in maniera meno drastica nel caso dei 3 ACK duplicati: **Fast - Recovery**
+- Incrementa linearmente perché abbiamo una congestione leggera
+
+## TCP Reno
+- Se abbiamo timeout si riparte da `cwnd = 1`
+- 3 ACK duplicati c'è una congestione lieve quindi si applica fast recovery partendo da `ssthreshold + 3`.
+
+![[Pasted image 20250405224536.png]]
+
+![[Pasted image 20250405224628.png]]
+## TCP: Tempo di andata e ritorno e timeout
+
+- Come si imposta il valore del timeout di TCP?
+	- Vogliamo impostarlo più grande del tempo di andata e ritorno della connessione ma questo varia
+	- Se lo impostiamo troppo piccolo abbiamo un timeout prematuro e quindi ritrasmissioni non necessarie
+	- Troppo grande: reazione lenta alla perdita di segmenti
+
+- Come stimare RTT?
+	- Sample RTT - Tempo misurato dalla trasmissione del segmento fino alla ricezione di ACK, ignora le ritrasmissioni e si usa un solo SampleRTT per più segmenti trasmessi insieme.
+	- SampleRTT varia a causa di congestione nei router e carico nei sistemi terminali, vanno quindi fatte delle stime più "livellate", una media di più misure recenti e non solo il SampleRTT
+
+$$
+\text{EstimatedRTT}_{t+1}=(1-\alpha) * \text{EstimatedRTT}_{t} +  \alpha * \text{SampleRTT}_{t+1}
+$$
+
+È una media esponenziale ponderata dove l'influenza delle misure passate decresce esponenzialmente.
+
+Il valore tipico di $\alpha=0.125$, in questo modo si assegna minore peso alle misure recenti e di più a quelle vecchie.
+
+_Esempio_
+
+![[Pasted image 20250405225920.png]]
+
+Notiamo che in questo modo i picchi non influenzano di molto la stima
+
+---
+
+Per il timeout facciamo un ragionamento simile.
+
+- EstimatedRTT più un "margine di sicurezza" dove se abbiamo una grande variazione di EstimatedRTT allora abbiamo anche un margine di sicurezza maggiore
+
+Dobbiamo stimare di quanto il SampleRTT si discosta da EstimatedRTT:
+
+$$
+\text{DevRTT} = (1-\beta) * \text{DevRTT} + \beta * |\text{SampleRTT - EstimatedRTT}|
+$$
+
+Dove tipicamente $\beta = 0.25$
+
+Poi va impostato anche un intervallo di timeout:
+- Si imposta un valore iniziale a 1 secondo
+- Ad ogni timeout si raddoppia il tempo
+- Quando si riceve un segmento si aggiorna EstimatedRTT e si usa la formula:
+
+$$
+\text{TimeoutInterval = EstimatedRTT} + 4 * \text{DevRTT}
+$$
+
+
