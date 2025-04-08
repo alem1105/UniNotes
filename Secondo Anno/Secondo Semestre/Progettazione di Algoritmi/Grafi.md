@@ -336,7 +336,7 @@ def Cammino(u, P):
 ```
 
 ```python
-def Cammino(u, P):
+def CamminoR(u, P):
 	if P[u] == -1: return []
 	if P[u] == u: return [u]
 	return CamminoR(P[u], P) + [u]
@@ -345,7 +345,7 @@ def Cammino(u, P):
 Sia la versione iterativa che quella ricorsiva hanno complessità di $O(n)$ se si dispone del vettore dei padri.
 
 # Colorazione di Grafi
-Dato un grafo connesso un intero $k$ vogliamo sapere se è possibile colorare i nodi del grafo in modo che i nodi fra loro adiacenti abbiano sempre colori distinti.
+Dato un grafo connesso e un intero $k$, vogliamo sapere se è possibile colorare i nodi del grafo usando al più $k$ colori, in modo che i nodi fra loro adiacenti abbiano sempre colori distinti.
 
 > [!info] Teorema 4 colori - Curiosità
 > Questo teorema afferma che un **grafo planare** richiede al più 4 colori per essere colorato.
@@ -417,7 +417,7 @@ _Esempio di grafo con più componenti connesse:_
 
 ![[Pasted image 20250307092506.png]]
 
-È possibile calcolare il vettore $C$ delle componenti connesse di un grafo, vale a dire un vettore che tanti elementi quanti i nodi del grafo e tale che se due nodi $x,y$ appartengono alla stessa componente allora $C[x]=C[y]$, quindi se prendiamo come esempio il grafo sopra otteniamo:
+È possibile calcolare il vettore $C$ delle componenti connesse di un grafo, vale a dire un vettore che ha tanti elementi quanti i nodi del grafo e tale che se due nodi $x,y$ appartengono alla stessa componente allora $C[x]=C[y]$, quindi se prendiamo come esempio il grafo sopra otteniamo:
 
 - $C=[2,1,2,3,4,5,2,1,1,1,2,3,5,1,5,1,2,5,3]$ (se non ho sbagliato qualche numero 🤡)
 
@@ -484,7 +484,7 @@ Vediamo un possibile algoritmo per costruire il vettore delle componenti forteme
 
 ```python
 def ComponenteFC(x, G):
-	visitati1 = DFS(x ,G)
+	visitati1 = DFS(x, G)
 	G1 = Trasposto(G)
 	visitati2 = DFS(x, G1)
 	componente = []
@@ -524,7 +524,7 @@ Quindi in totale $\Theta(n)\cdot O(n+m)=O(n^2+nm)=O(n^3)$ dato che al caso peggi
 
 Per verificare questo costo del caso peggiore possiamo pensare al grafo diretto $G$ avente un arco da $u$ a $v$ per ogni coppia di nodi $u,v$ tali che $u\leq v$
 
-Questo grafo ha $n^2$ archi e $n$ componenti fortemente connesse ovvero una per ogni nodo, infatti:
+Questo grafo ha $\frac{n(n-1)}{2} = O(n^2)$ archi e $n$ componenti fortemente connesse ovvero una per ogni nodo, infatti:
 
 ![[IMG_0223.png]]
 
@@ -532,7 +532,7 @@ Ogni nodo equivale ad una componente connessa.
 
 # Ordinamento Topologico
 
-_Stesso concetto di [[BD1 - Concorrenza#Ordinamento Topologico]]_
+_Stesso concetto di [[BD1 - Concorrenza#Ordinamento Topologico]] visto in Basi di Dati 1_
 
 Spesso un grafo diretto cattura relazioni di propedeuticità fra i nodi, ovvero se ad esempio abbiamo un arco che va dal nodo $a$ al nodo $b$ allora $a$ è propedeutico a $b$ ovvero va svolto prima di $b$.
 
@@ -567,7 +567,7 @@ def sortTop(G):
     gradoEnt = [0] * n 
     for i in range(n): 
         for j in G[i]:
-            gradoEnt[j] += 1 # posso fare len(G[i]) senza for ?? 
+            gradoEnt[j] += 1
     sorgenti = [ i for i in range(len(G)) if gradoEnt[i] == 0 ]
     ST = []
     
@@ -893,7 +893,7 @@ In totale quindi se le operazioni sulla coda hanno costo 1 abbiamo $O(n+m)$ per�
 
 Come costo totale otteniamo quindi $O(n^2)$
 
-Possiamo notare questo costo un esempio:
+Possiamo notare questo costo con un esempio:
 
 ![[Pasted image 20250316123628.png]]
 
