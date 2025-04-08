@@ -1,4 +1,4 @@
-Dato un grafo G e un nodo `s` vogliamo determinare le distanze minime da questo nodo anche se sono presenti archi con presi negativi.
+Dato un grafo G e un nodo `s` vogliamo determinare le distanze minime da questo nodo anche se sono presenti archi con pesi negativi.
 
 Per fare questo è importante definire prima il concetto di **ciclo negativo** ovvero un ciclo dove la somma dei pesi degli archi è negativa;.
 
@@ -28,8 +28,8 @@ La soluzione al nostro problema sarà data dall'ultima riga. Inoltre possiamo gi
 Come calcoliamo i restanti valori?
 
 Dobbiamo distinguere i due casi:
-- Se il costo per raggiungere `j` ha lunghezza inferiore o uguale al valore `i` allora prendiamo il valore precedente della tabella, quindi `T[i][j] = T[i][j - 1]`
-- Se non è così allora deve esistere un cammino minimo di lunghezza più `i - 1` ad un nodo `x` il quale poi tramite un arco ci porterà a `j`. Dobbiamo quindi prendere il cammino minimo fra tutti questi cammini che ci portano dalla sorgente ad un `x` e da `x` a `j` tramite un solo arco, ovvero: 
+- Se il cammino di lunghezza al più `i` per raggiungere `j` ha lunghezza inferiore a `i` allora prendiamo il valore precedente della tabella, quindi `T[i][j] = T[i - 1][j]`
+- Se non è così allora deve esistere un cammino minimo di lunghezza al più `i - 1` ad un nodo `x` il quale poi tramite un arco ci porterà a `j`. Dobbiamo quindi prendere il cammino minimo fra tutti questi cammini che ci portano dalla sorgente ad un `x` e da `x` a `j` tramite un solo arco, ovvero: 
   
   $T[i][j]=min_{(x-1)\in E}(T[i-1][x]+costo(x,j))$
 
@@ -38,7 +38,7 @@ _E è l'insieme degli archi_
 Ovviamente non sappiamo in quale dei due casi ci troviamo e quindi prendiamo il minore fra questi due casi:
 
 $$
-T[i][j]=min(T[i][j] = T[i][j - 1],min_{(x-1)\in E}(T[i-1][x]+costo(x,j)) )
+T[i][j]=min(T[i][j] = T[i-1][j],min_{(x-1)\in E}(T[i-1][x]+costo(x,j)) )
 $$
 
 ---
