@@ -29,7 +29,7 @@ Un pacchetto quindi deve passare fra molte reti prima di arrivare a destinazione
 Il concetto di velocità di una rete comprende molti fattori, come:
 - Ampiezza di banda
 - bitrate
-- trhoughput
+- throughput
 - ritardi
 - perdita di pacchetti
 
