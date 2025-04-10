@@ -78,13 +78,13 @@ I nomi che diamo ai pacchetti nei vari livelli dipendono appunto dall'header pre
 - frame - header collegamento + datagramma
 
 ## Multiplexing e Demultiplexing
-Dato che il TCP-IP prevede l'uso di più protocolli nello stesso livello è necessario eseguire multiplexing alla sorgente e demultiplexing alla destinazione, ovver:
+Dato che il TCP-IP prevede l'uso di più protocolli nello stesso livello è necessario eseguire multiplexing alla sorgente e demultiplexing alla destinazione, ovvero:
 - **Multiplexing**: Un protocollo può incapsulare i pacchetti ottenuti da più protocolli di livello superiore
 - **Demultiplexing**: Un protocollo può decapsulare e consegnare i pacchetti a più protocolli del livello superiore
 
 Va ovviamente dedicato un campo nell'header per identificare a quale protocollo appartengono i pacchetti incapsulati.
 
-Abbiamo che ad esempio il protocollo TCP può incapsulare pacchetti di tipo FTP, HTTP mentre UDP può incapsualre DNS e SNMP, grazie agli header riusciamo a capire a quale protocollo appartiene un pacchetto (demultiplexing):
+Abbiamo che ad esempio il protocollo TCP può incapsulare pacchetti di tipo FTP, HTTP mentre UDP può incapsulare DNS e SNMP, grazie agli header riusciamo a capire a quale protocollo appartiene un pacchetto (demultiplexing):
 
 ![[Pasted image 20250312134652.png]]
 
