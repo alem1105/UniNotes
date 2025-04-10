@@ -1,0 +1,3 @@
+- Simboli di predicato di arità 0 sono lettere proposizionali
+- I predicati con termini come argomenti sono formule atomiche
+- Formule atomiche => lettere proposizionali
