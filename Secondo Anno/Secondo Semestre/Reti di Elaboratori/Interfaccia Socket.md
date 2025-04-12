@@ -129,7 +129,7 @@ _Scriviamo un applicazione per comunicare TCP in Java_
 
 - Scriviamo il Client:
 
-```Java
+```java
 importa java.io.*;
 importa java.net.*;
 
@@ -163,7 +163,7 @@ class TCPClient {
 
 - Scriviamo il Server:
 
-```Java
+```java
 import java.io.*;
 import java.net.*;
 class TCPServer {
@@ -207,7 +207,7 @@ La comunicazione avviene in questo modo:
 
 - Scriviamo il client in Java
 
-```Java
+```java
 import java.io.*;
 import java.net.*;
 
@@ -246,7 +246,7 @@ class UDPClient {
 
 - Scriviamo il server
 
-```Java
+```java
 import java.io.*;
 import java.net.*;
 class UDPServer {
