@@ -69,7 +69,7 @@ Qui entra il gioco il timer, infatti questo viene mantenuto per il più vecchio 
 
 _Esempio_
 
-Il primo pacchetto inviato e su quale si trova il timer è 3 (`Sf = 3`) e il mittente invia 6 quindi abbiamo `Sf = 7`. Non arrivano ACK e scade il timer quindi vengono rinviati i pacchetti 3,4,5,6.
+Il primo pacchetto inviato e su quale si trova il timer è 3 (`Sf = 3`) e il mittente invia 6 quindi abbiamo `Sn = 7`. Non arrivano ACK e scade il timer quindi vengono rinviati i pacchetti 3,4,5,6.
 
 _FSM per rappresentare il mittente_
 
