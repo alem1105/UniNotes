@@ -141,7 +141,7 @@ Quando compiliamo un form ad esempio per iscrizione a qualche pagina o altro abb
 ## Tipi di Metodi - HTTP/1.1
 - **GET** - Viene usato quando il client vuole scaricare un documento dal server. Il documento viene specificato all'interno dell'URL.
 - **HEAD** - Utilizzato quando il client non vuole scaricare l'intero documento ma solo alcune informazioni di esso. Il server quindi in risposta non invia l'intero documento ma soltanto gli header richiesti.
-- **POST** - Utilizzato per fornire input al server, questi vengono inseriti dall'utente in dei campi di un form. L'input arriva nel corpo del messaggio. Coe detto prima è possibile utilizzare anche il GET inserendo i dati nell'URL
+- **POST** - Utilizzato per fornire input al server, questi vengono inseriti dall'utente in dei campi di un form. L'input arriva nel corpo del messaggio. Come detto prima è possibile utilizzare anche il GET inserendo i dati nell'URL
 - **PUT** - È utilizzato per memorizzare un documento nel server. Il documento viene fornito nel corpo del messaggio e la posizione di memorizzazione nell'URL.
 
 ## Intestazioni nella Richiesta
@@ -318,7 +318,7 @@ La cache serve quindi a ridurre i tempi di risposta per i client, ridurre il tra
 
 Facciamo una stima del ritardo calcolando $\frac{La}{R}$:
 - Utilizzo sulla LAN: $(15req/s * 1Mb/req) / 100Mbps=15\%$
-- Utilizzo sl collegamento d'accesso $(15req/s * 1Mb)/15Mbps=100\%$
+- Utilizzo sul collegamento d'accesso $(15req/s * 1Mb)/15Mbps=100\%$
 - L'intensità tende quindi a 1 e il ritardo diventa importante
 - Come ritardo totale otteniamo $2\sec+\text{minuti}+\text{millisecondi}$.
 
