@@ -314,3 +314,50 @@ Quando troviamo dei quantificatori abbiamo delle situazioni simili
 
 ![[Pasted image 20250410110315.png]]
 
+---
+
+- Una formula $\phi$ si dice **soddisfacibile** se esiste un'interpretazione $I$ e un assegnamento di variabili $S$ tale che $\text{eval}^{I,S}(\phi)=\text{true}$
+- Una formula $\phi$ si dice **insoddisfacibile** se per ogni interpretazione $I$ e assegnamento di variabili $S$ si ha che $\text{eval}^{I,S}(\phi)=\text{false}$
+- Una formula $\phi$ si dice **valida** se per ogni interpretazione $I$ e assegnamento di variabili $S$ si ha che $\text{eval}^{I,S}(\phi)=\text{true}$
+
+Nelle formule chiuse ovvero dove le variabili sono quantificate, l'assegnamento non gioca alcun ruolo, inoltre per queste formule chiuse abbiamo che:
+- Un'interpretazione M per cui $\text{eval}^{M,S}(\phi)=\text{true}$, per ogni assegnamento S si dice modello di $\phi$.
+
+---
+
+### Regole di Precedenza
+Nella FOL usiamo le seguenti regole di precedenza:
+1) $\neg$
+2) $\wedge, \vee$
+3) $\forall,\exists$
+4) $\to$
+
+### Ambiguità dei quantificatori
+La presenza di più quantificatori che quantificano variabili omonime può creare ambiguità, ad esempio:
+
+$$
+\forall X\text{ uomo(X)} \wedge \exists X \text{ mortale(X)} \vee X = \text{padre(socrate)}
+$$
+
+- A quale quantificatore fa riferimento la X in mortale(X)
+- A quale quantificatore fa riferimento la X in X = padre(socrate)
+
+Il nome di una variabile quantificata in realtà non gioca alcun ruolo, funzionano come i parametri dei linguaggi di programmazione, questo significa che la formula può essere riscritta evitando ambiguità ma stando comunque attenti alle intenzioni del progettista.
+
+Ad esempio possiamo scrivere le seguenti formule, che sono comunque non equivalenti fra loro:
+
+$$
+\begin{align*}
+\forall X\text{ uomo(X)} \wedge \exists Y \text{ mortale(X)} \vee Y = \text{padre(socrate)} \\
+\forall X\text{ uomo(X)} \wedge \exists Y \text{ mortale(Y)} \vee Y = \text{padre(socrate)} \\
+\forall X\text{ uomo(X)} \wedge \exists Y \text{ mortale(Y)} \vee X = \text{padre(socrate)} \\
+\forall X\text{ uomo(X)} \wedge \exists Y \text{ mortale(X)} \vee X = \text{padre(socrate)}
+\end{align*}
+$$
+
+Oppure invece di riscriverla possiamo usare delle parentesi per cancellare le ambiguità:
+
+$$
+(\forall X\text{ uomo(X)}) \wedge (\exists X \text{ mortale(X)} \vee X = \text{padre(socrate)})
+$$
+
