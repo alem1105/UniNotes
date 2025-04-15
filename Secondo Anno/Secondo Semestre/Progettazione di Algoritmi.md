@@ -66,3 +66,4 @@ Ma perché consideriamo efficiente un algoritmo con complessità $O(n^c)$ con un
 
 - # [[Problemi di Ottimizzazione e Algoritmi di Ottimizzazione]]
 - # [[Gli algoritmi Greedy]]
+- # [[Divide et Impera]]
