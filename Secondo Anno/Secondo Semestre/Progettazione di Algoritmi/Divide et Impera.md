@@ -47,5 +47,104 @@ def selezione2(A,k):
 	return selezione2(A2, k - len(A1) - 1)
 ```
 
-_Continuare slide 6 con studio del caso pessimo ovvero lista completamente sbilanciata_
+Questa procedura che tripartisce la lista può però restituire una partizione massimamente sbilanciata in cui si ha ad esempio $|A1|=0,|A2=n-1|$ ovvero quando il perno è l'ultimo elemento della lista.
 
+Se poi questo caso si ripete ad ogni partizione creata dall'algoritmo allora la complessità di questo sarebbe catturata da:
+
+$$
+\begin{align*}
+T(n)&=T(n-1)+\Theta(n) \\
+T(n)&=\Theta(n^2)
+\end{align*}
+$$
+
+In generale la complessità superiore dell'algoritmo è data da:
+
+$$
+T(n)=T(m)+\Theta(n)
+$$
+
+Dove $m=max\{ |A1|,|A2| \}$
+
+Quindi se avessimo una scelta del perno che garantisca sempre un equilibrio fra le liste che crea l'algoritmo avremo che:
+
+$$
+m=max\{ |A1|,|A2| \}\approx \frac{n}{2}
+$$
+
+E quindi la complessità diventa:
+
+$$
+\begin{align*}
+T(n)&=T\left( \frac{n}{2} \right) + \Theta(n) \\
+T(n)&=\Theta(n)
+\end{align*}
+$$
+
+Ovviamente avere sempre un perno che divide a metà le liste è troppo, osserviamo che in realtà possiamo accontentarci di una qualsiasi frazione $n$ anche piuttosto vicina ed ottenere sempre $T(n)=\Theta(n)$.
+
+Ad esempio se $m=max\{ |A1|,|A2| \} \approx \frac{3n}{4}$ abbiamo:
+
+$$
+T(n)\leq T\left( \frac{3}{4}n \right)+\Theta(n)
+=\Theta(n)
+$$
+
+---
+
+
+Proviamo quindi a scegliere il perno a caso in modo equiprobabile tra gli elementi della lista, in questo modo anche se la scelta non produce una lista perfettamente bilanciata avremo comunque una complessità lineare.
+
+```python
+def selezione2R(A, k):
+
+	if len(A)==1
+		return A[0]
+	perno = A[randint(0, len(A) - 1)]
+	A1, A2 = [], []
+	for x in A:
+		if x < perno:
+			A1.append(x)
+		elif x > perno:
+			A2.append(x)
+	if len(A1) >= k:
+		return selezione2R(A1, k)
+	elif len(A1) == k - 1:
+		return perno
+	return selezione2R(A2, k - len(A1) - 1)
+```
+
+Con questo algoritmo abbiamo che con alta probabilità il costo è lineare mentre al caso peggiore, che accade con una probabilità molto piccola è di $O(n^2)$.
+
+---
+
+C'è in realtà un algoritmo deterministico che garantisce una complessità di $O(n)$ anche al caso pessimo.
+
+Questo modo noto come **mediano dei mediani** garantisce che il perno scelto produce sempre due sottoliste A1 e A2 ciascuna delle quali ha non più di $\frac{3}{4}n$ elementi.
+
+1) Dividi l'insieme A da $n$ elementi in gruppi da 5, ovviamente l'ultimo potrebbe non averne 5. Si prendono in considerazione soltanto i primi $\left\lfloor  \frac{n}{5}  \right\rfloor$ gruppi.
+2) Si trova il mediano all'interno di ciascuno di questi gruppi
+3) Si calcola il mediano $p$ dei mediani precedenti
+4) Si usa $p$ come pivot per $A$
+
+```python
+def selezione(A, k):
+	if len(A) <= 120:
+		A.sort()
+		return A[k - 1]
+	B = [sorted(A[5*i:5*i+5])[2] for i in range(len(A)//5)]
+	perno = selezione(B, ceil(len(A)/10))
+	A1, A2 = [], []
+	for x in A:
+		if x < perno:
+			A1.append()
+		elif x > perno:
+			A2.append()
+	if len(A1) >= k:
+		return selezione(A1, k)
+	elif len(A1) == k - 1:
+		return perno
+	return selezione(A2, k - len(A1) - 1)
+```
+
+Questo algoritmo quindi risolve il problema in modo lineare anche al caso pessimo, però a causa delle grandi costanti nascoste nell'$O(n)$, in realtà l'algoritmo random di prima si comporta meglio.
