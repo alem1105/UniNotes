@@ -73,9 +73,16 @@ Useremo solo i seguenti diagrammi:
 
 ---
 
+Alcuni sono solo PDF dato che ci stanno principalmente solo regole per fare esercizi
 # [[Analisi Concettuale dei Requisiti]]
 
 # [[Analisi dei Requisiti - Documenti di Specifica]]
 
+# [[Logica del Primo Ordine - FOL]]
 
-- # [[Logica del Primo Ordine - FOL]]
+Non so se li sistemerò un giorno 🤓
+# [[Introduzione alla fase di progettazione]]
+
+# [[Logica del Primo Ordine nell'Analisi Concettuale]]
+
+# [[Linguaggio SQL]]

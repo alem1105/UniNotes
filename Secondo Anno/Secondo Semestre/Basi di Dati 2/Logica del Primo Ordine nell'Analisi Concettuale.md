@@ -1,0 +1,1 @@
+![[Slide A.4 - Logica del primo ordine (FOL) nell’Analisi Concettuale - BD2.pdf]]
