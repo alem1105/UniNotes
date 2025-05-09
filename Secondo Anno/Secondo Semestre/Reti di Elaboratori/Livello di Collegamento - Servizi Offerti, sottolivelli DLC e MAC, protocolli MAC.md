@@ -284,3 +284,111 @@ Cosa succede se un nodo mittente finisce di trasmettere un frame prima di riceve
 - Il tempo di trasmissione quindi deve essere almeno due volte il tempo di propagazione $T_{p}$
 - Quindi il primo nodo deve essere ancora in trasmissione dopo essere passati $2T_{p}$
 
+---
+
+_Esempio_
+
+Una rete che utilizza il CSMA / CD ha un rate di 10Mbps. Se il tempo di propagazione massimo è 25.6 μs, qual è la dimensione minima del frame?
+
+_Soluzione_
+
+Il tempo di trasmissione minimo del frame è:
+- $T_{fr}=2\times T_{p}=51.2 \mu s$
+Questo significa, nel peggiore dei casi, che un nodo deve trasmettere per un periodo di $51.2\mu s$ per poter rilevare la collisione.
+
+La dimensione minima del frame invece è:
+- $10Mbps \times 51.2\mu s = 512bit$ o 64 byte.
+
+> [!info] Dimensione minima frame
+> Questa è proprio la dimensione minima del frame nell'Ethernet Standard.
+
+# Metodi di Persistenza
+Che cosa deve fare un nodo se trova il canale libero? Ci sono più opzioni:
+- Trasmette subito
+	- **Non persistente**
+	- **1-persistente**
+- Trasmetterà con probabilità p
+	- **p-persistente**
+
+E se invece trova il canale occupato?
+- Desiste: Riascolta il canale dopo un tempo random
+	- **Non persistente**
+- Persiste: Rimane in ascolto finché il canale non si è liberato
+	- **1-persistente**
+	- **p-persistente**
+
+## Non Persistente
+- Se il canale è libero trasmette immediatamente
+- Se il canale è occupato attende un tempo random
+- Se collisioni backoff
+
+![[Pasted image 20250509144528.png|400]]
+
+## 1 Persistente
+- Se il canale è libero trasmette immediatamente
+- Se il canale è occupato continua ad ascoltare (carrier sense continuo)
+- Se collisione backoff
+
+![[Pasted image 20250509144738.png|400]]
+
+## p persistente
+- Se il canale è libero
+	- Trasmette con probabilità p
+	- Rimanda la connessione con probabilità $1-p$
+- Se il canale è occupato usa la procedura di backoff quindi si aspetta un tempo random e si riascolta
+- Se collisione backoff
+
+![[Pasted image 20250509145901.png|500]]
+
+
+> [!info] Efficienza del CSMA / CD
+> Quando un nodo trasmette questo può farlo soltanto al massimo rate mentre se sono più nodi a trasmettere allora il throughput è minore. Il CSMA / CD ha comunque un throughput maggiore ad ALOHA puro e slotted, ad esempio con il metodo 1 persistente si ha un throughput massimo del 50%.
+
+# Protocolli MAC a rotazione
+**Protocolli MAC a suddivisione del canale**:
+- Condividono il canale equamente ed efficientemente con carichi elevati
+- Inefficiente con carichi non elevati
+**Protocolli MAC ad accesso casuale**:
+- Efficienti anche con carichi non elevati: un singolo nodo è libero di usare l'intero canale
+- Se abbiamo carichi elevati ci sarà un alto numero di collisioni
+**Protocolli a rotazione**:
+- Cercano di realizzare un compromesso tra i precedenti
+
+## Protocolli a rotazione
+
+### Protocollo Polling
+C'è un nodo principale che "sonda" gli altri a turno, questo protocollo:
+- Elimina le collisioni
+- Elimina gli slot vuoti
+- Ritardo di polling
+- Se però il nodo principale si guasta allora l'intero canale resta inattivo
+
+![[Pasted image 20250509150524.png|300]]
+
+### Protocollo Token-Passing
+Viene fatto circolare un messaggio di controllo fra i nodi (token), si segue un ordine prefissato. Questo protocollo:
+- Decentralizzato
+- Altamente efficiente
+- Se si guasta un nodo potrebbe andare fuori uso l'intero canale.
+
+![[Pasted image 20250509150638.png|200]]
+
+---
+
+# Riassumendo
+Si possono risolvere i problemi sulla contesa di un canale condiviso con:
+- Suddivisione del canale
+	- Tempo
+	- Frequeunza
+	- Codice
+	- Ad esempio TDM, FDM
+- Suddivisione Casuale (dinamico)
+	- Ad esempio ALOHA, S-ALOHA, CSMA, CSMA / CD
+	- Rilevamento della portante: facile in reti cablate ma non in wireless
+	- CSMA / CD da Ethernet
+	- CSMA / CA usato in 802.11
+- A rotazione
+	- Polling con un nodo principale
+	- Token passing
+	- Ad esempio Bluetooth, FDDI, IBM Token Ring
+	
