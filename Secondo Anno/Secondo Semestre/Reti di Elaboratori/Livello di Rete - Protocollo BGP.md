@@ -75,6 +75,7 @@ In conclusione quindi i router di confine dovranno eseguire 3 protocolli di rout
 - intra-dominio
 - eBGP
 - iBGP
+
 Mentre gli altri router soltanto due: iBGP e intra-dominio
 
 > [!info] Fondamenti di BGP
