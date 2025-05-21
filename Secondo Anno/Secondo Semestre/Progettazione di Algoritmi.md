@@ -68,3 +68,4 @@ Ma perché consideriamo efficiente un algoritmo con complessità $O(n^c)$ con un
 - # [[Gli algoritmi Greedy]]
 - # [[Divide et Impera]]
 - # [[Programmazione Dinamica]]
+- # [[Backtracking]]
