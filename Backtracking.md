@@ -164,3 +164,63 @@ def bk3(n, k, tot1 = 0, sol = None):
         bk3(n, k, tot1 + 1, sol)  
         sol.pop()
 ```
+
+# Esercizio 4 (settembre 2020)
+Progettare un algoritmo che, dato un intero $n$, stampi tutte le stringhe sull'alfabeto dei 3 simboli $a,b,c$ in cui il numero delle $b$ supera quello di ciascuno degli altri due simboli.
+
+Ad esempio per $n=2$ l'algoritmo deve stampare la sola stringa $bb$ mentre per $n=3$ le stringhe da stampare sono:
+- $bbb,abb,bab,bba,cbb,bcb, bbc$
+
+```python
+def bk4(n, na = 0, nc = 0, sol = None):  
+    if sol is None:  
+        sol = []  
+  
+    if len(sol) == n:  
+        print(''.join(sol))  
+        return  
+  
+    sol.append('b')  
+    bk4(n, na, nc, sol)  
+    sol.pop()  
+  
+    # Caratteri che mi mancano da aggiungere sono maggiori del numero della  
+    # stringa con un carattere a aggiunto    
+    if n - (na + nc + 1) > na + 1:  
+        sol.append('a')  
+        bk4(n, na + 1, nc, sol)  
+        sol.pop()  
+  
+    # Caratteri che mi mancano da aggiungere sono maggiori del numero della  
+    # stringa con un carattere c aggiunto    
+    if n - (na + nc + 1) > nc + 1:  
+        sol.append('c')  
+        bk4(n, na, nc + 1, sol)  
+        sol.pop()
+```
+
+# Esercizio - Marzo 2023
+Dati tre interi $n,k,T$ positivi con $T\leq nk$ definiamo valida una sequenza di lunghezza $n$ con interi tra $0$ e $k$ la somma di cui elementi è $T$.
+
+Ad esempio per $n=6,k=4,T=12$ allora la sequenza $132042$ è valida mentre $121213$ non è valida.
+
+Progettare un algoritmo che dati gli interi $n,k,T$ stampi tutte le sequenze valide.
+
+L'algoritmo deve avere complessità $O(n\cdot k\cdot S(n,k))$ dove $S(n,k)$ è il numero di sequenze valide esistente.
+
+```python
+def bk(n, k, T, somma = 0, sol=[]):  
+  
+    if len(sol) == n:  
+        print(''.join(sol))  
+        return  
+  
+    for new_char in range(k + 1):  
+        if new_char + somma + (n - len(sol)-1) * k >= T and somma + new_char <= T:  
+            sol.append(str(new_char))  
+            bk(n, k, T, somma + new_char, sol)  
+            sol.pop()
+```
+
+- Con la prima condizione dell'if sto controllando se aggiungendo il nuovo elemento posso comunque raggiungere il valore T con i restanti elementi.
+- La seconda mi permette di non superare T
