@@ -224,3 +224,155 @@ def bk(n, k, T, somma = 0, sol=[]):
 
 - Con la prima condizione dell'if sto controllando se aggiungendo il nuovo elemento posso comunque raggiungere il valore T con i restanti elementi.
 - La seconda mi permette di non superare T
+
+# Esercizio
+Progettare un algoritmo che data una stringa X lunga $n$ sull'alfabeto ternario $\{ 0,1,2 \}$ stampi tutte le stringhe che è possibile ottenere da X sostituendo il simbolo $*$ ad alcuni dei suoi caratteri in modo che i caratteri rimanenti risultino in ordine strettamente crescente.
+
+Ad esempio:
+- X = "021" allora dobbiamo stampare: `***, 0**, 02*, 0*1, *2*, **1`
+- X = "2110" allora stampiamo: `****, 2***, *1**, **1*, ***0`
+
+L'algoritmo deve avere una complessità di $O(nS(n))$ dove $S(n)$ è il numero di stringhe da stampare.
+
+```python
+# Sol Professore
+def esAstMonti(X, p = '*', sol = []):  
+    if len(sol) == len(X):  
+        print(''.join(sol))  
+        return  
+  
+    sol.append('*')  
+    esAstMonti(X, p, sol)  
+    sol.pop()  
+    i = len(sol)  
+    if p == '*' or X[i] > p:  
+        sol.append(X[i])  
+        esAstMonti(X, X[i], sol)  
+        sol.pop()
+
+# Sol mia più brutta perchè non ho pensato al fatto che abbiamo solo 3 caratteri (in teoria funziona anche con numeri da 0 a 9 (?))
+def esAst(seq, max='-1', sol=None):  
+    if sol is None:  
+        sol = []  
+  
+    if len(sol) == len(seq):  
+        print(''.join(sol))  
+        return  
+  
+    sol.append('*')  
+    esAst(seq, max, sol)  
+    sol.pop()  
+  
+    i = len(sol)  
+  
+    if max < seq[i]:  
+        sol.append(seq[i])  
+        esAst(seq, seq[i], sol)  
+        sol.pop()
+```
+
+# Esercizio Ottobre 2020
+Progettare un algoritmo che, data una stringa X di lunghezza n, sull’alfabeto
+dei 3 simboli 0, 1 e 2, stampa tutte le stringhe di lunghezza n sullo stesso alfabeto che differiscono da X in ciascuna posizione.
+L’algoritmo proposto deve avere complessità $O(nD(n))$ dove $D(n)$ è il numero
+di stringhe da stampare.
+
+Ad esempio se X="020" l'algoritmo deve stampare le 8 stringhe: `101, 102, 111, 112, 201, 202, 211, 212`
+
+```python
+def esOtt2020(X, sol = []):  
+    if len(sol) == len(X):  
+        print(''.join(sol))  
+        return  
+  
+    for char in ['0','1','2']:  
+        if char != X[len(sol)]:  
+            sol.append(char)  
+            esOtt2020(X, sol)  
+            sol.pop()
+```
+
+# Esercizio Gennaio 2021
+Progettare un algoritmo che, dato un intero n, stampa tutte le stringhe binarie
+lunghe $n$ in cui non appaiono mai 3 simboli uguali consecutivi.
+L’algoritmo proposto deve avere complessità $O(nD(n))$ dove $D(n)$ è il numero
+di stringhe da stampare.
+Ad esempio per $n = 3$ l’algoritmo dve stampare, non necessariamente nello
+stesso ordine, le seguenti 6 stringhe: `001, 010, 011, 100, 101, 110`
+
+```python
+def esGenn2021(n, sol = []):  
+    if len(sol) == n:  
+        print(''.join(sol))  
+        return  
+  
+    i = len(sol)  
+    for char in ['0', '1']:  
+        if i >= 2:  
+            if sol[i-1] != char or sol[i-2] != char:  
+                sol.append(char)  
+                esGenn2021(n, sol)  
+                sol.pop()  
+        else:  
+            sol.append(char)  
+            esGenn2021(n, sol)  
+            sol.pop()
+```
+
+# Esercizio es
+Progettare un algoritmo che, dato un intero $n$, stampa tutte le stringhe binarie lunghe $2n$ per le quali la somma dei primi $n$ bit è uguale alla somma degli ultimi $n$ bit.
+
+Ad esempio per $n=2$, deve stampare:
+- `0101, 0110, 1010, 1001, 0000, 1111`
+
+```python
+def esEsame(n, sum=0, sol = None):  
+    if sol is None:  
+        sol = []  
+  
+    if len(sol) == 2*n:  
+        print(''.join(sol))  
+        return  
+  
+    for char in [0,1]:  
+        if len(sol) < n:  
+            sol.append(str(char))  
+            esEsame(n, sum + char, sol)  
+            sol.pop()  
+        else:  
+            if sum - char <= 2*n - len(sol) - 1 and sum-char >= 0:  
+                sol.append(str(char))  
+                esEsame(n, sum - char, sol)  
+                sol.pop()
+```
+
+# Esercizio Gennaio 2023
+Data una stringa binaria $s$, la differenza tra il numero di 1 e il numero di 0 nelle prime $i$ posizioni di $s$ è detto vantaggio alla posizione $i$ in $s$.
+
+Ad esempio per $s=010010111000$ il vantaggio nelle dodici posizioni è rispettivamente: `-1, 0, -1, -2, -1, -2, -1, 0, 1, 0, -1, -2`
+
+Dati due interi positivi $n$ ed $a$ con $a\geq 1$ definiamo con $S(n,a)$ l'insieme di stringhe binarie di lunghezza $n$ il cui vantaggio in ogni posizione cade nell'intervallo che va da $-a$ ad $a$.
+
+Ad esempio con $S(5,2)=\{ 01010,01011,01100,01101,10010,10011,10100,10101 \}$
+
+L'algoritmo, dati $n$ ed $a$ deve stampare tutte le stringhe in $S(n,a)$.
+
+```python
+def esGenn2023(n, a, diff = 0, sol = None):  
+    if sol is None:  
+        sol = []  
+  
+    if len(sol) == n:  
+        print(''.join(sol))  
+        return  
+  
+    for char in [0,1]:  
+        d = -1 if char == 0 else 1  
+        if -a < diff < a:  
+            sol.append(str(char))  
+            esGenn2023(n, a, diff + d, sol)  
+            sol.pop()
+```
+
+
+
