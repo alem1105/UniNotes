@@ -95,7 +95,7 @@ Anche il DHCP si basa sul paradigma client - server:
 - Client ottiene le informazioni dalla rete
 - Ogni sottorete dispone di un server DHCP, se questo non è presente è il router ad agire da server.
 
-Quando un dispositivo si collegat:
+Quando un dispositivo si collega:
 1) Invia un messaggio broadcast `DHCP discover`
 2) Il server DHCP risponde con `DHCP offer`
 3) L'host richiede l'indirizzo IP con `DHCP request`
