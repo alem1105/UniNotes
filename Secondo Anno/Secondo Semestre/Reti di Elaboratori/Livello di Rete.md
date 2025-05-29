@@ -66,7 +66,7 @@ Per ogni connessione stabilita i router mantengono una linea nella tabella, quan
 > Una volta stabilita una connessione, entrambe le parti possono trasmettere.
 
 ## Reti a Datagramma
-**Internet** di oggi è una rate a datagramma (packet switched), quindi i router in questo caso non conservano informazioni sui circuiti virtuali dato che non esistono vere e proprie connessioni a livello di rete. I pacchetti vengono semplicemente inoltrati in altri router in base al loro indirizzo di destinazione.
+**Internet** di oggi è una rete a datagramma (packet switched), quindi i router in questo caso non conservano informazioni sui circuiti virtuali dato che non esistono vere e proprie connessioni a livello di rete. I pacchetti vengono semplicemente inoltrati in altri router in base al loro indirizzo di destinazione.
 
 Questo significa inoltre che i pacchetti non seguiranno più lo stesso percorso, potenzialmente potrebbero prendere ciascuno un percorso diverso per arrivare a destinazione.
 
