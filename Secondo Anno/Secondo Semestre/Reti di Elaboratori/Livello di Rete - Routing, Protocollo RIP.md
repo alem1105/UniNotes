@@ -13,11 +13,11 @@ Possiamo vedere un rete come un grafo:
 
 ![[Pasted image 20250425202801.png|300]]
 
-Indiamo il grafo con $G=(N,E)$ dove $N$ indica l'insieme dei nodi ovvero i router ed $E$ l'insieme degli archi ovvero i collegamenti.
+Indichiamo il grafo con $G=(N,E)$ dove $N$ indica l'insieme dei nodi ovvero i router ed $E$ l'insieme degli archi ovvero i collegamenti.
 
 Inoltre indichiamo per ogni arco un costo: $c(x,x')$ indica il costo del collegamento fra $x$ e $x'$.
 
-Con il costo indichiamo possiamo indicare la lunghezza fisica del collegamento, la velocità del collegamento oppure il costo monetario associato ad esso.
+Con il costo possiamo indicare la lunghezza fisica del collegamento, la velocità del collegamento oppure il costo monetario associato ad esso.
 
 È importante quindi riuscire a trovare il percorso che ha costo minimo.
 
