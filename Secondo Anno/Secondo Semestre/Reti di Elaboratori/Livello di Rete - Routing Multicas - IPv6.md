@@ -89,7 +89,7 @@ Lavora tra un host e il router collegato ad esso, permette appunto all'host di i
 Questo protocollo invia messaggi incapsulati in datagrammi IP con IP protocol number 2, vengono spediti con TTL a 1. Ci sono però diversi tipi di messaggi:
 - **Membership query** - Messaggio che va dal router all'host e serve a determinare a quali gruppi hanno aderito gli host su ogni interfaccia.
 - **Membership report** - Va da un host al router e serve ad informarlo sull'adesione ad un gruppo. Di solito vengono inviati in risposta ad una query ma non sempre
-- **Leave group** - Va da un host al rouer e si manda quando si lascia un gruppo, questi messaggi sono opzionali, il router infatti può capire che non ci sono più adesioni quando non riceve report in risposta ad una query.
+- **Leave group** - Va da un host al router e si manda quando si lascia un gruppo, questi messaggi sono opzionali, il router infatti può capire che non ci sono più adesioni quando non riceve report in risposta ad una query.
 
 Un router multicast tiene una lista per ciascuna sottorete dei gruppi multicast (**multicast group membership**) con un timer per membership.
 - Questa membership deve essere aggiornata con dei report prima dello scadere del timer
