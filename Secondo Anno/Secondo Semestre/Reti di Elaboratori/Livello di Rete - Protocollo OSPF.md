@@ -79,7 +79,7 @@ In generale l'OSPF è più robusto di RIP infatti cosa succede se un router funz
 - Con DV invece se un router comunica cammini errati significa che questa informazioni si diffonde su tutta la rete portando a calcoli errati.
 
 # Protocollo OSPF
-Un protocollo ovviamente non è solo un algoritmo ma anche che tipo di messaggi scambia e le sue interazioni con altri protocolli.
+Un protocollo ovviamente non è solo un algoritmo ma anche che tipo di messaggi scambiati e le sue interazioni con altri protocolli.
 
 OSPF sta per Open Shortest Path First. Open perchè le specifiche del protocollo sono pubbliche.
 
