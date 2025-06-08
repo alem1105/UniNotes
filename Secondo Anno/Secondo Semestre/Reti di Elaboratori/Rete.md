@@ -177,4 +177,4 @@ Ci si collega col proprio terminale direttamente allo switch tramite cavo, lo sw
 
 ### Accesso Wireless
 
-Ci colleghiamo tramite WiFi all'access point locale collegate ai vari router, ha ovviamente un raggio d'azione limitato. Oppure possiamo utilizzare la rete cellulare che si basa sugli access point della compagnia telefonica, hanno raggi di azioni molto più elevati rispetto ai classici accesso point WiFi.
+Ci colleghiamo tramite WiFi all'access point locale collegate ai vari router, ha ovviamente un raggio d'azione limitato. Oppure possiamo utilizzare la rete cellulare che si basa sugli access point della compagnia telefonica, hanno raggi di azioni molto più elevati rispetto ai classici access point WiFi.
