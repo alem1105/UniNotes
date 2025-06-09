@@ -83,7 +83,7 @@ Supponiamo che l'utente immetta come URL `www.someSchool.edu/someDepartment/home
 | 2 - Il client trasmette una richiesta dove indica che vuole il file `someDepartment/home.index` | 3 - Il server crea il messaggio di risposta che contiene l'oggetto richiesto e lo spedisce |
 |                                                                                                 | 4 - Il server chiude la connessione TCP                                                    |
 | 5 - Il client riceve il messaggio e visualizza il documento html che contiene i 10 riferimenti  |                                                                                            |
-| 6 - Vengono ripetuti i precedenti passaggi per ogni                                             |                                                                                            |
+| 6 - Vengono ripetuti i precedenti passaggi per ogni documento                                   |                                                                                            |
 
 Per calcolare il tempo di risposta in queste connessione definiamo il concetto di **RTT**.
 
@@ -106,7 +106,7 @@ Gli svantaggi delle connessioni non persistenti sono:
 
 Con le connessioni persistenti andiamo a risolvere alcuni dei problemi delle non persistenti, infatti:
 - Il server lascia aperta la connessione dopo l'invio di una risposta
-- In questo modo i successivi invii tra clie / server usano la stessa connessione
+- In questo modo i successivi invii tra client / server usano la stessa connessione
 - Non abbiamo quindi bisogno di un RTT per ogni oggetto ma di uno soltanto per la connessione e uno per ogni oggetto ricevuto.
 
 ## Formato dei messaggi in una richiesta HTTP
@@ -125,7 +125,7 @@ Accept-language:fr
 ```
 
 1) La prima riga è **riga di richiesta** dove vengono inseriti i comandi GET - POST - HEAD.
-2) Le successive sono **righe di intestazione**
+2) Le successive sono **righe di intestazione**.
 3) A fine messaggio troviamo **carriage return** e un **life feed**.
 
 A confronto:
@@ -141,7 +141,7 @@ Quando compiliamo un form ad esempio per iscrizione a qualche pagina o altro abb
 ## Tipi di Metodi - HTTP/1.1
 - **GET** - Viene usato quando il client vuole scaricare un documento dal server. Il documento viene specificato all'interno dell'URL.
 - **HEAD** - Utilizzato quando il client non vuole scaricare l'intero documento ma solo alcune informazioni di esso. Il server quindi in risposta non invia l'intero documento ma soltanto gli header richiesti.
-- **POST** - Utilizzato per fornire input al server, questi vengono inseriti dall'utente in dei campi di un form. L'input arriva nel corpo del messaggio. Come detto prima è possibile utilizzare anche il GET inserendo i dati nell'URL
+- **POST** - Utilizzato per fornire input al server, questi vengono inseriti dall'utente in dei campi di un form. L'input arriva nel corpo del messaggio. Come detto prima è possibile utilizzare anche il GET inserendo i dati nell'URL.
 - **PUT** - È utilizzato per memorizzare un documento nel server. Il documento viene fornito nel corpo del messaggio e la posizione di memorizzazione nell'URL.
 
 ## Intestazioni nella Richiesta
