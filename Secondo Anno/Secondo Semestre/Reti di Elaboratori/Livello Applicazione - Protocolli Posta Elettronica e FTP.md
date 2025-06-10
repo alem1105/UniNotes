@@ -61,7 +61,7 @@ Questo protocollo utilizza una connessione TCP dal client al server sulla porta 
 - Chiusura
 
 Vediamo un esempio di trasmissione tra due persone, Alice e Roberto.
-1) Alice usa il suo agente per comporre il messaggio da inviare alla mail di roberto
+1) Alice usa il suo agente per comporre il messaggio da inviare alla mail di Roberto
 2) L'agente di Alice invia il messaggio al server di posta di Alice, questo viene inserito nella coda dei messaggi
 3) Il lato client SMTP apre una connessione TCP con il server di posta di Roberto
 4) Il client SMTP invia il messaggio di Alice sulla connessione TCP
@@ -89,7 +89,7 @@ Abbiamo due componenti principali:
 	- To: Indirizzo/i destinatari
 	- From: Indirizzo del mittente
 	- Cc: Indirizzo di uno o più destinatari a cui si invia per conoscenza
-	- Bcc: È come Cc ma i veri destinatari non sanno che anche questi in Bcc hanno ricevuto il messaggio.
+	- Bcc: È come Cc ma i veri destinatari non sanno che anche questi in Bcc hanno ricevuto il messaggio
 	- Subject: Argomento del messaggio
 	- Sender: Chi materialmente effettua l'invio, ad esempio il dipendente dell'azienda.
 - Corpo: il messaggio vero e proprio composto soltanto da caratteri ASCII
@@ -105,7 +105,7 @@ Per fare questo si usano intestazioni aggiuntive, il MIME è un protocollo che a
 Il client dell'utente finale può usare diversi protocolli per accedere al server della posta, infatti SMTP viene usato per trasferire i messaggi fra i server ma non può essere usato dall'utente, questo infatti ha bisogno di eseguire azioni di **pull** mentre SMTP svolge soltanto **push**.
 
 Possiamo usare diversi protocolli:
-- POP3 (Post Office Protocol - v.3): Autorizzazione e downlaod
+- POP3 (Post Office Protocol - v.3): Autorizzazione e download
 - IMAP (Internet Mail Access Protocol): Permette più funzioni e manipolazione di messaggi sul server
 - HTTP: Servizi come gmail, hotmail ecc...
 
@@ -113,7 +113,7 @@ Possiamo usare diversi protocolli:
 Questo permette al client di aprire una connessione TCP verso il server di posta sulla porta 110, poi si procede in 3 fasi:
 1) Autorizzazione: L'agente utente si identifica
 2) Transazione: L'agente utente recupera i messaggi
-3) Aggiornamento: Dopo che il client ha finito e chiusa la connessione vengono cancellati i messaggi marcati per la rimozione´
+3) Aggiornamento: Dopo che il client ha finito e chiusa la connessione vengono cancellati i messaggi marcati per la rimozione
 
 Comandi utilizzabili con POP3, possiamo distinguerli in due fasi della comunicazione:
 - Fase di Autorizzazione
