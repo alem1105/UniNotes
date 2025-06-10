@@ -348,9 +348,13 @@ E se invece trova il canale occupato?
 **Protocolli MAC a suddivisione del canale**:
 - Condividono il canale equamente ed efficientemente con carichi elevati
 - Inefficiente con carichi non elevati
+
+
 **Protocolli MAC ad accesso casuale**:
 - Efficienti anche con carichi non elevati: un singolo nodo è libero di usare l'intero canale
 - Se abbiamo carichi elevati ci sarà un alto numero di collisioni
+
+
 **Protocolli a rotazione**:
 - Cercano di realizzare un compromesso tra i precedenti
 
