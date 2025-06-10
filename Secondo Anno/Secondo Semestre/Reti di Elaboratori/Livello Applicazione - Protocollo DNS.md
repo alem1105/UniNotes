@@ -18,7 +18,7 @@ Il protocollo DNS serve quindi ad associare ad un indirizzo IP un nome host, not
 Per quanto riguarda la memorizzazione:
 - Si utilizza un **database distribuito** su una gerarchia di server DNS
 Per quanto riguarda l'accessibilità:
-- Si usa un **protocollo a livello applicazione** che consente agli host di interrogare i database dei server ed eseguire le traduzione
+- Si usa un **protocollo a livello applicazione** che consente agli host di interrogare i database dei server ed eseguire le traduzioni
 
 Il DNS viene utilizzato anche dagli altri protocolli di livello applicazione per tradurre gli hostname e utilizza come protocollo per il trasporto l'UDP dato che ci serve più velocità che sicurezza per questo tipo di dati, di base utilizza la porta 53.
 
@@ -137,7 +137,7 @@ Questi sono memorizzati all'interno del database e vengono trasportati dai messa
 
 - `(Name, Value, Type, TTL)`  dove:
 	- TTL è il tempo residuo di vita
-	- Type ha vari valori e fa a seconda di questo fa cambiare il significato di `name` e `value`
+	- Type ha vari valori e a seconda di questi fa cambiare il significato di `name` e `value`
 
 Se Type vale `A`:
 - Allora il record contiene una mappatura Hostname -> IP **a**ddress e quindi troveremo sul campo `name` l'hostname e sul campo `value` l'indirizzo IP
