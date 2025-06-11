@@ -129,6 +129,8 @@ IFS - Spazio Interframe: Rilevata la portante, se il canale risulta libero si po
 Cosa fa il mittente?
 - Ascolta il canale
 - Se libero per DIFS tempo allora trasmette
+
+
 Il ricevente?
 - Se frame ricevuto correttamente allora invia ACK dopo SIFS tempo
 
