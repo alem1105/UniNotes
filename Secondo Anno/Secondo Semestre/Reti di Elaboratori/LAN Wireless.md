@@ -129,6 +129,8 @@ IFS - Spazio Interframe: Rilevata la portante, se il canale risulta libero si po
 Cosa fa il mittente?
 - Ascolta il canale
 - Se libero per DIFS tempo allora trasmette
+
+
 Il ricevente?
 - Se frame ricevuto correttamente allora invia ACK dopo SIFS tempo
 
@@ -167,6 +169,8 @@ Il problema dell'hidden terminal però non viene risolto né con IFS né con fin
 ![[Pasted image 20250519170431.png|400]]
 
 Quindi si invia un RTS per capire se si può trasmettere e se si riceve un CTS si possono inviare i dati.
+
+Il CTS viene inviato a tutte le stazioni, in questo modo quest'ultime anche se "nascoste" sanno che non devono inviare pacchetti altrimenti si verificherebbero collisioni.
 
 # Evitare Collisioni sul Destinatario
 Come fanno le stazioni che non sono coinvolte nella comunicazione a sapere per quanto tempo devono astenersi dal trasmettere, dato che ascoltando il canale non sono in grado di rilevare la trasmissione?
