@@ -6,7 +6,7 @@ Come è fatta questa intestazione?
 
 ![[Pasted image 20250331094634.png]]
 
-- Numero di sequenza: È il numero di sequenza del primo byte che stanno venendo inviati
+- Numero di sequenza: È il numero del primo byte dei dati che stanno venendo inviati
 - Acknowledgment number: È il numero di sequenza del prossimo byte che il client si aspetta di ricevere dal server
 
 Invece le flag colorate in celeste indicano:
@@ -42,7 +42,7 @@ Adesso si può iniziare a trasferire dati
 
 1) Il client invia due segmenti da 1000 byte infatti i loro numeri di sequenza vanno da 8001 a 9000 e da 9001 a 10000.
 2) Il server risponde con un `ACK` e inviando i byte con numero di sequenza da 15001 a 17000, il campo `rwnd = 3000` indica quanti byte può ricevere per volta il server. Indica la `receive window`.
-3) Il client invia la sua `receive window` e un `ACK`
+3) Il client invia la sua `receive window` e un `ACK`.
 
 ## Trasferimento dati: Urgent
 I dati che hanno un flag `URG` vengono elaborati subito, indipendentemente dalla loro posizione nel flusso di byte.
@@ -87,28 +87,28 @@ Perché ACK cumulativi? Vediamo come si comporta TCP in varie situazioni:
 
 **Regola 3**
 
-- Arriva un segmento con numero di sequenza atteso e un altro segmento precedente è in attesa di trasmissione dell'ACK
-- Si invia un singolo ACK cumulativo per entrambi
+- Arriva un segmento con numero di sequenza atteso e un altro segmento precedente è in attesa di trasmissione dell'ACK.
+- Si invia un singolo ACK cumulativo per entrambi.
 
 ---
 
 **Regola 4**
 
 - Arriva un segmento non ordinato che ha quindi un numero di sequenza superiore a quello atteso e viene quindi rilevato un buco.
-- Viene subito inviato un ACK duplicato indicando il numero di sequenza del prossimo byte atteso. Questa procedura prende il nome di **ritrasmissione veloce**
+- Viene subito inviato un ACK duplicato indicando il numero di sequenza del prossimo byte atteso. Questa procedura prende il nome di **ritrasmissione veloce**.
 
 ---
 
 **Regola 5**
 
 - Arriva un segmento mancante ovvero è già stato ricevuto un suo successivo.
-- Viene inviato subito un ACK
+- Viene inviato subito un ACK.
 
 ---
 
 **Regola 6**
 
-- Arriva un segmento duplicato
+- Arriva un segmento duplicato.
 - Invia un ACK che contiene il numero di sequenza atteso.
 
 ## Ritrasmissione dei segmenti
@@ -120,7 +120,7 @@ Se questo riscontro non arriva possono accadere due cose:
 
 ---
 
-_FSM per Mittente_
+_FSM Mittente_
 
 ![[Pasted image 20250331110114.png|500]]
 
@@ -136,13 +136,13 @@ Usando quindi i timer per gli ACK cumulativi avremo una situazione simile:
 
 Quando il client riceve 4001-5000 si aspetta 5001, attende 500ms e non riceve niente e quindi invia ACK di 5001.
 
-Il server risponde con 5001-6000 e quindi il server aspetta per 500ms il 6001, dato che riceve 6001-7000 entro la finestra invia un singolo ACK di 7001.
+Il server risponde con 5001-6000 e quindi il client aspetta per 500ms il 6001, dato che riceve 6001-7000 entro la finestra invia un singolo ACK di 7001.
 
 ## Segmento Smarrito
 
 ![[Pasted image 20250331110838.png|500]]
 
-1) Client invia in ordine 501 - 600 e 601-700 quindi il server aspetta 701.
+1) Il client invia in ordine 501-600 e 601-700 quindi il server aspetta 701.
 2) 701-800 viene spedito ma smarrito
 3) Il client invia anche 801-900 e il server lo riceve, siccome ha ricevuto un pacchetto superiore a quello che si aspettava rinvia un ACK di 701.
 4) Il client lo riceve e rispedisce 701-800
@@ -158,7 +158,7 @@ Il pacchetto perso è il 301-400. Una volta che il client ha ricevuto 3 ACK dupl
 
 ![[Pasted image 20250331111719.png|500]]
 
-Viene smarrito ACK di 701 ma non viene ritrasmesso dato che il server ha ricevuto dei segmenti successivi e quindi può inviare direttamente ACK di 901. Ma non sempre accade questo
+Viene smarrito l'ACK di 701 ma non viene ritrasmesso dato che il server ha ricevuto dei segmenti successivi e quindi può inviare direttamente ACK di 901. Ma non sempre accade questo
 
 ## Riscontro smarrito con ritrasmissione
 
@@ -200,8 +200,8 @@ _Esempio_
 1) Viene inviato il pacchetto 100
 2) Il server con un ACK comunica la sua finestra grande 800, il client quindi adatta la sua finestra di invio a 800.
 3) Il client aggiusta la sua finestra di invio e trasmette un ACK per stabilire la connessione
-4) Il client invia 200 byte di dati (parte griga), il server li riceve e fa scorrere la sua finestra di ricezione, 800-200 = 600
-5) Il server invia ACK contenente anche la nuova finestra da 600. Il server la riceve e fa scorrere anche la sua.
+4) Il client invia 200 byte di dati (parte grigia), il server li riceve e fa scorrere la sua finestra di ricezione, 800-200 = 600
+5) Il server invia ACK contenente anche la nuova finestra da 600. Il client la riceve e fa scorrere anche la sua.
 6) Il client invia altri 300 byte. Il server li riceve e passa a 300 byte di finestra ma 100 byte di quelli ricevuti vengono passati all'applicazione e quindi li riguadagna la finestra, siamo a 400
 7) Il server invia la nuova finestra in un ACK, il client fa scorrere la finestra togliendo da sinistra i segmenti per i quali ha ricevuto ACK e aggiungendo a destra fino a raggiungere 400
 8) Il server consuma altri 200 byte e quindi la finestra passa a 600, invia un ACK al client che allargherà verso destra la finestra di invio per farla combaciare.
@@ -274,7 +274,7 @@ Quando si rileva la congestione si imposta `ssthresh = cwnd / 2` ma anche `cwnd 
 ### Fast Recovery dopo :P
 
 # Versioni TCP
-Ci sono diverse versioni di TCP che si muovo fra questi metodi in modo diverso.
+Ci sono diverse versioni di TCP che si muovono fra questi metodi in modo diverso.
 
 ## TCP Tahoe
 Considera timeout e 3 ACK duplicati come congestione e riparte da `cwnd = 1` con `ssthresh = cwnd / 2`
