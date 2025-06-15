@@ -112,7 +112,7 @@ _FSM per rappresentare il mittente_
 
 ![[Pasted image 20250327223946.png]]
 
-_FSM per Destinatario_
+_FSM per rappresentare il Destinatario_
 
 ![[Pasted image 20250327224001.png]]
 
