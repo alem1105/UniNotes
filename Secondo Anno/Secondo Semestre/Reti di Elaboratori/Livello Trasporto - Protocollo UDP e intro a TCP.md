@@ -22,7 +22,7 @@ Possiamo individuare le seguenti figure:
 Quindi notiamo che i protocolli di trasporto (portieri) lavorano a livello locale e non sono coinvolti al di fuori.
 
 # Indirizzamento
-I nuovi sistemi operativi sono multiutenti e multiprocesso questo significa che sia a livello client che server avremo diversi processi attivi. Per stabilire una comunicazione tra due processi sarà quindi necessario individuare:
+I nuovi sistemi operativi sono multiutente e multiprocesso questo significa che sia a livello client che server avremo diversi processi attivi. Per stabilire una comunicazione tra due processi sarà quindi necessario individuare:
 - Host locale
 - Host remoto
 - Processo locale
@@ -79,7 +79,7 @@ Come detto prima i socket permettono la comunicazione fra processi, questi però
 
 Comunicare tra un processo client e uno server significa comunicare tra due socket.
 
-Sono composte da:
+Sono composti da:
 - 32 bit di indirizzo IP
 - 16 bit numero di porta
 
@@ -189,7 +189,7 @@ Destinatario
 - Viene diviso in parole da 16 bit
 - Tutte le parole vengono sommate con complemento a 1
 - Viene fatto il complemento a 1 della somma ed il risultato è il nuovo checksum
-- Se il checuksum vale 0 allora il messaggio viene accettato altrimenti si scarta
+- Se il checksum vale 0 allora il messaggio viene accettato altrimenti si scarta
 
 _Esempio di checksum_
 
@@ -262,7 +262,7 @@ Ci sono 2 casi di controllo di flusso:
 
 ![[Pasted image 20250322195421.png]]
 
-Come possiamo realizzare il controllo del flusso?:
+Come possiamo realizzare il controllo del flusso?
 - Implementiamo dei buffer ovvero delle zone di memoria che memorizzano i pacchetti
 - Il consumatore invia dei segnali al produttore:
 	- Il livello trasporto del mittente segnala al livello applicazione di sospendere l'invio dei messaggi quando il buffer è saturo, quando si svuota si può riprendere l'invio.
@@ -325,4 +325,4 @@ Nella realtà per memorizzare i numeri di sequenza del prossimo pacchetto da inv
 ## Controllo della Congestione
 Nella commutazione a pacchetto la congestione avviene se il carico della rete ovvero il numero di pacchetti su di essa è superiore alla sua capacità, con il controllo della congestione usiamo delle tecniche per fare in modo che questa situazione non si verifichi mai.
 
-Si parla di congestione perché arrivano più pacchetti di quelli che router e switch riescono a gestire e quindi si riempono le loro code portando alla perdita di pacchetti e rallentamenti.
+Si parla di congestione perché arrivano più pacchetti di quelli che router e switch riescono a gestire e quindi si riempiono le loro code portando alla perdita di pacchetti e rallentamenti.
