@@ -114,7 +114,7 @@ Tutte le stazioni che fanno parte di una ethernet sono dotate di una Network Int
 2) **Carrier Sense e Trasmissione** - Se il canale è inattivo (lo si capisce vedendo il livello di energia sul mezzo trasmissivo) inizia la trasmissione, se invece risulta occupato allora si resta in attesa fino a quando non è inattivo.
 3) **Collision Detection** - Verifica, durante la trasmissione, la presenza di segnali provenienti da altre NIC, se non ci sono allora il pacchetto viene spedito.
 4) **Jamming** - Se vengono rilevati segnali da altre NIC interrompe la trasmissione del pacchetto e invia un segnale di disturbo (jam)
-5) **Backoff Esponenziale** - La NIC rimane in attesa, quando riscontra la n-esima collisione consecutiva stabilisce un valore $k$ tra $\{ 0,1,2,\dots,2^{m-1} \}$ dove $m$ è il minimo tra $n$ e $10$. La NIC aspetta un tempo pari a $k$ volte 512 bit  e ritorna la Passo 2.
+5) **Backoff Esponenziale** - La NIC rimane in attesa, quando riscontra la n-esima collisione consecutiva stabilisce un valore $k$ tra $\{ 0,1,2,\dots,2^{m}-1 \}$ dove $m$ è il minimo tra $n$ e $10$. La NIC aspetta un tempo pari a $k$ volte 512 bit  e ritorna la Passo 2.
 
 - Il **jam** è grande 48 bit e il suo obiettivo è quello di avvisare della collisione tutte le altre NIC che sono in fase trasmissiva
 - L'obiettivo del backoff esponenziale è quello di stimare quanti sono gli adattatori coinvolti.

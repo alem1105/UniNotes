@@ -102,7 +102,7 @@ Fra tutti i router soltanto alcuni dovranno ricevere traffico multicast, ovvero 
 
 Ci sono diversi approcci per identificare questo albero.
 
-### Albero condiviso del gruppo
+### Albero condiviso dal gruppo
 Viene costruito un singolo albero d'instradamento condiviso da tutto il gruppo multicast, il router agisce da rappresentante per il gruppo, se il mittente del traffico multicast non è il centro dell'albero allora esso invierà il traffico al centro usando unicast, sarà poi il centro ad inviarlo al resto del gruppo:
 
 ![[Pasted image 20250507113843.png|300]]

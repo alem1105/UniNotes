@@ -218,7 +218,7 @@ L'efficienza è definita come la frazione di slot vincenti in presenza di un ele
 - Studiando il valore di $p$ che massimizza la probabilità di successo per $N$ che tende a infinito si ottiene che l'efficienza massima è $\frac{1}{2} e$ ovvero $0.18$, molto bassa.
 
 # Slotted ALOHA
-Un modo per aumentare l'efficienza di ALOHA consiste nel dividere il tempo in intervalli discreti, ciascuno corrispondente ad un frame time $F_{fr}$.
+Un modo per aumentare l'efficienza di ALOHA consiste nel dividere il tempo in intervalli discreti, ciascuno corrispondente ad un frame time $T_{fr}$.
 
 Serve **sincronizzazione** - i nodi devono essere d'accordo nel confine fra gli intervalli, possiamo realizzare questo facendo emettere da un'attrezzatura speciale un breve segnale all'inizio di ogni intervallo.
 
