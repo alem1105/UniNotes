@@ -3,7 +3,7 @@ Nel paradigma client / server la comunicazione a livello di applicazione avviene
 - Di solito il client è quello che inizia la comunicazione inviando una richiesta al server
 - Il server è in attesa di richieste dai client
 
-## API: Application Progamming Interface
+## API: Application Programming Interface
 Se vogliamo sviluppare un programma in grado di comunicare con un altro programma abbiamo bisogno di un set di istruzioni che riescano a:
 - Chiedere ai primi 4 livelli dello stack TCP / IP di aprire una connessione
 - Inviare e ricevere dati
