@@ -60,7 +60,7 @@ programma ex1(input_file, output_file) che:
      dell'immagine che vi sono presenti. Riferendosi alla figura
      semplificata sottostante:
 
-        \ +++++++++++++++++++
+        ```\ +++++++++++++++++++
         \ +-1-|-2-|---------+
         \ ++++a+++|----5----+
         \ +-3-|-4-|---------+
@@ -69,7 +69,7 @@ programma ex1(input_file, output_file) che:
         \ +---6---|++++c+++++
         \ +-------|-10-|-9--+
         \ +++++++++++++++++++
-  
+        ```
    \ l'approccio deve restituire un intero che corrisponde a 10 in
     questo caso (numero totale di rettangoli). I numeri posti nella
     figura soprastante sono stati inseriti solo per chiarire il
@@ -92,7 +92,7 @@ programma ex1(input_file, output_file) che:
 
    \ Un altro esempio un pochino piu' complesso:
 
-   \      +++++++++++++++++++++++++++++++++++++
+   \      ```+++++++++++++++++++++++++++++++++++++
          +-1-|-2-|---------|--------|--------+
          ++++a+++|----5----|---6----|----7---+
          +-3-|-4-|---------|--------|--------+
@@ -109,6 +109,7 @@ programma ex1(input_file, output_file) che:
          +--25---|++++m++++|---30---|+++n+++++
          +-------|-29-|-28-|--------|-33-|-34+
          +++++++++++++++++++++++++++++++++++++
+    ```
 
   \       num. rect: 34
          gerarchia dei colori:
