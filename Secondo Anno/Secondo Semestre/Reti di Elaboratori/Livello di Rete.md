@@ -72,7 +72,7 @@ Questo significa inoltre che i pacchetti non seguiranno più lo stesso percorso,
 
 ![[Screenshot 2025-04-09 alle 10.44.32.png|500]]
 
-In questo caso la tabella di inoltro dei router sarebbe tropo grande se coprisse tutte le possibilità, ovvero circa 4 miliardi di possibili indirizzi.
+In questo caso la tabella di inoltro dei router sarebbe troppo grande se coprisse tutte le possibilità, ovvero circa 4 miliardi di possibili indirizzi.
 
 Per scegliere il percorso viene utilizzato quindi il prefisso degli indirizzi:
 

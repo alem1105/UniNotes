@@ -14,9 +14,9 @@ Per fare questo il sistema operativo deve poter comunicare con l'hardware e gest
 > All'intero della CPU sono presenti dei registri molto veloci tra cui:
 > - PC: Program Counter, contiene l'indirizzo della prossima istruzione da eseguire.
 > - IR: Instruction Register, contiene l'istruzione da eseguire vera e propria.
->- MAR: Memory Address Register, contiene un indirizzo della memoria RAM
->- MBR: Memory Buffer Register, contiene un valore da scrivere sulla RAM
->  La ALU (Execution Unit) è la parte che svolge i calcoli logici e aritmetici.
+> - MAR: Memory Address Register, contiene un indirizzo della memoria RAM.
+> - MBR: Memory Buffer Register, contiene un valore da scrivere sulla RAM.
+> - ALU (Execution Unit): è la parte che svolge i calcoli logici e aritmetici.
 
 **Componenti Principali**:
 - Processore: Svolge le computazioni.
@@ -78,7 +78,7 @@ Questa macchina ha 3 particolari istruzioni:
 ## Interruzioni
 Le interruzioni interrompono il normale flusso delle operazioni del processore per eseguire delle particolari operazioni del Sistema Operativo, quindi queste non sono scritte dall'utente.
 
-Le cause di queste interruzioni sono molteplici e a seconda di queste prendono deo nomi diversi, **sincrone e asincrone**.
+Le cause di queste interruzioni sono molteplici e a seconda di queste prendono dei nomi diversi, **sincrone e asincrone**.
 
 Quelle sincrone sono le interruzioni del programma e avvengono immediatamente dopo l'esecuzione di un'istruzione, quelle asincrone invece nella maggior parte dei casi vengono gestite molto dopo l'istruzione che le ha sollevate, e in alcuni casi non vengono nemmeno generate da un'istruzione ma da altri eventi.
 
@@ -444,7 +444,7 @@ Il Sistema Operativo deve:
 
 > [!info] Che cos'è un processo?
 > In modo semplice è un **programma in esecuzione**, ovvero quando un utente richiede la computazione svolta da quel programma.
-> Possiamo definirlo anche in altri modi, ad esempio un processo è un'istanza di un programma in esecuzione, e per alcuni programma possiamo avere anche più istanze ovvero più processi.
+> Possiamo definirlo anche in altri modi, ad esempio un processo è un'istanza di un programma in esecuzione, e per alcuni programmi possiamo avere anche più istanze, ovvero più processi.
 > Ogni istanza viene assegnata ad un processore per l'esecuzione.
 > Ogni processo è caratterizzato da:
 > - Codice ovvero **una sequenza di istruzioni**
@@ -565,7 +565,7 @@ A livello implementativo possiamo vederlo così:
 
 ![[Pasted image 20241005113707.png]]
 
-Basta quindi aggiungere una cosa per i processi in attesa.
+Basta quindi aggiungere una coda per i processi in attesa.
 
 Possiamo migliorare questa implementazione nel seguente modo:
 
@@ -663,7 +663,7 @@ Le informazioni contenute in un _PCB_ possono essere raggruppate in 3 categorie:
 - Stato
 - Controllo
 
-Per identificare un processo abbiamo visto che gli viene assegnato un identificativo unico che si chiama **PID (Process IDentifier)**, un numero positivo che gli viene assegnato. Molte tabelle del SO usano i PID per realizzare collegamenti fra le varie tabelle e quella dei processi, ad esempio per tenere conto di quella processo sta utilizzando una determinata risorsa.
+Per identificare un processo abbiamo visto che gli viene assegnato un identificativo unico che si chiama **PID (Process IDentifier)**, un numero positivo che gli viene assegnato. Molte tabelle del SO usano i PID per realizzare collegamenti fra le varie tabelle e quella dei processi, ad esempio per tenere conto di quale processo sta utilizzando una determinata risorsa.
 
 > [!warning] Stato del Processo e Stato del Processore
 > È importante non confondere le due cose, gli stati del processo sono quelli visti prima come ad esempio _ready, blocked ecc..._ mentre lo stato del processore è il contenuto dei suoi registri, le sue **informazioni di stato**.
@@ -738,7 +738,7 @@ Spesso però i _programmi utente_ hanno bisogno degli I/O, per fare questo i pro
 > > 
 > 
 
-L'interrupt handler può essere eseguito in diversi "modi", e in tutti questi dobbiamo essere in kernl mode:
+L'interrupt handler può essere eseguito in diversi "modi", e in tutti questi dobbiamo essere in kernel mode:
 - Eseguito per conto dello stesso processo interrotto che lo ha esplicitamente voluto
 	- System calls oppure in risposta ad una sua richiesta di I/O
 - Eseguito per conto dello stesso processo interrotto ma non voluto:
@@ -831,7 +831,7 @@ Usa il modello 2 dove la maggior parte del SO viene eseguito all'interno dei pro
 > ![[Pasted image 20241005195853.png|500]]
 > 
 > Qua abbiamo più stati ma il funzionamento è simile a quello visto prima.
-> Quando un processo chiama la funzione **fork** crea un processo figlio, va in _ready to run in memory_ dove è pronto per essere selezionate mentre se si trova in _ready to run swapped_ significa che si trova sul disco. Il running è diviso in _kernel running_ e _user running_ che indicano in che modalità è eseguito un processo, da notare che prima bisogna passare per la _kernel running_.
+> Quando un processo chiama la funzione **fork** crea un processo figlio, va in _ready to run in memory_ dove è pronto per essere selezionato mentre se si trova in _ready to run swapped_ significa che si trova sul disco. Il running è diviso in _kernel running_ e _user running_ che indicano in che modalità è eseguito un processo, da notare che prima bisogna passare per la _kernel running_.
 > La _preemted_ indica quando togliamo il processore ad un processo prima che finisca, la _asleep in memory_ indica che non può essere eseguito finché non avviene un altro evento ma si trova comunque in memoria.
 > _Sleeping Swapped_ è come il precedente ma si trova in memoria.
 > Quando un processo finisce va nello stato _zombie_, più nello specifico quando un processo viene terminato deve mandare al suo padre un codice che indica la sua terminazione, finché non lo fa il processo figlio si trova in questo stato zombie. In questo stato inoltre non esiste più l'immagine del processo ma soltanto il suo PCB.
@@ -848,11 +848,11 @@ Questi sono visti dai programmatori
 ### Livello Registro
 - Program Counter: Indirizzo della prossima istruzione del process text da eseguire
 - Processor status register: Registro di stato del processore, relativo a quando è stato swappato l'ultima volta
-- Stack Pointer: puntatore alla cima dello user stack
+- Stack Pointer: Puntatore alla cima dello user stack
 - General purpose registers: Registri accessibili al programmatore, relativo a quando è stato swappato l'ultima volta.
 
 ### Livello Sistema
-Gestire un proesso a livello di memoria
+Gestire un processo a livello di memoria
 
 - Process table entry: Puntatore alla tabella di tutti i processi che individua quello corrente
 - U Area: Informazioni per il controllo del processo
@@ -910,7 +910,7 @@ Quindi in un sistema a singolo thread è gestito come abbiamo visto fino ad ades
 Su un sistema multithread abbiamo un PCB del processo, la _User Address Space_ che è la parte in comune fra tutti i thread, quindi variabili globali ecc.., e per ogni thread la gestione di quel thread quindi un **Thread Control Block** che serve a gestire lo scheduling fra questi e poi due stack separati per ogni thread, uno utente e uno kernel mode.
 
 > [!info] Vantaggio dei Thread
-> Prima abbiamo visto che è possibili creare più processi figli da un padre, a cosa servono quindi i Thread?
+> Prima abbiamo visto che è possibile creare più processi figli da un padre, a cosa servono quindi i Thread?
 > 
 > Questi sono più efficienti, è inoltre più semplice crearli, terminarli e fare lo switching.
 > 
@@ -939,6 +939,8 @@ Su un sistema multithread abbiamo un PCB del processo, la _User Address Space_ c
 - Switch più efficiente dato che per thread dello stesso processo non è richiesto il mode switch.
 - Scheduling diverso per ogni applicazione utente
 - Permettono di usare i thread anche su sistemi operativi che non li supportano.
+
+
 **Peggio ULT perché**:
 - Se un thread si blocca, si bloccano tutti quelli di quel processo (a meno che non sia per un _block_) mentre con i KLT si blocca solo quel thread. Questo avviene perché il Sistema operativo con gli ULT non è a conoscenza dei thread.
 - Se ci sono più processori o cores, tutti i thread del processo ne possono usare soltanto uno sempre per lo stesso motivo di prima.
@@ -987,8 +989,8 @@ Nell'immagine non è riportato ma c'è un puntatore **thread group (lista concat
 > È sostanzialmente il modello a 5 stati, non ci sono processi suspended, o meglio potrebbero esserci ma non per scelta del SO.
 > 
 > Ci sono diversi stati:
-> - `TASK_RUNNING`: include sia ready che running, quindi sono tutti "running".
-> - `TASK_INTERRUPTIBLE, TASK_UNINTERRUPTIBLE, TASK_STOPPED, TASK_TRACED:` Sono tuttti blocked la differenza la fa soltanto il motivo per cui lo sono.
+> - `TASK_RUNNING`: Include sia ready che running, quindi sono tutti "running".
+> - `TASK_INTERRUPTIBLE, TASK_UNINTERRUPTIBLE, TASK_STOPPED, TASK_TRACED:` Sono tutti blocked la differenza la fa soltanto il motivo per cui lo sono.
 > - `EXIT_ZOMBIE, EXIT_DEAD`: Sono entrambi Exit, zombie ha lo stesso significato di Unix
 
 ## Segnali ed Interrupt in Linux
@@ -1013,7 +1015,7 @@ I gestori di interrupt ed eccezioni sono eseguiti invece in **modalità kernel**
 
 In breve quindi:
 - I Signal Handler sono eseguiti in user mode mentre gli interrupt handler in kernel mode.
-- I signal handler potrebbero essere riscritto dal programmatore mentre gli interrupt handler no. (Anche 2 signal handler non possono essere riscritti `SIGKILL e SIGSTOP`).
+- I Signal Handler potrebbero essere riscritti dal programmatore mentre gli interrupt handler no. (Anche 2 signal handler non possono essere riscritti `SIGKILL e SIGSTOP`).
 
 # Scheduling
 Ne abbiamo parlato spesso, è il modo in cui il sistema operativo alloca le risorse tra i vari processi.
