@@ -244,7 +244,7 @@ func getAlemOpinion(on phone: Phone) {
 	if phone == .iPhone11Pro {
 		print("Something about 11 Pro")
 	}
-	else if prhone == .iPhoneSE {
+	else if phone == .iPhoneSE {
 		print("Something about iPhhoneSE")
 	}
 	else if ...
@@ -290,7 +290,7 @@ func getAlemOpinion(on phone: Phone) {
 		case .iPhone11Pro:
 			print("Something about 11 Pro")
 		case .iPhoneSE:
-			print("Something about iPhhoneSE")
+			print("Something about iPhoneSE")
 		case ...
 		default:
 			print("Non hai inserito un telefono valido")
@@ -307,4 +307,119 @@ Il caso `default` viene eseguito quando non rientriamo nei casi precedenti.
 ...
 
 # Optionals
+Ci permettono di gestire la "mancanza" di valore per un tipo di dato, ad esempio
+
+```swift
+var ages: [Int] = []
+ages.sort()
+
+let oldestAges = ages.last
+```
+
+In questo caso last non esiste dato che l'array è vuoto, ritornerà il valore `nil`
+
+Di base non possiamo accedere direttamente al valore contenuto in un Optional, se presente, ma dobbiamo usare dei costrutti che ci permettono di effettuare **l'unwrap**:
+
+- **If let**
+
+In questo modo stiamo dicendo, _se ages.last ha un valore e non è nil allora lo inseriamo in oldestAge_, abbiamo accesso alla variabile all'interno delle parentesi
+
+```swift
+if let oldestAge = ages.last {
+	print("The oldest age is \(oldestAge)")
+} else {
+	print("There is no oldest age. You must have no students.")
+}
+```
+
+- **Nil coalescing**
+
+Creiamo la variabile, se ha un valore allora lo usiamo altrimenti forniamo un valore di default dopo i `??`
+
+```swift
+let oldestAge = ages.last ?? 999
+```
+
+- **Guard Statement**
+
+Ci permette di uscire dal codice o eseguire delle operazioni nel caso in cui il valore è nil.
+
+```swift
+func getOldestAge() {
+	guard let oldestAge = ages.last else {
+		return
+	}
+}
+```
+
+> [!info] Guard vs If let
+> Cosa cambia allora fra i due?
+> 
+> Con `if let` abbiamo accesso alla variabile soltanto all'interno dello scope di `if let` quindi se dobbiamo controllare più tipi potremmo avere un codice poco leggibile e pieno di parentesi annidate.
+> 
+> Con `guard` possiamo controllare il tipo in una riga e poi usare la variabile all'interno dell'intera funzione, quindi anche se controlliamo più variabili abbiamo comunque accesso a tutte.
+
+- **Force Unwrap**
+
+Questo è molto pericoloso, non ci interessa che valore ha il dato, lo usiamo e basta.
+
+```swift
+let oldestAge = ages.last!
+```
+
+# Self
+
+Si usa con le classi serve a riferirsi all'oggetto in cui ci troviamo, praticamente uguale al `this` di Java
+
+# Classi
+
+Sono la base della programmazione ad Oggetti. Possiamo quindi creare i nostri tipi personalizzati:
+
+```swift
+class Developer {
+	var name: String
+	var jobTitle: String
+	var yearsExp: Int
+
+	init(name: String, jobTitle: String, yearsExp: Int) {
+		self.name = name
+		self.jobTitle = jobTitle
+		self.yearsExp = yearsExp
+	}
+}
+```
+
+Possiamo creare degli oggetti in questo modo:
+
+```swift
+let alessio = Developer(name: "Alessio", jobTitle: "Student", yearsExp: 2)
+```
+
+Ed accedere ai campi come le altre variabili:
+
+```swift
+alessio.name
+alessio.jobTitle
+alessio.yearsExp
+```
+
+Se vogliamo crearne uno vuoto dobbiamo rendere i campi della classe degli Optionals, quindi:
+
+```swift
+class Developer {
+	var name: String?
+	var jobTitle: String?
+	var yearsExp: Int?
+
+	init(name: String, jobTitle: String, yearsExp: Int) {
+		self.name = name
+		self.jobTitle = jobTitle
+		self.yearsExp = yearsExp
+	}
+}
+```
+
+In questo modo possiamo creare l'oggetto senza parametri e poi aggiungerli successivamente.
+
+# Ereditarietà
 
