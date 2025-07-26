@@ -423,3 +423,135 @@ In questo modo possiamo creare l'oggetto senza parametri e poi aggiungerli succe
 
 # Ereditarietà
 
+Una classe può ereditare elementi di un'altra classe
+
+Una sottoclasse si crea come una classe normale ma dobbiamo indicare la superclasse con i `:`, quindi:
+
+```swift
+class Developer {
+	var name: String?
+	var jobTitle: String?
+	var yearsExp: Int?
+
+	init(name: String, jobTitle: String, yearsExp: Int) {
+		self.name = name
+		self.jobTitle = jobTitle
+		self.yearsExp = yearsExp
+	}
+
+	func speakName() {
+		print(name!)
+	}
+}
+
+class iOSDeveloper: Developer {
+	var favoriteFramework: String?
+
+	func speakFavoriteFramework() {
+		if let favoriteFramework == favoriteFramework {
+			print(favoriteFramework)
+		} else {
+			print("No favorite Framework")
+		}
+	}
+}
+```
+
+E possiamo creare un oggetto:
+
+```swift
+let alessio = iOSDeveloper(name: "Alessio"...)
+```
+
+Usiamo quindi lo stesso costruttore della classe `Developer` che viene ereditato da `iOSDeveloper`.
+
+Possiamo modificare delle funzionalità della superclasse tramite gli `override`:
+
+```swift
+class Developer {
+	var name: String?
+	var jobTitle: String?
+	var yearsExp: Int?
+
+	init(name: String, jobTitle: String, yearsExp: Int) {
+		self.name = name
+		self.jobTitle = jobTitle
+		self.yearsExp = yearsExp
+	}
+
+	func speakName() {
+		print(name!)
+	}
+}
+
+class iOSDeveloper: Developer {
+	var favoriteFramework: String?
+
+	func speakFavoriteFramework() {
+		if let favoriteFramework == favoriteFramework {
+			print(favoriteFramework)
+		} else {
+			print("No favorite Framework")
+		}
+	}
+
+	override func speakName() {
+		print("\(name!) - \(jobTitle!)")
+	}
+}
+```
+
+# Struct
+
+Sono simili alle classi, infatti possono avere proprietà e funzionalità, la differenza è che sono più leggere delle classi perché sono dei **value types** mentre le classi sono **reference types**.
+
+Reference Types - Essenzialmente sono come dei puntatori che puntano alla struttura dati creata.
+
+Value Types - Sono loro stessi l'istanza di quei dati.
+
+Infatti se ad esempio creiamo una nuova variabile e ci assegniamo un oggetto già creato, questa variabile sarà in realtà un puntatore a quello stesso oggetto, ovvero:
+
+```swift
+var alessio = Developer(name: "Alessio", jobTitle: "Student", yearsExp: 2)
+
+var matteo = alessio
+
+matteo.name // Restituirà Alessio
+
+matteo.name = "Matteo"
+alessio.name // Restituirà Matteo
+```
+
+Se invece creiamo ed usiamo una `struct`:
+
+```swift
+struct Developer {
+	var name: String?
+	var jobTitle: String?
+	var yearsExp: Int?
+}
+
+var alessio = Developer(name: "Alessio", jobTitle: "Student", yearsExp: 2)
+
+var matteo = alessio
+matteo.name = "Matteo"
+matteo.name // Restituirà Matteo
+alessio.name // Restituirà Alessio
+```
+
+# Extensions
+
+Servono ad aggiungere funzionalità ad un tipo di dato già esistente.
+
+```swift
+extension String {
+	func removeWhitespace() -> String {
+		return components(separatedBy: .whitespaces).joined()
+	}
+}
+
+let alphabet = "A B C D E F"
+print(alphabet.removeWhitespace()) // ABCDEF
+```
+
+
