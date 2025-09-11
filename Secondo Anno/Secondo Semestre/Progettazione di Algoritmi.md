@@ -60,12 +60,17 @@ Ma perché consideriamo efficiente un algoritmo con complessità $O(n^c)$ con un
 **Testi di Church-Turing estesa** - I modelli di calcolo realistici sono tra loro polinomialmente correlati, quindi il concetto di trattabilità è **indipendente dalla macchina**.
 
 - # [[Grafi]]
+
 - # [[Grafi Pesati]]
 
 ---
 
 - # [[Problemi di Ottimizzazione e Algoritmi di Ottimizzazione]]
+
 - # [[Gli algoritmi Greedy]]
+
 - # [[Divide et Impera]]
+
 - # [[Programmazione Dinamica]]
+
 - # [[Backtracking]]
