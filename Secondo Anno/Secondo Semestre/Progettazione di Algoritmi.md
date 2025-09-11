@@ -61,16 +61,21 @@ Ma perché consideriamo efficiente un algoritmo con complessità $O(n^c)$ con un
 
 - # [[Grafi]]
 
+
 - # [[Grafi Pesati]]
 
 ---
 
 - # [[Problemi di Ottimizzazione e Algoritmi di Ottimizzazione]]
 
+
 - # [[Gli algoritmi Greedy]]
+
 
 - # [[Divide et Impera]]
 
+
 - # [[Programmazione Dinamica]]
+
 
 - # [[Backtracking]]
