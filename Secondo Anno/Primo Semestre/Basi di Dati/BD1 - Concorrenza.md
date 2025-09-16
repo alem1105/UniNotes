@@ -235,7 +235,7 @@ Ovviamente questa contraddizione può crearsi ovunque ma noi per comodità lo ab
 Un deadlock si verifica quando ogni transazione in un insieme T è in attesa di ottenere un lock su un item sul quale un'altra transazione nello stesso insieme mantiene un lock quindi questa rimane bloccata non rilasciando i lock e bloccando anche eventuali transazioni non dell'insieme.
 
 Essenzialmente accade una situazione del tipo:
-- A ha un lock e sta un unlock di B
+- A ha un lock e sta aspettando un unlock di B
 - Anche B sta aspettando un unlock di C
 - Ma C sta aspettando un unlock di A
 Quindi è tutto bloccato.
