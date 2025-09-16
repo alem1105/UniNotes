@@ -198,7 +198,7 @@ Una transazione si dice **a due fasi** se:
 
 Quindi una volta effettuato un unlock non è più possibile effettuare altri lock, per nessuna variabile.
 
-Inoltre da non confondere il protocollo a due fasi da il lock a due valori, il fatto di essere a due fasi è solo una caratteristica aggiuntiva, ci possono essere infatti anche transazioni a due fasi e 3 valori di lock.
+Inoltre da non confondere il protocollo a due fasi con il lock a due valori, il fatto di essere a due fasi è solo una caratteristica aggiuntiva, ci possono essere infatti anche transazioni a due fasi e 3 valori di lock.
 
 ### Teorema sul lock a due fasi
 Sia T un insieme di transazioni, se **ogni transazione** in T è **a due fasi** allora **ogni schedule** di T è **serializzabile**.
