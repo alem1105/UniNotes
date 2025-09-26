@@ -163,7 +163,7 @@ $$
 \begin{cases}
 q_{0} \text{ se } w = \epsilon \\
 q_{1} \text{ se } w \text{ inizia con 1} \\
-q_{2} \text{ se } w \text{ inizia con 2}
+q_{2} \text{ se } w \text{ inizia con 0}
 \end{cases}
 $$
 
