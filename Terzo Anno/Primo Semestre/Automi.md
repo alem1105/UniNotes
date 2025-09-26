@@ -218,6 +218,7 @@ L^{n+1} = L^n \circ L
 \end{cases*}
 $$
 
+
 ### Operatore "star" \*
 
 $$
