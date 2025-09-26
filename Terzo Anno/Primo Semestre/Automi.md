@@ -160,17 +160,17 @@ In questo caso abbiamo quindi $|w|\leq n$ con $n>0$, e quindi la funzione di tra
 
 $$
 \delta^*(q_{0},w)=
-\begin{cases*}
+\begin{cases}
 q_{0} \text{ se } w = \epsilon \\
 q_{1} \text{ se } w \text{ inizia con 1} \\
 q_{2} \text{ se } w \text{ inizia con 2}
-\end{cases*}
+\end{cases}
 $$
 
 Adesso prendiamo una stringa $|x| = n+1$ e la pensiamo costruita come $x=au$ con $a\in \{ 0,1 \}$ e $u\in \{ 0,1 \}^*$, la funzione di transizione ci restituirà:
 
 $$
-\delta^*(q_{0},x)=\delta^*(q_{0},au)=\delta^*(\underbracket{\delta(q_{0},a)}_{\text{solo 2 soluzioni}},u)
+\delta^* (q_{0},x) = \delta^* (q_{0},au) = \delta^* (\underbrace{\delta(q_{0},a)}_{\text{solo 2 soluzioni}},u)
 $$
 
 Le due soluzioni di quel passaggio sono:
@@ -212,10 +212,10 @@ $$
 Possiamo definirla ricorsivamente:
 
 $$
-\begin{cases*}
+\begin{cases}
 L^0 = \epsilon \\
 L^{n+1} = L^n \circ L
-\end{cases*}
+\end{cases}
 $$
 
 
