@@ -7,10 +7,10 @@
 Introduciamo delle definizioni e delle operazioni che utilizzeremo durante il corso.
 #showybox(
   frame: (
-    border-color: white,
-    title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
-  ),
+  border-color: green.lighten(60%),
+  title-color: green.lighten(60%),
+  body-color: green.lighten(95%)
+),
   title-style: (
     color: black,
     weight: "regular",
@@ -23,10 +23,10 @@ Introduciamo delle definizioni e delle operazioni che utilizzeremo durante il co
 
 #showybox(
   frame: (
-    border-color: white,
-    title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
-  ),
+  border-color: green.lighten(60%),
+  title-color: green.lighten(60%),
+  body-color: green.lighten(95%)
+),
   title-style: (
     color: black,
     weight: "regular",
@@ -41,9 +41,9 @@ Introduciamo delle definizioni e delle operazioni che utilizzeremo durante il co
 
 #showybox(
 frame: (
-  border-color: green.lighten(85%),
+  border-color: green.lighten(60%),
   title-color: green.lighten(60%),
-  body-color: green.lighten(85%)
+  body-color: green.lighten(95%)
 ),
 title-style: (
   color: black,
@@ -56,9 +56,9 @@ title: [*Lunghezza di una Stringa*],
 )
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -71,9 +71,9 @@ title: [*Lunghezza di una Stringa*],
 )
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -86,9 +86,9 @@ title: [*Lunghezza di una Stringa*],
 )
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -101,9 +101,9 @@ title: [*Lunghezza di una Stringa*],
 )
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -116,9 +116,9 @@ title: [*Lunghezza di una Stringa*],
 )
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -130,12 +130,11 @@ title: [*Lunghezza di una Stringa*],
   [Data la stringa $w in Sigma^*$ e dato $n in NN$ definiamo la potenza in modo ricorsivo: $ w^n = cases(epsilon " se " n = 0, w w^{n-1} " se " n>0) $]
 )
 
-
 #showybox(
   frame: (
-    border-color: white,
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,

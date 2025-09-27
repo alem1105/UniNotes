@@ -10,6 +10,7 @@ Il modello di computazione che utilizzeremo per ora è un DFA, questo ha una mem
   frame: (
     border-color: blue.lighten(60%),
     title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -29,9 +30,9 @@ Il modello di computazione che utilizzeremo per ora è un DFA, questo ha una mem
 
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -55,9 +56,9 @@ Dati dei DFA vogliamo iniziare a definire dei linguaggi dedicati a questi, per f
 
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -75,9 +76,9 @@ Adesso diamo le definizioni di *Configurazione* e *Passo di Computazione* che ci
 
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -92,9 +93,9 @@ Adesso diamo le definizioni di *Configurazione* e *Passo di Computazione* che ci
 
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -117,9 +118,9 @@ Definiamo quindi il linguaggio accettato dal DFA.
 
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,

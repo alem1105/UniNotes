@@ -7,9 +7,9 @@
 
 #showybox(
   frame: (
-    border-color: green.lighten(85%),
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -29,6 +29,7 @@ Uno dei nostri obiettivi nel corso è quello di, dato un linguaggio, progettare 
   frame: (
     border-color: blue.lighten(60%),
     title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -62,9 +63,9 @@ Questo DFA accetta quindi tutte le stringhe che iniziano con il simbolo 1 mentre
 
 #showybox(
   frame: (
-    border-color: red.lighten(85%),
+    border-color: red.lighten(60%),
     title-color: red.lighten(60%),
-    body-color: red.lighten(85%)
+    body-color: red.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -119,9 +120,9 @@ Dimostriamo per induzione che il linguaggio è accettato, quindi presa una strin
 
 #showybox(
   frame: (
-    border-color: white,
+    border-color: purple.lighten(60%),
     title-color: purple.lighten(60%),
-    body-color: purple.lighten(85%)
+    body-color: purple.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -132,9 +133,9 @@ Dimostriamo per induzione che il linguaggio è accettato, quindi presa una strin
   title: [*Dimostrazione*],
   showybox(
   frame: (
-    border-color: purple.lighten(85%),
+    border-color: purple.lighten(95%),
     title-color: purple.lighten(60%),
-    body-color: purple.lighten(85%)
+    body-color: purple.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -150,9 +151,9 @@ Dimostriamo per induzione che il linguaggio è accettato, quindi presa una strin
   ),
   showybox(
   frame: (
-    border-color: purple.lighten(85%),
+    border-color: purple.lighten(95%),
     title-color: purple.lighten(60%),
-    body-color: purple.lighten(85%)
+    body-color: purple.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -182,9 +183,9 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
 
 #showybox(
   frame: (
-    border-color: white,
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -198,9 +199,9 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
 
 #showybox(
   frame: (
-    border-color: white,
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -214,9 +215,9 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
 
 #showybox(
   frame: (
-    border-color: white,
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -230,9 +231,9 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
 
 #showybox(
   frame: (
-    border-color: white,
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -248,9 +249,9 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
 
 #showybox(
   frame: (
-    border-color: white,
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -266,9 +267,9 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
 
 #showybox(
   frame: (
-    border-color: white,
+    border-color: green.lighten(60%),
     title-color: green.lighten(60%),
-    body-color: green.lighten(85%)
+    body-color: green.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -286,9 +287,9 @@ Vogliamo capire se dati due linguaggi naturali $L_1,L_2 in "REG"$ il linguaggio 
 
 #showybox(
   frame: (
-    border-color: white,
+    border-color: purple.lighten(60%),
     title-color: purple.lighten(60%),
-    body-color: purple.lighten(85%)
+    body-color: purple.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -297,7 +298,9 @@ Vogliamo capire se dati due linguaggi naturali $L_1,L_2 in "REG"$ il linguaggio 
     boxed-style: (anchor: (y: horizon, x: left))
   ),
   title: [*Teorema - Chiusura per Unione*],
-  [Come prima idea possiamo dire che: $ L_1, L_2 in "REG" arrow.double.r exists M_1, M_2 in "DFA t.c. " L(M_1) = L_1 and L(M_2) = L_2 $ \ 
-  Quindi dati due linguaggi naturali esistono due automi che li hanno come linguaggi accettati. Noi dobbiamo definire un terzo automa $M$ tale che $L(M)=L_1 union L_2$, ma data una stringa $x$ candidata non possiamo provare a vedere prima cosa succede su $M_1$ e se non la accetta provare $M_2$ perchè perderemmo la sequenza corretta della stringa su $M$.\ 
-  Quello che dobbiamo fare è testare ogni carattere di $x$ in parallelo su $M_1$ e $M_2$ e in base al risultato aggiorniamo lo stato di $M$.]
+  [Come prima idea possiamo dire che: $ L_1, L_2 in "REG" arrow.double.r exists M_1, M_2 in "DFA t.c. " L(M_1) = L_1 and L(M_2) = L_2 $ 
+  ]
 )
+Quindi dati due linguaggi naturali esistono due automi che li hanno come linguaggi accettati. Noi dobbiamo definire un terzo automa $M$ tale che $L(M)=L_1 union L_2$, ma data una stringa $x$ candidata non possiamo provare a vedere prima cosa succede su $M_1$ e se non la accetta provare $M_2$ perchè perderemmo la sequenza corretta della stringa su $M$. 
+
+Quello che dobbiamo fare è testare ogni carattere di $x$ in parallelo su $M_1$ e $M_2$ e in base al risultato aggiorniamo lo stato di $M$.

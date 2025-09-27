@@ -5,10 +5,9 @@
 #import "@preview/ilm:1.4.1": *
 
 #set text(lang: "it")
-#set text(font: "Calibri")
 
 #show: ilm.with(
-  title: [Automi Calcolabilità e Complessità],
+  title: [Automi, Calcolabilità e Complessità],
   author: "Alessio Marini, 2122855",
   date: datetime(year: 2025, month: 09, day: 27),
   abstract: [Appunti presi durante il corso di Automi, Calcolabilità e Complessità nell'anno 2025/2026 del professore Daniele Venturi. \ 
