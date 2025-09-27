@@ -1,3 +1,5 @@
+Forse provo a fare un PDF: [[automi.pdf]]
+
 # Introduzione alla Terminologia
 Alcune definizioni:
 - **Alfabeto** - Insieme finito di simboli, ad es $\Sigma=\{ 0,1,x,y,z \}$
