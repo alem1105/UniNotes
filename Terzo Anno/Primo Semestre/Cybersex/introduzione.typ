@@ -1,7 +1,7 @@
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/fontawesome:0.6.0": *
 
-= Definizione di Cybersecurity
+= Definition of Cybersecurity
 
 #showybox(
   frame: (
@@ -15,51 +15,69 @@
     align: center,
     boxed-style: (anchor: (y: horizon, x: left))
   ),
-  title: [*Definizione secondo il NIST (National Institute of Standards and Technology)*],
-  [La prevenzione di danni, la protezione e il ripristino di computers, servizi di comunicazione, sia cablati che wireless e tutte le informazioni che trasportano al fine di garantire la loro disponibilità, integrità, autenticità e confidenzialità.]
+  title: [*Definition by NIST (National Institute of Standards and Technology)*],
+  [Prevention of damage to, protection of, and restoration of computers,
+  electronic communications systems, electronic communications
+  services, wire communication, and electronic communication, including
+  information contained therein, to ensure its availability, integrity,
+  authentication, confidentiality, and nonrepudiation.]
 )
 
-Mentre una definizione di *Computer Security* potrebbe essere: _Misure e controlli che garantiscono la confidenzialità, l'integrità e la disponibilità di *assets* che includono hardware, software, firm-ware e tutte le informazioni che vengono processate, salvate e comunicate._
+== A definition of Computer Security
 
-Per *asset* intendiamo quello che è importante per un sistema ovvero quello che vuole proteggere.
+Computer Security: Measures and controls that ensure *confidentiality*,
+*integrity*, and *availability* of information system *assets* including
+hardware, software, firm-ware, and information being processed, stored,
+and communicated.
 
-== Cosa dovrebbe essere protetto?
-
-- Dati Personali
-  - Nel nostro sistema cosa intendiamo per dati personali? Nome, Cognome, Email?
-  - A che cosa servono questi dati nel sistema?
-  - Chi può vedere questi dati?
-  - Come ci assicuriamo che possano vederli soltanto le persone scelte?
-
-- Dati dell'Azienda?
-  - Dati Finanziari
-  - Informazioni riservate riguardo a prodotti dell'Azienda
-  - Dati personali dei dipendenti
-  - Informazioni sull'infrastruttura di rete dell'Azienda
+An asset is something important for the system.
 
 == Assets 
 
-Per assets intediamo cosa è importante per una persona o azienda o in generale il sistema che dobbiamo rendere sicuro.
+The asset is a key concept, the assets are important for a person or a company and need to be protected. 
 
-Ad esempio per un computer gli assets principali sono:
-- Hardware
-- Software 
-- Dati 
-- Comunicazioni e Reti
+Some examples:
+- Patient records
+- Equipment
+- Keys for net-banking
 
-== Security Concepts e Relazioni
+#showybox(
+frame: (
+  border-color: blue.lighten(60%),
+  title-color: blue.lighten(60%),
+  body-color: blue.lighten(95%)
+),
+title-style: (
+  color: black,
+  weight: "regular",
+  align: center,
+  boxed-style: (anchor: (y: horizon, x: left))
+),
+title: [*What should be protected?*],
+[- *Personal Data* of users like name, surname, email ecc...
+- *Company Data* like financial data, internal information about products or personal data of the customers, partners ecc...]
+)
 
-#image("image.png")
+== Security Concepts and Relationships
 
-- Per il proprietario sono importanti gli *assets*, vuole minimizzare i rischi su quest'ultimi e quindi impone delle *contromisure* per ridurli.
-- Gli attacanti vogliono danneggiare o rubare gli assets.
+#image("img/image.png")
 
-Vediamo i principali termini:
-- *Threat Agent (Attacante)*: Chi fa o ha intenzione di svolgere attacchi
-- *Countermeasure*: Un dispositivo o una tecnica di difesa
-- *Risk*: Una situazione che mette a rischio un elemento del sistema
-- *Threat*: Qualsiasi situazione o evento che potrebbe influenzare il sistema
-- *Vulnerability*: Una debolezza nel sistema, può apparire in molte forme, ad esempio nel codice, nel personale, in qualche procedura ecc...
+== Threat Agent (Adversary)
+Who conducts or has the intent ro conduct detrimental activities.
+
+== Countermeasure
+A device or technique that ha as its objective the impairment adversarial activity.
+
+== Risk
+A measure of the extent to which an entity is threatened by a potential circumstance or event.
+
+== Threat
+Any circumstance or event with the potential to adversely impact organizational operations.
+
+== Vulnerability
+Weakness in an information system, system security procedures, internal controls, or
+implementation that could be exploited or triggered by a threat source.
+
 
 #showybox(
   frame: (
@@ -73,87 +91,103 @@ Vediamo i principali termini:
     align: center,
     boxed-style: (anchor: (y: horizon, x: left))
   ),
-  title: [*Osservazione sulla Sicurezza*],
-  [La sicurezza di un sistema, applicazione o altro è sempre relativa a:
-  - Un insieme di proprietà
-  - Un avversario con delle abilità specifiche
+  title: [*Observation about Security*],
+  [The security of a system, application or protocol is relative to:
+  - A set of desidere properties
+  - An adversary with specific capabilities
 
-  Ad esempio, i permessi di accesso ai file su Linux o Windows non avranno effetto su un attaccante che accede al sistema tramite un CD.
+  For example the file access permissions in Linux or Windows are not effective against someone who can boot from a CD or USB drive.
   ]
 )
 
 == Threats
+There are different type of threats.
 
-Per quanto riguarda le minacce, ci sono diversi tipi di attacchi:
-
-- *Active Attack*: Un attacco che vuole alterare le risorse del sistema o influire sulle sue operazioni. Ne esistono di diversi tipi:
+- *Active Attack*: An attempt to alter system resources or affect their operation. Some example:
   - Replay
   - Masquerade
   - Modification on Messages
   - Denial of Service
-- *Passive Attack*: Un attacco che mira a sfruttare le informazioni contenute in un sistema senza danneggiarlo. L'obiettivo è quindi quello di rubare informazioni per renderle pubbliche o ricattare oppure anche analizzare il sistema per un attacco futuro.
-- *Inside Attack*: Un attacco iniziato da qualcuno all'interno del sistema, di solito quest'ultimo ha dei permessi nel sistema ma non completi.
-- *Outside Attack*: Un attacco che inizia dall'esterno del sistema da una persona non autorizzata.
+- *Passive Attack*: An attempt to learn or make use of information from the system that does not affect
+system resources. For example an adversary could steal some information for use them in the future in a new attack.
+- *Inside Attack*: Initiated by an entity inside the security perimeter (an “insider”). The insider is
+authorized to access system resources but uses them in a way not approved by those
+who granted the authorization.
+- *Outside Attack*: Initiated from outside the perimeter, by an unauthorized or ille-gitimate user of the
+system (an “outsider”). On the Internet, potential outside attackers range from
+amateur pranksters to organized criminals, international terrorists, and hostile
+governments.
 
 = Security Goals
 
-Esistono 3 concetti fondamentali da considerare che possiamo indicare con l'acronimo *C.I.A.*:
+There are 3 foundamental concepts in security, *C.I.A.*:
 - *Confidentiality*
 - *Integrity*
 - *Availability*
 
 == Confidentiality
 
-Evitare che dei non autorizzati accedano a delle informazioni riservate, per garantirla eistono diversi strumenti.
+The avoidance of the unauthorized disclosure of information. It involves the protection of data, providing access for those who are allowed to see it while disallowing others.
+
+Let's look some *tools for confidentiality*
+
 
 === Encryption
 
-Modificare le informazioni con dei *secret*, chiamati *encryption key*, in modo che diventino leggibili soltanto per chi ha un altro *secret* ovvero la *decryption key*. In alcuni casi le key combaciano mentre in altri no.
+The transformation of information using a secret, called an
+*encryption key*, so that the transformed information can only be read
+using another secret, called the *decryption key* (which may, in some cases,
+be the same as the encryption key).
 
-#image("image-1.png")
+#image("img/image-1.png")
 
 === Access Control 
 
-Sono delle regole che servono a determinare quali persone possono accedere a determinate informazioni o servizi.
+Rules and policies that limit access to confidential information to those people and/or systems with a “need to know.”
 
-Ad esempio possiamo garantire l'accesso ad una stanza soltanto ad un determinato gruppo di dipendenti.
+For example we can grant this "need to know" with a device, a password, a role ecc...
 
 === Authentication
 
-Identificare qualcuno e quali permessi ha, l'identificazione può avvenire in diversi modi, ad esempio:
-- Un oggetto (tessere elettroniche, chiavi, ecc...)
-- Password
-- Impronta digitale, retina ecc...
+The determination of the identity or role that someone has.
+This determination can be done in a number of different ways:
+- An object
+- A password
+- Fingerprint
 
 === Authorization
 
-Determina se una persona autenticata può accedere a delle risorse, basandosi sulle regole dell'*accesso control*. Questa dovrebbe servire a prevenire il tentativo di "imbrogliare" il sistema da parte di attaccanti.
+The determination if a person or system is allowed access to resources, based on an *access control policy*.
 
 === Physical Security
 
-Delle barriere fisiche per non permettere l'accesso a delle zone protette, ad esempio le stanze dove ci sono i server con informazioni importanti.
+The establishment of physical barriers to limit access to protected computational resources.
 
 == Integrity
 
-Le informazioni non devono essere alterate senza permesso. Possiamo provare a garantirla con diversi strumenti:
+The property that something has not be altered in an unauthorized way. Some tools for integrity:
 
-- *Backups*: Degli "snapshot" di tutti i dati archiviati
-- *Checksums*: Il risultato di un'operazione che mappa il contenuto di un file in un valore numerico. Queste sono fatte in modo che anche un piccolo cambiamento nel file cambi il risultato finale, in questo modo è molto rato che due file diversi abbiano lo stesso risultato.
-- *Data correcting codes*: Sono dei metodi di mantenimento dei dati che rilevano anche dei piccoli cambiamenti e li correggono in automatico.
+- *Backups*: Periodic archiving of data.
+- *Checksums*: The computation of a function that maps the contents of a file to a numerical value. A checksum function depends on the entire contents of a file and is designed in a way that even a small change to the input file (such as flipping a single bit) is highly likely to result in a different output value.
+- *Data correcting codes*: Methods for storing data in such a way that small changes can be easily detected and automatically corrected.
 
 == Availability
 
-I servizi offerti e le informazioni accessibili da chi ha il permesso di farlo devono essere sempre disponibili. Proviamo a garantirla con:
-- *Physical Protections*: 
-- *Computational redundancies*: Computer o dischi che servono come "fallback" nel caso di errori nei dispositivi principali.
+The property that something is accessible and modifiable in a timely fashion by those authorized to do so.
+
+Some tools for the availability:
+- *Physical Protections*: Infrastructure meant to keep information available
+even in the event of physical challenges.
+- *Computational redundancies*: Computers and storage devices that serve as
+fallbacks in the case of failures.
 
 == Other Security Concepts
 
-Altri concetti importanti nella sicurezza informatica sono: *Authenticity, Accountability e Anonymity*.
+Some other important concepts are *Authenticity, Accountability e Anonymity*.
 
 === Authenticity
-Dobbiamo essere in grado di capire che un sistema, una persona o in generale qualcosa o qualcuno sia affidabile.
+Is the ability to determine that statements, policies, and permissions issued by persons or systems are genuine.
 
-Uno strumento semplice come esempio è la firma o *digital signature*
+An example of tool for authenticity could be *digital signature*
 
 === Accountability

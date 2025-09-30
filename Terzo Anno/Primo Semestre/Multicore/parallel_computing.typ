@@ -1,6 +1,12 @@
-Provando a fare un PDF: [[multicore.pdf]]
+#import "@preview/showybox:2.0.4": showybox
+#import "@preview/finite:0.5.0": automaton
+#import "@preview/codly:1.2.0": *
+#import "@preview/codly-languages:0.1.8": *
+#show: codly-init.with()
+#codly(languages: codly-languages)
+#show raw: set text(font: "Cascadia Code")
 
-# Parallel Computing
+= Parallel Computing
 Dal 1986 al 2003 le velocità dei microprocessori aumentava di un 50% all'anno, ovvero un 60x in 10 anni.
 Dal 2003 in poi però questo incremento ha iniziato a rallentare, ad esempio dal 2015 al 2017 c'è stato soltanto un 4% all'anno ovvero un 1.5x in 10 anni.
 
@@ -8,18 +14,28 @@ Ci sono motivi fisici dietro a questo fenomeno e per questo, invece di continuar
 
 I programmi seriali ovviamente non sfruttano questi benefici e continuano a venir eseguiti in un singolo processore, anche se ovviamente significa che possiamo eseguirli in più istanze contemporaneamente. Sono quindi i programmatori che devono sapere come utilizzare queste tecnologie per scrivere programmi che le sfruttano.
 
-**Abbiamo veramente bisogno di questa efficienza in più?**
-
-Per la maggior parte dei programmi no ma esistono dei campi di ricerca che dove c'è bisogno di eseguire tantissime operazioni in poco tempo o comunque su tantissimi dati, ad esempio:
-- LLMs
-- Decoding the human genome
-- Climate modeling
-- Protein folding
-- Drug discovery
-- Energy research
-- Fundamental physics
-
----
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [Ci serve tutta questa efficienza?],
+  [Per la maggior parte dei programmi no ma esistono dei campi di ricerca che dove c'è bisogno di eseguire tantissime operazioni in poco tempo o comunque su tantissimi dati, ad esempio:
+  - LLMs
+  - Decoding the human genome
+  - Climate modeling
+  - Protein folding
+  - Drug discovery
+  - Energy research
+  - Fundamental physics]
+)
 
 Il motivo fisico che abbiamo accennato prima del perché costruiamo questi sistemi paralleli è dovuto al fatto che le performance di un processore aumentano con l'aumentare della densità di transistor che ha, questo comporta alcune cose:
 - Transistor più piccoli -> Processori più veloci
@@ -29,29 +45,42 @@ Il motivo fisico che abbiamo accennato prima del perché costruiamo questi siste
 
 Quindi anche se alcuni programmi possiamo eseguirli in più istanze e aumentare la loro efficienza spesso non è la strada migliore e dobbiamo imparare a scrivere del codice che usa la parallelizzazione. Con il temo sono stati scoperti dei "pattern" facilmente convertibili in codice parallelo ma spesso la strada migliore è quella di fare un passo indietro e ripensare un nuovo algoritmo. Non sempre saremo in grado di parallelizzare completamente il codice.
 
-_Esempi_
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: white
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [_Esempio_],
+  [*Codice Seriale* - _Compute $n$ values and add them together_
+  
+  ```c
+  sum = 0;
+  for (i = 0; i < n; i++) {
+    x = Compute_next_value(...);
+    sum += x;
+  }
+  ```
 
-- Codice seriale, _compute n values and add them together_
+  *Codice Parallelo* - abbiamo $p$ cores dove $p << n$ e ogni core calcola la somma di $n / p$ valori
 
-```
-sum = 0
-for (i = 0; i < n; i++) {
-	x = Compute_next_value(. . .);
-	sum += x;
-}
-```
-
-- Codice parallelo, abbiamo $p$ cores dove $p < < n$, ogni core calcola la somma di $n/ p$ valori
-
-```
-my_sum = 0;
-my_first_i = ...;
-my_last_i = ...;
-for (my_i = my_first_i; my_i < my_last_i; my_i++) {
-	my_x = Compute_next_value(. . .);
-	my_sum += my_x;
-}
-```
+  ```c
+  my_sum = 0;
+  my_first_i = ...;
+  my_last_i = ...;
+  for (my_i = my_first_i; my_i < my_last_i; my_i++) {
+    my_x = Compute_next_value(. . .);
+    my_sum += my_x;
+  }
+  ```
+  ]
+)
 
 Quindi ogni core usa delle variabili per memorizzare il suo primo e ultimo valore da sommare, in questo modo ogni core può eseguire del codice indipendentemente dagli altri core.
 
@@ -67,40 +96,64 @@ Però usando questa soluzione, nello step finale abbiamo che un core solo (il pr
 
 Per risolvere questo possiamo ad esempio accoppiare il core 0 con il core 1 e fare in modo che il core 0 sommi al suo risultato quello del core 1, poi possiamo fare lo stesso lavoro con il 2 e il 3 ed avere quindi nel core 2 la somma di 2 e 3 ecc...
 
-Ripetiamo tutto questo accoppiando 0-2, 4-6..... e poi continuiamo a ripetere accoppiando 0-4....
+Ripetiamo tutto questo accoppiando 0-2, 4-6... e poi continuiamo a ripetere accoppiando 0-4...
 
-_Graficamente:_
+Vediamo graficamente:
 
-![[Pasted image 20250923221857.png]]
+TODO: image
 
 Se confrontiamo i due metodi:
 
-![[Pasted image 20250923222113.png]]
+TODO: image
 
 Notiamo che con il primo metodo, quello a sinistra, se abbiamo 8 cores facciamo 7 somme aggiuntive, in generale $p-1$ somme.
 
-Con il secondo metodo se abbiamo 8 cores facciamo 3 somme aggiuntive (sono sempre 7 ma sono parallele e avvengono nello stesso momento), in generale abbiamo $\log_{2}(p)$ somme.
+Con il secondo metodo se abbiamo 8 cores facciamo 3 somme aggiuntive (sono sempre 7 ma sono parallele e avvengono nello stesso momento), in generale abbiamo $log_2(p)$ somme.
 
 Quindi se ad esempio avessimo avuto $p=1000$ con il primo metodo avremmo avuto 999 somme mentre con il secondo soltanto 10.
 
-# Come scriviamo codice parallelo?
-- **Task Parallelism**: Dividere alcune task fra i cores. L'idea è quella di eseguire compiti diversi in parallelo.
-- **Data Parallelism**: Partizionare i dati fra i cores, fargli risolvere operazioni simili e risolvere il problema raccogliendo i dati. In generale quando i cores svolgono la stessa operazione ma su pezzi di dati diversi.
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Come scriviamo codice parallelo?*],
+  [- *Task Parallelism*: Dividere alcune task fra i cores. L'idea è quella di eseguire compiti diversi in parallelo.
+  - *Data Parallelism*: Partizionare i dati fra i cores, fargli risolvere operazioni simili e risolvere il problema raccogliendo i dati. In generale quando i cores svolgono la stessa operazione ma su pezzi di dati diversi.
+  ]
+)
 
-_Esempio_
-
-Devo valutare 300 esami da 15 domande ciascuno e ho 3 assistenti:
-- Data Parallelism: Ogni assistente valuta 100 esami
-- Task Parallelism:
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: white
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [Esempio],
+  [Devo valutare 300 esami da 15 domande ciascuno e ho 3 assistenti:
+  - Data Parallelism: Ogni assistente valuta 100 esami
+  - Task Parallelism:
 	- L'assistente 1 valuta tutti gli esami ma soltanto le domande 1-5
 	- L'assistente 2 valuta tutti gli esami ma soltanto le domande 6-10
 	- L'assistente 3 valuta tutti gli esami ma soltanto le domande 11-15
 
-L'esempio che abbiamo fatto precedentemente con le somme dei vari cores, è stato parallelizzato on Data o Task Parallelism?
+  L'esempio che abbiamo fatto precedentemente con le somme dei vari cores, è stato parallelizzato on Data o Task Parallelism?
 
-![[Pasted image 20250923223557.png]]
-
----
+  TODO: image]
+)
 
 Se ogni core può lavorare in modo indipendente dagli altri allora la scrittura del codice sarà molto simile a quella di un programma seriale. In generale dobbiamo coordinare i cores, questo perché:
 - Communication: Ad esempio perché ogni core manda una somma parziale ad un altro
@@ -114,5 +167,3 @@ Noi scriveremo codice esplicitamente parallelo usando 4 diverse estensioni delle
 - CUDA \[Library + Compiler\]
 
 Useremo anche librerie ad alto livello già esistenti che però hanno un compresso per quanto riguarda facilità di utilizzo e performance.
-
-~~Perché ci servono 4 diverse librerie?~~
