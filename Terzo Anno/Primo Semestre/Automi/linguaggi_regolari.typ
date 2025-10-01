@@ -103,7 +103,7 @@ Questo DFA accetta quindi tutte le stringhe che iniziano con il simbolo 1 mentre
           q0-q2: (curve: -1, label: (anchor: left)),
           q1-q1: (anchor: right+top),
           q2-q2: (anchor: top+right),
-          q1: (fill: green.lighten(50%))
+          q1: (fill: green.lighten(60%))
           )
       )
     )
@@ -175,6 +175,96 @@ Dimostriamo per induzione che il linguaggio è accettato, quindi presa una strin
 
     Quindi il DFA andrà sicuremante in uno dei due stati $q_1$ o $q_2$ e da lí non si muoverà più, per il ragionamento fatto all'inizio della dimostrazione.
   ]
+  )
+)
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: white
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esercizi*],
+  showybox(
+    frame: (
+      border-color: blue.lighten(60%),
+      title-color: blue.lighten(60%),
+      body-color: white
+    ),
+    title-style: (
+      color: black,
+      weight: "regular",
+      align: center,
+      boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*DFA 1*],
+    [Dato il linguaggio $L = {x:x in {0,1}^* and W_H (x) >= 3}$ con $W_H (x)=\#1$ ovvero il numero di 1 presenti nella stringa. Progettare un automa che accetta il linguaggio e dimostrarlo.
+    
+    Un possibile automa potrebbe essere:
+    
+    #align(center,
+      automaton(
+        initial: "q0", final: none,
+        (
+          q0: (q1: 1, q0: 0),
+          q1: (q2: 1, q1: 0),
+          q2: (q3: 1, q2: 0),
+          q3: (q3: (0,1))
+        ),
+        layout: (q0: (0,0), q1: (3, 0), q2: (6, 0), q3: (9,0)),
+        style: (
+          q0-q2: (curve: -1, label: (anchor: left)),
+          q1-q1: (anchor: top),
+          q2-q2: (anchor: top),
+          q3: (fill: green.lighten(60%))
+        )
+      )
+    )
+
+    *Dimostrazione:* Copiare da iPad
+    ]
+  ),
+  showybox(
+    frame: (
+      border-color: blue.lighten(60%),
+      title-color: blue.lighten(60%),
+      body-color: white
+    ),
+    title-style: (
+      color: black,
+      weight: "regular",
+      align: center,
+      boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*DFA 2*],
+    [Dato il linguaggio $L = {x: x= 0^n 1 " con " n in NN}$ progettare un automa che accetta il linguaggio e dimostrarlo.
+    
+    Un possibile automa potrebbe essere:
+    
+    #align(center,
+      automaton(
+        initial: "q0", final: none,
+        (
+          q0: (q0: 0, q1: 1),
+          q1: (q2: (0,1)),
+          q2: (q2: (0,1)),
+        ),
+        layout: (q0: (0,0), q1: (3, 0), q2: (6, 0)),
+        style: (
+          
+          q1: (fill: green.lighten(60%))
+        )
+      )
+    )
+
+    *Dimostrazione*: Copiare da iPad
+    ]
   )
 )
 
