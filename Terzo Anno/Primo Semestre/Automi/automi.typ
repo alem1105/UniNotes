@@ -1,6 +1,7 @@
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/finite:0.5.0": automaton
 #import "@preview/fontawesome:0.6.0": *
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
 #import "@preview/ilm:1.4.1": *
 
@@ -27,3 +28,4 @@
 #include "terminologia.typ"
 #include "dfa.typ"
 #include "linguaggi_regolari.typ"
+#include "non_determinismo.typ"

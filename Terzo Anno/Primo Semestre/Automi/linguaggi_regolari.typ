@@ -375,6 +375,8 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
 == Proprietà di chiusura dei Linguaggi Naturali
 Vogliamo capire se dati due linguaggi naturali $L_1,L_2 in "REG"$ il linguaggio risultante di operazioni effettuate con questi linguaggi è naturale o no, ad esempio se $L_1 union L_2 in "REG"$ oppure se $L_1 inter L_2 in "REG"$
 
+=== Chiusura per Unione
+
 #showybox(
   frame: (
     border-color: purple.lighten(60%),
@@ -394,3 +396,78 @@ Vogliamo capire se dati due linguaggi naturali $L_1,L_2 in "REG"$ il linguaggio 
 Quindi dati due linguaggi naturali esistono due automi che li hanno come linguaggi accettati. Noi dobbiamo definire un terzo automa $M$ tale che $L(M)=L_1 union L_2$, ma data una stringa $x$ candidata non possiamo provare a vedere prima cosa succede su $M_1$ e se non la accetta provare $M_2$ perchè perderemmo la sequenza corretta della stringa su $M$. 
 
 Quello che dobbiamo fare è testare ogni carattere di $x$ in parallelo su $M_1$ e $M_2$ e in base al risultato aggiorniamo lo stato di $M$.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Input Dimostrazione*],
+  [Vogliamo mostrare che dati
+  - $M_1=(Q_1, Sigma, delta_1, q_o^1, F_1)$
+  - $M_2 = (Q_2, Sigma, delta_2, q_0^2, F_2)$
+  _Assumiamo lo stesso $Sigma$ per semplicità_
+
+  Tali che: $L(M_1) = L_1 and L(M_2) = L_2$
+
+  Costruiamo un terzo DFA $M(Q,Sigma,delta,q_0,F)$ t.c. $L(M)=L_1 union L_2$
+
+  Avremo che:
+  - $Q={(r_1, r_2):r_1 in Q_1, r_2 in Q_2}=Q_1 times Q_2$ (Tutte le coppie di stati possibili)
+  - $delta:Q times Sigma arrow.r Q$
+    - $delta((r_1, r_2),a)=(delta_1 (r_1,a),delta_2 (r_2,a))$
+  - $F={(r_1,r_2):r_1 in F_1 or r_2 in F_2}=underbracket((F_1 times Q_2), "il primo stato è accettato") union underbracket((F_2 times Q_1), "il secondo stato è accettato")$
+  
+  Infatti basta che soltanto uno dei due stati della coppia venga accettato per accettare la coppia.
+
+  Da notare che per l'intersezione abbiamo una situazione molto simile, infatti avremo che: $ F={(r_1, r_2):r_1 in F_1 and r_2 in F_2} = F_1 times F_2 $
+  ],
+  [
+    #showybox(
+      frame: (
+        border-color: purple.lighten(95%),
+        title-color: purple.lighten(60%),
+        body-color: purple.lighten(95%)
+      ),
+      title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+      ),
+      title: [*Dimostrazione*],
+      [Vogliamo mostrare che dato
+      $ delta^* (q_0,x)=delta^*((q_0^1, q_0^2),x) $
+      Si ha che $forall x in Sigma^*$
+      $ =(delta_1^*(q_0^1,x), delta_2^*(q_0^2,x)) $
+
+      *TODO: MANCA UNA PARTE DI DIMOSTRAZIONE (Mostrare che funziona per n e 0)*
+
+      $ forall x in Sigma^*, x in L(M) arrow.r.l.double x in L_1 union L_2 \ => x in L(M) arrow.double.r delta^*(q_0,x) in F = F_1 times Q_2 union F_2 times Q_1 = (p,q) \ "Dove " p = delta_1^*(q_0^1,x), q = delta_2^*(q_0^2,x)) $
+
+      Questo significa che
+      - Se $x in L_1$ allora $delta^*(q_0^1,x) in F_1$ e quindi:
+      
+      $ delta^*(q_0,x)=(delta_1^*(q_0^1,x), delta_2^*(q_0^2,x)) in F_1 times Q_2 arrow.double.r M " accetta " x $
+      - Se $x in L_2$ allora $delta^*(q_0^2,x) in F_2$ e quindi:
+      
+      $ delta^*(q_0,x)=(delta_1^*(q_0^1,x), delta_2^*(q_0^2,x)) in F_2 times Q_1 arrow.double.r M " accetta " x $
+      ]
+    )
+  ]
+)
+
+Spiegato a parole, abbiamo che la funzione di transizione dell'automa $M$ equivale ad eseguire lo stesso input sui due automi $M_1, M_2$. Presa una stringa del linguaggio questa è accettata dall'automa se e solo se appartiene all'unione dei due linguaggi di $M_1 " e " M_2$.
+
+Partendo dalla sinistra dell'implicazione abbiamo che $x in L(M)$ quindi la stringa è accettata e allora la funzione di transizione estesa ci porta in uno stato appartenente ad $F$. Ricordiamo che lo stato in cui ci troviamo è in realtà una coppia di stati uno dei quali deve essere accettato o da $M_1$ o da $M_2$ e questo appunto significa rispettivamente che o $x in L(M_1)$ oppure $x in L(M_2)$. 
+
+=== Chiusura per Complemento
+
+Per dimostrare la chiusura per complemento abbiamo bisogno del concetto di *Non Determinismo*.
