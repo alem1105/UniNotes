@@ -67,7 +67,7 @@ Nel non determinismo quindi abbiamo un input che si dirama in vari stati invece 
     boxed-style: (anchor: (y: horizon, x: left))
   ),
   title: [*Definizione - NFA*],
-  [Un NFA è $(Q, Sigma, delta, q_0, F)$ dove $Q,Sigma,q_0,F$ sono come nei DFA ma: $ delta: Q times Sigma_epsilon arrow.r PP(Q) \ "Dove " Sigma^epsilon union {epsilon} $ e $PP$ è l'insieme delle parti.]
+  [Un NFA è $(Q, Sigma, delta, q_0, F)$ dove $Q,Sigma,q_0,F$ sono come nei DFA ma: $ delta: Q times Sigma_epsilon arrow.r PP(Q) \ "Dove " Sigma_epsilon union {epsilon} $ e $PP$ è l'insieme delle parti.]
 )
 
 Vediamo un esempio e capiamo come ci si muove al loro interno.
@@ -153,4 +153,68 @@ Per muoverci, ad esempio nel NFA dell'esempio sopra, ci torna utile disegnare un
   edge(<h>, <k>, "->"),
   edge(<k>, <m>, "->")
 )
+)
+
+== Configurazione negli NFA
+
+Possiamo estendere il concetto di *configurazione* anche per gli NFA.
+
+Dato un NFA $N$ indichiamo come configurazione una coppia $(q,x) in Q times Sigma_epsilon^*$ e avremo un passo di configurazione come: $ (p,a x) attach(tack.r, br: N) (q,x) arrow.double.r.l q in delta(p,a) $
+Con:
+- $x in Sigma^*_epsilon$
+- $a in Sigma_epsilon$
+- $p,q in Q$
+
+Quindi il risultato di una transizione deve far parte dell'insieme delle parti degli stati: $ delta(p,a) in bb(P) (Q) $
+
+Quando, l'automa $N$, accetta $w in Sigma_epsilon^*$?
+- Se e solo se $exists q in F " t.c. " (q_0,w) attach(tack.r, br: N, tr: *) (q, epsilon)$. Dove $attach(tack.r, br: N, tr: *)$ è la relazione estesa.
+
+== Confronto tra linguaggi di DFA e NFA
+
+Prendiamo le due classi:
+- $cal(L)"(DFA)" subset.eq "REG"$
+- $cal(L)"(NFA)" = {L:exists "NFA N t.c. " cal(L)(N) = L}$
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ "REG" = cal(L) ("NFA") $
+  ],
+  [
+    *Dimostrazione*. Dobbiamo dimostrare la doppia implicazione $cal(L)("DFA")subset.eq cal(L)("NFA")$ e $cal(L)("NFA") subset.eq cal(L)("DFA")$.
+
+    La *prima implicazione* è molto semplice infatti dato un linguaggio $L in cal(L)("DFA")$ e un DFA $D$ tale che $L=L(D)$ e siccome gli NFA sono una generalizzazione dei DFA avremo che $D$ è anche un NFA e quindi $L in cal(L)("NFA")$. Quindi $cal(L)("DFA")subset.eq cal(L)("NFA")$.
+
+    Per la *seconda implicazione* prendiamo un linguaggio $L in cal(L)("NFA")$, quindi $exists "NFA " N=(Q_N, Sigma, delta_N, q_0^N, F_N)$ t.c. $L(N)=L$. 
+
+    Dobbiamo costruire un DFA $D=(Q_D, Sigma, delta_D, q_0^D, F_D)$ t.c. $L(D)=L$. Costruiamolo tramite $N$.
+
+    Consideriamo il caso dove non ci sono $epsilon-"archi"$:
+    - $Q_D=bb(P)(Q_N)$
+    - $q_0^D = {q_0^N}$
+    - $F_D = {R in Q_D, R inter F_N eq.not emptyset}$
+
+    Quindi sia $R in Q_D, a in Sigma$: $ delta_D (R,a) = union.big_(r in R) delta_N (r,a) = {q in Q_N : q in delta_N (r,a) " per qualche " r in R} $
+
+    Quindi abbiamo costruito come stati finali, un insieme di insiemi, gli insiemi elemento sono formati da stati e sono tali che almeno uno di loro faccia parte degli stati finali dell'NFA. In questo modo durante la risoluzione del DFA possiamo eseguire in modo deterministico tutte le strade e fare l'unione di tutti i risultati, raggiungeremo sicuramente uno stato accettato.
+
+    Consideriamo invece adesso il caso generale dove ci sono gli $epsilon-"archi"$.
+    
+    Sia $R in Q_D$ definiamo:
+    - $E(R)={q in Q_N: q " può essere raggiunto da stato in R attraverso " gt.eq 0 "  "epsilon "-archi"}$ e quindi: $ delta_D (R,a) = union.big_(r in R) E(delta_N (r,a)) $
+
+    *TODO: Da finire*
+  ]
 )
