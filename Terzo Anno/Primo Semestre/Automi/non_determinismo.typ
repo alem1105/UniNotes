@@ -170,51 +170,35 @@ Quindi il risultato di una transizione deve far parte dell'insieme delle parti d
 Quando, l'automa $N$, accetta $w in Sigma_epsilon^*$?
 - Se e solo se $exists q in F " t.c. " (q_0,w) attach(tack.r, br: N, tr: *) (q, epsilon)$. Dove $attach(tack.r, br: N, tr: *)$ è la relazione estesa.
 
-== Confronto tra linguaggi di DFA e NFA
+== Equivalenza tra NFA e DFA
 
 Prendiamo le due classi:
 - $cal(L)"(DFA)" subset.eq "REG"$
 - $cal(L)"(NFA)" = {L:exists "NFA N t.c. " cal(L)(N) = L}$
 
-#showybox(
-  frame: (
-    border-color: blue.lighten(60%),
-    title-color: blue.lighten(60%),
-    body-color: blue.lighten(95%)
-  ),
-  title-style: (
-    color: black,
-    weight: "regular",
-    align: center,
-    boxed-style: (anchor: (y: horizon, x: left))
-  ),
-  title: [*Teorema*],
-  [
-    $ "REG" = cal(L) ("NFA") $
-  ],
-  [
-    *Dimostrazione*. Dobbiamo dimostrare la doppia implicazione $cal(L)("DFA")subset.eq cal(L)("NFA")$ e $cal(L)("NFA") subset.eq cal(L)("DFA")$.
+*Teorema* - Per ogni automa finito non deterministico esiste un automa finito deterministico equivalente.
 
-    La *prima implicazione* è molto semplice infatti dato un linguaggio $L in cal(L)("DFA")$ e un DFA $D$ tale che $L=L(D)$ e siccome gli NFA sono una generalizzazione dei DFA avremo che $D$ è anche un NFA e quindi $L in cal(L)("NFA")$. Quindi $cal(L)("DFA")subset.eq cal(L)("NFA")$.
+*Dimostrazione*. Dobbiamo dimostrare la doppia implicazione $cal(L)("DFA")subset.eq cal(L)("NFA")$ e $cal(L)("NFA") subset.eq cal(L)("DFA")$.
 
-    Per la *seconda implicazione* prendiamo un linguaggio $L in cal(L)("NFA")$, quindi $exists "NFA " N=(Q_N, Sigma, delta_N, q_0^N, F_N)$ t.c. $L(N)=L$. 
+La *prima implicazione* è molto semplice infatti dato un linguaggio $L in cal(L)("DFA")$ e un DFA $D$ tale che $L=L(D)$ e siccome gli NFA sono una generalizzazione dei DFA avremo che $D$ è anche un NFA e quindi $L in cal(L)("NFA")$. Quindi $cal(L)("DFA")subset.eq cal(L)("NFA")$.
 
-    Dobbiamo costruire un DFA $D=(Q_D, Sigma, delta_D, q_0^D, F_D)$ t.c. $L(D)=L$. Costruiamolo tramite $N$.
+Per la *seconda implicazione* prendiamo un $"NFA" = (Q_N, Sigma, delta_N, q_0^N, F_N)$ che riconosce un linguaggio $A$. Dobbiamo costruire un $"DFA" D=(Q_D, Sigma, delta_D, q_0^D, F_D)$ che riconosce $A$.
 
-    Consideriamo il caso dove non ci sono $epsilon-"archi"$:
-    - $Q_D=bb(P)(Q_N)$
-    - $q_0^D = {q_0^N}$
-    - $F_D = {R in Q_D, R inter F_N eq.not emptyset}$
+Consideriamo il caso in cui non abbiamo $epsilon-"archi"$:
+1. $Q_D=bb(P)(Q_N)$ - Uno stato del DFA equivale quindi ad un insieme di stati del NFA.
+2. Presi un $R in Q_D$ e $a in Sigma$, sia $ delta_D (R,a)={q in Q_N : q in delta_N (r,a) " per qualche " r in R} $
 
-    Quindi sia $R in Q_D, a in Sigma$: $ delta_D (R,a) = union.big_(r in R) delta_N (r,a) = {q in Q_N : q in delta_N (r,a) " per qualche " r in R} $
+Quindi la funzione di transizione del DFA equivale ad eseguire la transizione su tutti gli di $R$ nel NFA.
 
-    Quindi abbiamo costruito come stati finali, un insieme di insiemi, gli insiemi elemento sono formati da stati e sono tali che almeno uno di loro faccia parte degli stati finali dell'NFA. In questo modo durante la risoluzione del DFA possiamo eseguire in modo deterministico tutte le strade e fare l'unione di tutti i risultati, raggiungeremo sicuramente uno stato accettato.
+Possiamo anche scriverla come: $ delta_D (R, a) = union.big_(r in R) delta(r,a) $
 
-    Consideriamo invece adesso il caso generale dove ci sono gli $epsilon-"archi"$.
-    
-    Sia $R in Q_D$ definiamo:
-    - $E(R)={q in Q_N: q " può essere raggiunto da stato in R attraverso " gt.eq 0 "  "epsilon "-archi"}$ e quindi: $ delta_D (R,a) = union.big_(r in R) E(delta_N (r,a)) $
+3. $q_0^D = {q_0^N}$
+4. $F_D = {R in Q : R " contiene uno stato accettante di " N}$ - Quindi il DFA accetta se e solo se nell'insieme risultante della transizione abbiamo almeno uno stato accettante dell'NFA. I due automi sono equivalenti.
 
-    *TODO: Da finire*
-  ]
-)
+Adesso consideriamo il caso con gli $epsilon"-archi"$, introduciamo delle notazioni. Per ogni $R$ di $D$ definiamo $E(R)$ come la collezione di stati che possono essere raggiunti dagli elementi di $R$ proseguendo solo con $epsilon"-archi"$, includendo anche gli stessi elementi di $R$, in modo formale possiamo dire: $ E(R) = {q : q " può essere raggiunto con " gt.eq 0 quad epsilon-"archi"} $
+
+Adesso modifichiamo la funzione di transizione di $D$ in modo da far aggiungere gli stati che possono essere raggiunti da $epsilon-"archi"$ dopo ogni passo, sostituendo $delta_N (r,a)$ con $E(delta_N (r,a))$: $ delta_D (R,a) = {q in Q : q in E(delta_N (r,a) ) " per qualche " r in R} $
+
+Dobbiamo anche modificare lo stato iniziale di $D$ in modo che anche nello stato iniziale raggiunga subito tutti gli stati possibili tramite $epsilon-"archi"$ e lo facciamo cambiando $q_0^D$ in $E({q_0^N})$.
+
+Abbiamo completato la costruzione del DFA equivalente ad NFA, infatti ad ogni passo del NFA avremo che il DFA entra in uno stato equivalente all'insieme degli stati in cui si trova l'NFA.
