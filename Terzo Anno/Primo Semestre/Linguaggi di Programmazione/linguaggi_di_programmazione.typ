@@ -24,3 +24,4 @@
 #set math.equation(numbering: none)
 
 #include "algebre.typ"
+#include "espressioni.typ"

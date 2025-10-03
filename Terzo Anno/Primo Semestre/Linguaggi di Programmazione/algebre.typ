@@ -133,7 +133,7 @@ Adesso, con questo concetto in mente possiamo parlare di Algebre Induttive.
     title: [*Definizione*],
     [
         Un Algebra $(A, Gamma)$ si dice induttiva quando:
-    - Tutte le $Gamma_i$ sono induttive
+    - Tutte le $Gamma_i$ sono iniettive
     - Tutte le $Gamma_i$ hanno immagini disgiunte
     - $forall S subset.eq A$ se $S$ è chiuso rispetto a tutte le $Gamma_i$ allora $S=A$
     ]
@@ -196,8 +196,101 @@ Quindi se $S$ è chiuso su entrambe allora abbiamo preso $NN$ e l'algebra è ind
         align: center,
         boxed-style: (anchor: (y: horizon, x: left))
     ),
-    title: [5 Assiomi - Algebra Induttiva],
+    title: [*5 Assiomi - Algebra Induttiva*],
     [I 5 Assiomi di Peano sono quindi un caso particolare di Algebra Induttiva con le operazioni $"zero e succ"$.
-    
+
     Quando un'algebra è induttiva le sue operazioni $Gamma_i$ si chiamano *costruttori dell'algebra*.]
+)
+
+=== Liste finite come algebre induttive
+
+Dato un insieme $A$, indichiamo con $A-"list"$ l'insieme delle liste finite di elementi di $A$. La tupla $(A"-list, empty, cons")$ é un algebra induttiva dove:
+- empty: $bb(1) arrow.r A"-list"$ é la funzione costante che restituisce la lista vuota <>.
+- cons: $(A"-list" times A) arrow.r A"-list"$. Ad esempio: $"cons"(3, <5,7>)=<3,5,7>$. É quindi la funzione che costruisce una lista aggiungendo un elemento in testa.
+
+Questa è un'algebra induttiva, infatti:
+- I costruttori hanno immagini disgiunte
+- I costruttori sono chiusi per $A"-list"$
+- C'è un unico modo per costruire ogni lista
+
+#showybox(
+    frame: (
+        border-color: red.lighten(60%),
+        title-color: red.lighten(60%),
+        body-color: red.lighten(95%)
+    ),
+    title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Liste Infinite*],
+    [Le liste infinite non possono essere un'algebra induttiva, infatti contengono una sotto-algebra induttiva, quella delle liste finite che abbiamo appena visto.]
+)
+
+=== Booleani come Algebra non Induttiva
+
+Consideriamo l'algebra $(B,"not")$ dove $B={0,1}$ e $"not":B arrow.r B : b arrow.r not b$
+
+- not rispetta le prime due caratteristiche delle algebre induttive
+- L'algebra però non rispetta il terzo requisito, infatti se consideriamo $emptyset subset.eq B$ notiamo che not è chiusa rispetto ad esso, questo perchè se consideriamo un $x in emptyset$ e l'implicazione $x in emptyset arrow.double.r "not"(x) in emptyset$ questa risulta vera dato che la premessa è falsa.
+
+Abbiamo quindi trovato un $S$ ovvero $emptyset$ chiuso per le operazioni dell'algebra ma che è diverso da $B$. Quindi possiamo dire che $(B, "not")$ non è un'algebra induttiva.
+
+=== Alberi Binari come Algebre Induttive
+
+L'insieme degli alberi binari finiti $("B-trees, leaf, branch")$ dove:
+- B-trees: ${t|t "è una foglia, oppure " t=<t_1,t_2> " con " t_1,t_2 in "B-trees"}$
+- leaf: $1 arrow.r "B-trees"$. un elemento foglia
+- branch: $"B-trees" times "B-trees" arrow.r "B-trees": (t_(s x), t_(d x)) arrow.r t$. Costruisce un ramo in modo che $t_(s x), t_(d x)$ siano i due sottoalberi di $t$.
+
+È un algebra induttiva.
+
+#showybox(
+    frame: (
+        border-color: green.lighten(60%),
+        title-color: green.lighten(60%),
+        body-color: green.lighten(95%)
+    ),
+    title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Teorema*],
+    [Un albero binario con $n$ foglie ha $2n-1$ nodi.],
+    [
+       #showybox(
+        frame: (
+            border-color: green.lighten(95%),
+            title-color: green.lighten(60%),
+            body-color: green.lighten(95%)
+        ),
+        title-style: (
+            color: black,
+            weight: "regular",
+            align: center,
+            boxed-style: (anchor: (y: horizon, x: left))
+        ),
+        title: [*Dimostrazione*],
+        [Possiamo dimostrarlo per induzione strutturale sui costruttori degli alberi:
+        
+        *Caso Base:* Consideriamo l'albero formato da una sola foglia, costruito quindi con leaf(). Questo avrà $n=1$ foglie e $2n-1 = 1$ nodi.
+        
+        *Ipotesi Induttiva:* Ogni argomento dato in input ai costruttori rispetta la proprietà.
+        
+        Dimostriamo quindi che branch, dati due argomenti che rispettano la proprietà, rispetti la proprietà.
+        
+        *Passo Induttivo:* Abbiamo $t="branch"(t_1, t_2)$. Siano:
+        - $n=n_1 + n_2$ il numero di foglie di $t$
+        - $n_1$ sono le foglie di $t_1$
+        - $n_2$ le foglie di $t_2$. 
+        Per ipotesi induttiva $t_1$ ha $2n_1 -1$ nodi e $t_2$ ne ha $2n_2 -1$, dunque $t$ ne avrà $ (2n_1 -1)+(2n_2 -1)+1 \ "(+1 perché c'è se stesso)" $
+        
+        
+        Che corrisponde a $ 2(n_1 + n_2) -1=2n -1 quad square.filled $]
+        ) 
+    ]
 )
