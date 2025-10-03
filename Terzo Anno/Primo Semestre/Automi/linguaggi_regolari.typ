@@ -351,7 +351,7 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
   ),
   title: [*Potenza*],
   [Possiamo definirla ricorsivamente:
-  $ cases(L_0 = epsilon, L^(n+1) = L^N circle.small L) $
+  $ cases(L^0 = epsilon, L^(n+1) = L^N circle.small L) $
   ]
 )
 
@@ -372,8 +372,10 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
   ]
 )
 
-== Proprietà di chiusura dei Linguaggi Naturali
-Vogliamo capire se dati due linguaggi naturali $L_1,L_2 in "REG"$ il linguaggio risultante di operazioni effettuate con questi linguaggi è naturale o no, ad esempio se $L_1 union L_2 in "REG"$ oppure se $L_1 inter L_2 in "REG"$
+== Introduzione alla proprietà di chiusura dei Linguaggi Naturali
+Vogliamo capire se dati due linguaggi naturali $L_1,L_2 in "REG"$ il linguaggio risultante di operazioni effettuate con questi linguaggi è naturale o no, ad esempio se $L_1 union L_2 in "REG"$ oppure se $L_1 inter L_2 in "REG"$.
+
+Vedremo qualche dimostrazione ma in realtà sarà più semplice dimostrare tutte le chiusure utilizzando gli NFA, ovvero gli automi non deterministici.
 
 === Chiusura per Unione
 
@@ -468,6 +470,6 @@ Spiegato a parole, abbiamo che la funzione di transizione dell'automa $M$ equiva
 
 Partendo dalla sinistra dell'implicazione abbiamo che $x in L(M)$ quindi la stringa è accettata e allora la funzione di transizione estesa ci porta in uno stato appartenente ad $F$. Ricordiamo che lo stato in cui ci troviamo è in realtà una coppia di stati uno dei quali deve essere accettato o da $M_1$ o da $M_2$ e questo appunto significa rispettivamente che o $x in L(M_1)$ oppure $x in L(M_2)$. 
 
-=== Chiusura per Complemento
+*Resto delle dimostrazioni*
 
-Per dimostrare la chiusura per complemento abbiamo bisogno del concetto di *Non Determinismo*.
+Per dimostrare il resto delle proprietà introduciamo il concetto di non determinismo.

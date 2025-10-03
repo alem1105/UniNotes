@@ -14,19 +14,20 @@ Nel *non determinismo* invece:
 Nel non determinismo quindi abbiamo un input che si dirama in vari stati invece che seguire un cammino di _uno stato alla volta_.
 
 - *Determinismo*
-
-#automaton(
-  initial: "q0", final: none,
-  (
-    q0: (q1:()),
-    q1: (q2:()),
-    q2: (q3: ()),
-    q3: (),
-  ),
-  layout: (q0: (0,0), q1: (3, 0), q2: (6, 0), q3: (9, 0)),
-  style: (
-    q3: (fill: green.lighten(60%))
+#align(center, 
+  automaton(
+    initial: "q0", final: none,
+    (
+      q0: (q1:()),
+      q1: (q2:()),
+      q2: (q3: ()),
+      q3: (),
+    ),
+    layout: (q0: (0,0), q1: (3, 0), q2: (6, 0), q3: (9, 0)),
+    style: (
+      q3: (fill: green.lighten(60%))
     )
+  )
 )
 
 - *Non Determinismo*
@@ -202,3 +203,69 @@ Adesso modifichiamo la funzione di transizione di $D$ in modo da far aggiungere 
 Dobbiamo anche modificare lo stato iniziale di $D$ in modo che anche nello stato iniziale raggiunga subito tutti gli stati possibili tramite $epsilon-"archi"$ e lo facciamo cambiando $q_0^D$ in $E({q_0^N})$.
 
 Abbiamo completato la costruzione del DFA equivalente ad NFA, infatti ad ogni passo del NFA avremo che il DFA entra in uno stato equivalente all'insieme degli stati in cui si trova l'NFA.
+
+== Convertire un NFA in DFA
+
+Prendiamo come esempio l'NFA:
+
+#align(center,
+  automaton(
+    initial: "q1", final: none,
+    (
+      q1: (q2: "b", q3: ()),
+      q2: (q2: "a", q3: ("a","b")),
+      q3: (q1: "a")
+    ),
+    layout: (q1: (0,0), q2: (-2, -3), q3: (2, -3)),
+    style: (
+      q1: (fill: green.lighten(65%)),
+      q2-q2: (anchor: left),
+      q1-q2: (curve: -1),
+      q3-q1: (curve: -1),
+      q1-q3: (curve: -1, label: $epsilon$),
+      q2-q3: (curve: -1)
+    )
+  )
+)
+
+Iniziamo a definire gli elementi del DFA $D$:
+- $Q_D = {q_0, q_{1}, q_{2}, q_{3}, q_{1,2}, q_{1,3}, q_{2,3}, q_{1,2,3}}$
+
+- $q_0^D = E({q_1})= q_{1,3}$ -  Consideriamo quindi l'estensione dello stato iniziale con gli $epsilon-"archi"$
+
+- $F_D = {q_{1}, q_{1,2}, q_{1,3}, q_{1,2,3}}$ - Sono tutti gli stati che contengono almeno uno stato accettante, in questo caso soltanto $q_1$
+
+Adesso dobbiamo calcolare $delta_D$, vediamo alcuni casi ma non tutti:
+- $delta_D (q_{2},a)=q_{2,3}$
+
+- $delta_D (q_{2},b)=q_{3}$
+
+- $delta_D (q_{3},a)=q_{3}$ - Perché dobbiamo considerare anche l'$epsilon"-archi"$
+
+- $delta_D (q_{3},b)=q_{emptyset}$ - Infatti finisce la stringa ma non siamo in uno stato accettante
+
+Ci sarebbero altre funzioni, ma vediamo cosa otteniamo:
+
+#align(center,
+  automaton(
+    initial: "q13", final: none,
+    (
+      q13: (q13: "a", q2: "b"),
+      q2: (q23: "a", q3: "b"),
+      q3: (q13: "a", q0: "b"),
+      q23: (q123: "a", q3: "b"),
+      q0: (q0: ("a", "b")),
+      q123: (q123: "a", q23: "b")
+    ),
+    layout: (
+      q13: (0,0), q3: (3, 0), q0: (6, 0), q2: (0, -3), q23: (3, -3), q123: (6, -3)
+    ),
+    style: (
+      q13: (fill: green.lighten(65%)),
+      q123: (fill: green.lighten(65%)),
+      q13-q2: (curve: -1),
+      q3-q13: (curve: -1),
+      q2-q23: (curve: -1),
+    )
+  )
+)

@@ -29,3 +29,5 @@
 #include "dfa.typ"
 #include "linguaggi_regolari.typ"
 #include "non_determinismo.typ"
+#include "chiusureNFA.typ"
+#include "espressioni_regolari.typ"
