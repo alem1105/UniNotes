@@ -351,7 +351,7 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
   ),
   title: [*Potenza*],
   [Possiamo definirla ricorsivamente:
-  $ cases(L^0 = epsilon, L^(n+1) = L^N circle.small L) $
+  $ cases(L^0 = {epsilon}, L^(n+1) = L^N circle.small L) $
   ]
 )
 

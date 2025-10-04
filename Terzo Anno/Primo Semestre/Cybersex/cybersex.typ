@@ -24,3 +24,4 @@
 #set math.equation(numbering: none)
 
 #include "introduzione.typ"
+#include "crypto_concepts.typ"
