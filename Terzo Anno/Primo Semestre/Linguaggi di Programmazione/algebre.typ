@@ -294,3 +294,120 @@ L'insieme degli alberi binari finiti $("B-trees, leaf, branch")$ dove:
         ) 
     ]
 )
+
+== Omomorfismo
+
+Prima vediamo cosa significa che due algebre hanno la stessa segnatura. 
+
+Due algebre hanno la stessa segnatura quando hanno le stesse operazioni, ad esemio prendiamo un'algebra su l'insieme $D$ con le operazioni:
+- $f_D=A times D arrow.r D$
+- $g_d=bb(1) arrow.r D$
+- $h_D = A times B times D arrow.r D$
+
+Un'algebra sull'insieme $C$ con la stessa segnatura, avrà le seguenti operazioni:
+- $f_C = A times C arrow.r C$
+- $g_C = bb(1) arrow.r C$
+- $h_C = A times B times C arrow.r C$
+
+Più formalmente quindi, due algebre $(A, Gamma_A)$ e $(B, Gamma_B)$ hanno la stessa segnatura se sostituendo $A$ con $B$ in tutte le $gamma in Gamma_A$ ottengo $Gamma_B$.
+
+#showybox(
+    frame: (
+        border-color: blue.lighten(60%),
+        title-color: blue.lighten(60%),
+        body-color: white
+    ),
+    title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Esempio*],
+    [#align(image("img/Senza titolo-2025-10-07-0914.svg", width: 30%), center)
+    
+    L'algebra definita sopra sull'insieme $bb(B)$ ha la stessa segnatura dei naturali, anche se non è induttiva. Infatti abbiamo che _true_ corrisponde a _zero_ mentre _not_ a _succ_]
+)
+
+Un omomorfismo tra due algebre $(A, gamma) arrow.r (B, delta)$ con la stessa segnatura $I$ è una funzione $h:A arrow.r B$ tale che per ogni $i in I$ con $a_i=n$ e $m$ parametri esterni si ha: $ h(gamma_i (a_1,...,a_n,k_1,...,k_m)) = delta_i (h(a_1),...,h(a_n),h(k_1),...,h(k_m)) $
+
+Ad esempio prendiamo il seguente omomorfismo $f$:
+
+#align(center, image("img/Senza titolo-2025-10-07-0914 (1).svg", width: 80%))
+
+Se prendiamo un elemento da $NN$ e ci eseguiamo sopra $h_n$ otteniamo un certo elemento. Questo elemento possiamo mandarlo in $bb(B)$ con $f$ e poi applicarci $n o t$. Dobbiamo ottenere lo stesso valore, formalmente: $ f(h_n (n)) = n o t(f(n)) $
+
+In questo esempio deve anche essere vero: $ "true" = f("zero") $
+
+#showybox(
+    frame: (
+        border-color: green.lighten(60%),
+        title-color: green.lighten(60%),
+        body-color: green.lighten(95%)
+    ),
+    title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Isomorfismo*],
+    [Un isomorfismo è un omomorfismo biiettivo. Questo significa che abbiamo una corrispondenza 1:1 fra gli elementi delle due algebre. Possiamo usarle allo stesso modo per fare calcoli ed operazioni, l'unica cosa che cambia è la rappresentazione.]
+)
+
+#showybox(
+    frame: (
+        border-color: green.lighten(60%),
+        title-color: green.lighten(60%),
+        body-color: green.lighten(95%)
+    ),
+    title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Lemma*],
+    [Data un'algebra induttiva $A$ con una certa segnatura, se prendiamo un'altra algebra $B$ con la stessa segnatura (non obbligatoriamente induttiva) allora esiste un unico omomorfismo $A arrow.r B$.]
+)
+
+#showybox(
+    frame: (
+        border-color: green.lighten(60%),
+        title-color: green.lighten(60%),
+        body-color: green.lighten(95%)
+    ),
+    title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Lemma di Lambek*],
+    [Due algebre induttive $A$ e $B$ con la stessa segnatura sono *isomorfe* (esiste un isomorfismo fra di esse)],
+    [#showybox(
+    frame: (
+        border-color: green.lighten(95%),
+        title-color: green.lighten(60%),
+        body-color: green.lighten(95%)
+    ),
+    title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Dimostrazione*],
+    [- Supponiamo $A,B$ induttive
+    - Allora $exists ! h : A arrow.r B$ e $exists ! k: B arrow.r A$
+    - *Lemma: * Componendo due omomorfismi ottengo un omomorfismo. Otteniamo quindi $k circle.small h: A arrow.r A$:
+    
+    #align(center, image("img/Senza titolo-2025-10-07-0914 (2).svg", width: 80%))
+    
+    - Sappiamo che per le algebre esiste l'omomorfismo identità $i d$.
+    - Otteniamo i due omomorfismi $k circle.small h$ e $i d$ che hanno segnatura $A arrow.r A$ ma siccome $A$ è induttiva ne esiste soltanto uno, questo significa che $k circle.small h = i d$.
+    - Siccome $k circle.small h$ è uguale all'identità significa che le due funzioni $h,k$ sono invertibili ed esiste quindi una biiezione tra $A$ e $B$. Sono isomorfe.
+    - Stesso discorso può essere fatto per $h circle.small k$
+    ]
+)]
+)

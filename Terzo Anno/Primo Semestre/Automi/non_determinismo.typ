@@ -189,7 +189,7 @@ Consideriamo il caso in cui non abbiamo $epsilon-"archi"$:
 1. $Q_D=bb(P)(Q_N)$ - Uno stato del DFA equivale quindi ad un insieme di stati del NFA.
 2. Presi un $R in Q_D$ e $a in Sigma$, sia $ delta_D (R,a)={q in Q_N : q in delta_N (r,a) " per qualche " r in R} $
 
-Quindi la funzione di transizione del DFA equivale ad eseguire la transizione su tutti gli di $R$ nel NFA.
+Quindi la funzione di transizione del DFA equivale ad eseguire la transizione su tutti gli stati di $R$ nel NFA.
 
 Possiamo anche scriverla come: $ delta_D (R, a) = union.big_(r in R) delta(r,a) $
 
