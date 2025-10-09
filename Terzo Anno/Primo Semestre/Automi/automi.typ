@@ -5,6 +5,8 @@
 
 #import "@preview/ilm:1.4.1": *
 
+#show raw: set text(font: "Cascadia Code")
+
 #set text(lang: "it")
 
 #show: ilm.with(
