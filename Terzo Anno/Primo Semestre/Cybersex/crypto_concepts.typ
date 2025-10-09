@@ -118,4 +118,6 @@ Some methods:
 
 The public-key approach advantages:
 - It provides a digital signature as well as message authentication 
-- It does not require the distribution of keys to communicating parties.
+- It does not require the distribution of keys to communicating parties.ù
+
+*DA SLIDE 19*

@@ -167,3 +167,69 @@ Noi scriveremo codice esplicitamente parallelo usando 4 diverse estensioni delle
 - CUDA \[Library + Compiler\]
 
 Useremo anche librerie ad alto livello già esistenti che però hanno un compresso per quanto riguarda facilità di utilizzo e performance.
+
+== Type of Parallel Systems
+
+- *Shared Memory*: I core lavorano sulla stessa memoria e vanno coordinati.
+- *Distributed Memory*: Ogni core ha la sua memoria dedicata e si scambiano messaggi fra loro per coordinarsi.
+
+In generale quindi devono comunque avere un modo per coordinarsi
+
+- *Multiple-Instruction Multiple-Data (MIMD)*: Ogni core ha la sua unità di controllo e può lavorare indipendentemente dagli altri. Come ad esempio la CPU classica dei PC, ogni core può fare qualcosa di diverso.
+
+- *Single-Instruction Multiple-Data (SIMD)*: Ogni core può lavorare su un pezzo di dato diverso, ma tutti devono lavorare per la stessa istruzione. Ad esempio possono lavorare tutti su un vettore ma ognuno su una parte di vettore diversa.
+
+// IMG SIMD e MIMD
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Concurrent*],
+  [
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Parallel*],
+  [
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Distributed*],
+  [
+  ]
+)
+
+- *Von Neumann architecture*
