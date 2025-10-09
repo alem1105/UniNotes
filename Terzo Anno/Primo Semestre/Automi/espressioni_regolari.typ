@@ -243,9 +243,9 @@ Adesso per il caso induttivo dobbiamo considerare un'espressione regolare $r=R_1
         q3: (q: ""),
 
         q4: (q5: "a"),
-        q5: (q: "")
+        q5: (q: ""),
       ),
-      layout: (i: (-4, -1), q: (-2, -1), q0: (0,0), q1: (2, 0), q2: (4,0), q3: (6,0), q4: (0, -2), q5: (2, -2)),
+      layout: (i: (-4, -1), q: (-2, -1), q0: (0,0), q1: (2, 0), q2: (4,0), q3: (6,0), q4: (0, -3), q5: (2, -3)),
       style: (
         i-q: (label: $epsilon$),
         i: (fill: green.lighten(50%)),
@@ -255,10 +255,112 @@ Adesso per il caso induttivo dobbiamo considerare un'espressione regolare $r=R_1
         q-q4: (label: $epsilon$, curve: -1),
         q4-q5: (curve: -1),
         q5: (fill: green.lighten(50%)),
-        q3-q: (label: $epsilon$, anchor: top),
-        q5-q: (label: $epsilon$)
+        q3-q: (label: $epsilon$, curve: 0.8, anchor: bottom),
+        q5-q: (label: $epsilon$, curve: -0.5)
       )
     )
   )
   ]
 )
+
+Adesso dobbiamo dimostrare la seconda implicazione, quindi $"REG" subset.eq L("re")$. Dobbiamo quindi prendere un NFA e vogliamo trovare l'espressione regolare corrispondente.
+
+Prima di farlo vediamo come *convertire un NFA in un'espressione regolare*.
+
+== Convertire NFA in espressione regolare
+
+Partiamo da un NFA $N$ con $L in "REG":L(N)=L$ e introduciamo il concetto di *GNFA (NFA Generalizzato)*.
+
+Per GNFA intendiamo un NFA dove le etichette degli archi sono delle espressioni regolari.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Forma Canonica del GNFA*],
+  [Un GNFA si trova in forma canonica quando:
+  - Lo stato iniziale ha solo archi uscenti verso tutti gli altri stati
+  - Lo stato finale ha solo archi entranti
+  - Fatta eccezione per lo stato finale ed iniziale esiste un arco fra ogni coppia di stati
+  
+  Più formalmente dato GNFA=$(Q, Sigma, delta, q_("START"), q_("ACC"))$: $ delta:Q \\ {q_("ACC")} times Q \\ {q_("START")} arrow.r cal(R)="re"(Sigma) $
+  Dove $cal(R)$ è l'insieme di tutte le espressioni regolari sul linguaggio $Sigma$]
+)
+
+Definiamo adesso la funzione `Convert(G)` che prende in input un grafo e restituisce l'espressione regolare associata.
+
+Definiamo `Convert`:
+- Definiamo $k =$ numero di stati in G.
+- Se $k=2$ significa che abbiamo soltanto $q_("start"),q_("acc")$ e un singolo arco con etichetta $R in cal(R)$. Avremo $R$ come output.
+- Se $k>2$ scegliamo uno stato $q_("rip")$ diverso da $q_("start")$ e $q_("acc")$ e definiamo $G'={Q',Sigma, delta', q_("start"), q_("acc")}$ dove:
+  - $Q'=Q \\ {q_("rip")}$
+  - $delta':Q' \\ {q_("acc")} times Q' \\ {q_("start")} arrow.r cal(R)$
+
+Adesso $forall q_i in Q' \\ {a_("acc")}, q_j in Q' \\ {q_("start")}$ consideriamo l'automa:
+
+#align(center,
+  automaton(
+    initial: none, final: none,
+    (
+      qi: (qj:"R4", qrip: "R1"),
+      qj: (),
+      qrip: (qj: "R3", qrip: "R2"),
+    ),
+    layout: (qi: (0,0), qj: (0, 2), qrip: (-2,1)),
+    style: (
+      qrip-qrip: (anchor: left),
+      qi-qj: (curve:-1)
+    )
+  )
+)
+
+Dove:
+- $"R1" = delta(q_i, q_("rip"))$
+- $"R2" = delta(q_("rip"), q_("rip"))$
+- $"R3" = delta(q_j, q_("rip"))$
+- $"R4" = delta(q_i, q_j)$
+
+Consideriamo questo automa perché ci interessano soltanto gli archi che collegano $q_i$ e $q_j$ oppure che riguardano $q_("rip")$.
+Avremo quindi che $ delta'(q_i,q_j)="(R1)(R2)*(R3)"union "(R4)" $
+
+Abbiamo quindi definito un automa che ci permette di muoverci fra $q_i$ e $q_j$ anche senza $q_("rip")$, dobbiamo continuare a ripetere questo procedimento finché non rimaniamo soltanto con lo stato iniziale e lo stato accettante.
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: white
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempio*],
+  [
+    TODO: Copiare da iPad
+  ]
+)
+
+Adesso possiamo concludere la dimostrazione iniziata nel capitolo precedente.
+
+Dobbiamo dimostrare che quello che otteniamo da `Convert(G)` è equivalente a $G$.
+
+Se $k=2$ è sicuramente vero.
+
+L'espressione regolare $R$ descrive tutte le stringhe che portano, in $G$, da $q_("start")$ a $q_("acc")$.
+
+Supponiamo che sia vero per $k-1$ stati e dimostriamo che è vero per $k$ stati mostrando che $L(G)=L(G')$ dove $G'$ è l'automa con uno stato rimosso.
+
+Se l'automa $G$ accetta una stringa $w$ significa che esiste un ramo di computazione che permette a $G$ di percorrere gli stati $q_("start")...q_("acc")$, se questa sequenza non contiene $q_("rip")$ allora abbiamo che $L(G)=L(G')$ perché le nuove espressioni regolari conterranno le vecchie per unione.
+
+Se invece $q_("rip")$ è presente nella sequenza avremo comunque che gli stati a lui adiacenti ($q_1, q_2$) in $G'$ hanno degli archi che tengono conto di tutti i modi per percorrere un cammino da $q_1$ a $q_2$ direttamente o passando per $q_("rip")$ e quindi otteniamo di nuovo $L(G)=L(G')$.
