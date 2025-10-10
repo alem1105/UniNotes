@@ -347,7 +347,9 @@ Abbiamo quindi definito un automa che ci permette di muoverci fra $q_i$ e $q_j$ 
   ),
   title: [*Esempio*],
   [
-    TODO: Copiare da iPad
+    #image("img/image.png")
+
+    _Quando avrò tempo lo farò più carino :P_
   ]
 )
 
@@ -364,3 +366,112 @@ Supponiamo che sia vero per $k-1$ stati e dimostriamo che è vero per $k$ stati 
 Se l'automa $G$ accetta una stringa $w$ significa che esiste un ramo di computazione che permette a $G$ di percorrere gli stati $q_("start")...q_("acc")$, se questa sequenza non contiene $q_("rip")$ allora abbiamo che $L(G)=L(G')$ perché le nuove espressioni regolari conterranno le vecchie per unione.
 
 Se invece $q_("rip")$ è presente nella sequenza avremo comunque che gli stati a lui adiacenti ($q_1, q_2$) in $G'$ hanno degli archi che tengono conto di tutti i modi per percorrere un cammino da $q_1$ a $q_2$ direttamente o passando per $q_("rip")$ e quindi otteniamo di nuovo $L(G)=L(G')$.
+
+= Pumping Lemma
+Serve a dimostare che un linguaggio non è naturale.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema - Pumping Lemma*],
+  [
+    Se $L$ è regolare, allora esiste $p$ t.c. presa $w in L$ con $|w| gt.eq p$, allora $w$ può essere scomposta in $w=x y z$ in modo che:
+    1. $forall i gt.eq 0$ si ha che $x y^i z in L$
+    2. $|y| > 0$
+    3. $|x y| lt.eq p$
+  ]
+)
+
+Vedremo che questo $p$ è il numero di stati dell'automa, infatti prima di dimostrare ragionamo su questo caso:
+
+Fissiamo $p=$\#stati automa ed $M$ t.c. $L(M)=L$ e siccome $|w|gt.eq p$, scomponiamo in questo modo:
+
+#align(center,
+  automaton(
+    initial: none, final: none,
+    (
+      q0: (q1: "x"),
+      q1: (q1: "y", q2: "z"),
+      q2: ()
+    ),
+    layout: (q0: (0, 0), q1: (3, 0), q2: (6, 0)),
+    style: (
+      q2: (fill: green.lighten(50%))
+    )
+  )
+)
+
+Una ripetizione, in questo caso $y$, deve esistere sempre dato che la stringa è più grande del numero di stati. Significa appunto che uno stato deve sicuramente ripetersi.
+
+== Dimostrazione
+Sia $M=(Q,Sigma, delta, q_1, F)$ t.c. $L(M)=L$ e sia $p=|Q|$.
+Consideriamo inoltre $w=w_1 w_2 ... w_n$ con $n gt.eq p$.
+
+Consideriamo anche la sequenza di stati $r_1,...,r_(n+1)$ attraversati da $M$ su input $w$, avremo che $r_1 = q_1$ e $r_(n+1) in F$. Ovviamente avremo che $n+1 gt.eq p+1$.
+
+Per il *pigeonhole principle*, nella sequenza considerata ci sarà sicuramente uno stato che si ripete, sia questo stato $r_j$ nella prima apparizione e $r_l$ nella seconda ($j eq.not l$, lo stato è lo stesso ma consideriamo due iterazioni diverse ovvero j quando lo incontriamo e l quando si ripete per la prima volta), avremo ovviamente che $l lt.eq p+1$ perché $r_l$ si presenta tra le prime $p+1$ posizioni nella sequenza che inizia con $r_1$.
+
+Scomponiamo la stringa in $w= x y z$ e poniamo:
+- $x= w_1, ... w_(j-1)$. Ovvero la stringa prima del primo stato che si ripete.
+- $y=w_j ... w_(l-1)$. Prima della prima ripetizioni.
+- $z = w_l ... w_n$. Tutto il resto della stringa.
+
+Abbiamo che:
+- $x$ porta $M$ da $r_1 = q_1$ ad $r_j$
+- $y$ porta $M$ da $r_j$ ad $r_l = r_j$
+- $z$ porta $M$ da $r_j = r_l$ a $r_(n+1) in F$
+
+Quindi notiamo che possiamo ripetere $y$ quante volte vogliamo e la stringa ottenuta $x y^i z$ apparterrà sempre al linguaggio. *Dimostrata la prima condizione*.
+
+Siccome $j eq.not l$ per costruzione allora $|y|>0$. *Seconda condizione*.
+
+Infine $l lt.eq p+1$ e allora $|x y|=l-1 lt.eq p$. *Terza condizione*
+
+== Esempi 
+Utilizziamo il pumping lemma.
+
+1) Mostrare che $L={o^n 1^n : n gt.eq 0}$ non è regolare.
+
+Scegliamo una stringa $0^p 1^p$ con $p$ che sarà il nostro *valore di pumping* che scegliamo per contraddire la prova. Vogliamo comunque $|w| gt.eq q$ per rientrare nelle condizioni.
+
+Se il linguaggio fosse regolare allora presa $w=0^p 1^p$, per qualsiasi scomposizione $w=x y z$ t.c. $|x y| lt.eq p$ avremo che $y$ è composta da soli '0': $ w=underbracket(0..., "x")underbracket(..., "y")01.....1 $
+
+Per falsificare la condizione quindi ci basta prendere una $i gt.eq 2$ e avremo una stringa $x y^i z = o^q 1^p$ con $q>p$ che non rientra nel linguaggio dato che il numero di 0 ed 1 non è lo stesso.
+
+2) Mostrare che il linguaggio $L={w in {0,1}^*: \#_0 w = \#_1 w}$ ovvero le stringhe hanno lo stesso numero di 0 ed 1 ma in qualsiasi ordine.
+
+Proviamo a scomporre con $w in L$ t.c. $w=(01)^p$ e con $|w|=2p gt.eq p$
+
+Otteniamo una stringa: $ underbracket(01, "y")underbracket(0101010...01, "z") quad x = epsilon $
+
+Notiamo però che questa scomposizione non va bene per falsificare le condizioni, infatti qualsiasi $i$ prendiamo aumentiamo sia il numero di 0 che di 1 quindi la stringa appartiene al linguaggio.
+
+Proviamo con la stringa $w=0^p 1^p$ con $|w|=2p$ e rispettiamo $|x y|lt.eq p$ e $|y| > 0$.
+
+Siccome $|x y| lt.eq p$ allora $y$ è fatta solo da 0: $ underbracket(0....0, "x")underbracket(0.....0, "y")underbracket(1....1,"z") $
+
+In questo caso aumentando $y$ aumentiamo soltanto gli 0 e quindi la stringa non appartiene a $L$.
+
+Più precisamente abbiamo che:
+
+- $|y|=k>0$ ma $k lt.eq p$ e inoltre $|x|=p-k, |z| = p$, tuttavia $|x y^2 z|=(p-k)+2k+p=2p+k$ ma il numero di 0 è $(p-k)+2k=p+k$ mentre quello degli 1 è sempre $p$ che è $<p+k$, quindi non rientra nel linguaggio.
+
+Con la stessa stringa possiamo provare anche questa scomposizione: $ underbracket(0....., "x")underbracket(...00.., "y")underbracket(...01...1, "z") $
+
+Anche in questo caso aumentiamo solo gli 0 e quindi non rientriamo nel linguaggio. Più precisamente:
+
+- $|y| = k>0$
+- $|z|=p+l$
+- $|x|=p-k-l$
+- Assumendo $l>0$
+
+Tuttavia $|x y^2 z|=(p-k-l)+2k+p+l=2p+k$ ma il numero di 0 è $(p-k-l)+2k+l=p+k$ mentre quello degli 1 è $p<p+k$.
