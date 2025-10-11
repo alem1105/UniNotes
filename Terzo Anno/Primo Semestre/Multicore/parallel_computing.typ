@@ -170,16 +170,18 @@ Useremo anche librerie ad alto livello già esistenti che però hanno un compres
 
 == Type of Parallel Systems
 
-- *Shared Memory*: I core lavorano sulla stessa memoria e vanno coordinati.
-- *Distributed Memory*: Ogni core ha la sua memoria dedicata e si scambiano messaggi fra loro per coordinarsi.
+- *Shared Memory*: I core lavorano sulla stessa memoria e si coordinano leggendo una specifica zona di memoria.
+- *Distributed Memory*: Ogni core ha la sua memoria dedicata e per coordinarsi si scambiano messaggi su una rete dedicata.
 
-In generale quindi devono comunque avere un modo per coordinarsi
+In generale quindi devono comunque avere un modo per coordinarsi.
+
+#align(center, image("img/image.png", width: 80%))
 
 - *Multiple-Instruction Multiple-Data (MIMD)*: Ogni core ha la sua unità di controllo e può lavorare indipendentemente dagli altri. Come ad esempio la CPU classica dei PC, ogni core può fare qualcosa di diverso.
 
 - *Single-Instruction Multiple-Data (SIMD)*: Ogni core può lavorare su un pezzo di dato diverso, ma tutti devono lavorare per la stessa istruzione. Ad esempio possono lavorare tutti su un vettore ma ognuno su una parte di vettore diversa.
 
-// IMG SIMD e MIMD
+#align(center, image("img/image1.png", width: 60%))
 
 #showybox(
   frame: (
@@ -195,6 +197,7 @@ In generale quindi devono comunque avere un modo per coordinarsi
   ),
   title: [*Concurrent*],
   [
+    Diverse tasks possono essere in esecuzione in ogni momento. Questi possono essere anche seriali, ad esempio dei sistemi operativi su un singolo core.
   ]
 )
 
@@ -212,6 +215,7 @@ In generale quindi devono comunque avere un modo per coordinarsi
   ),
   title: [*Parallel*],
   [
+    Diverse tasks possono *collaborare* per risolvere lo *stesso problema*.
   ]
 )
 
@@ -229,7 +233,42 @@ In generale quindi devono comunque avere un modo per coordinarsi
   ),
   title: [*Distributed*],
   [
+    Il lavoro viene diviso su macchine separate che comunicano tramite una rete. Il sistema appare come sistema unico.
   ]
 )
 
+Da notare che i sistemi paralleli e distribuiti sono comunque concorrenti, infatti molte attività vengono svolte nello stesso momento e si contendono le risorse del sistema.
+
 - *Von Neumann architecture*
+Di solito quando programmiamo non ci preoccupiamo di come è fatto l'hardware su cui stiamo lavorando, di solito possiamo astrarre. Però se vogliamo scrivere codice efficiente ci tornerà utile capire come funziona l'hardware e scrivere codice ottimizzato per quell'hardware.
+
+Vediamo la *Von Neumann Architecture*
+
+#align(center, image("img/image2.png", width: 50%))
+
+- *Main Memory*: È formata da tante locazioni di memoria che contengono dei dati, ciascuna è identificata da un *indirizzo*
+- *CPU*: Esegue le istruzioni e decide quali eseguire. I registri sono delle memorie estremamente veloci ma anche molto piccole che servono a memorizzare dati importanti come lo stato d'esecuzione dei processi. Ad esempio uno dei più importanti è il *Program Counter (PC)* che contiene l'indirizzo della prossima istruzione da eseguire.
+- *Interconnect*: Serve a mettere in comunicazione la memoria e la CPU, di solito è un *bus di sistema* ma in alcuni casi potrebbe essere più complesso. 
+
+Una macchina che segue il modello di Von Neumann esegue un'istruzione alla volta, ogni istruzione opera su una piccola parte di dati che vengono memorizzati nei registri. La CPU può leggere e scrivere dati nella memoria ma la separazione di queste due componenti causa quello che viene chiamato *Von Neumann Bottleneck*, infatti il bus di sistema o in generale la connessione fra i componenti determinate la velocità di trasferimento dei dati, di solito è più lenta sia della memoria che della CPU.
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: white
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Una comparazione*],
+  [
+    #image("img/687474703a2f2f692e696d6775722e636f6d2f6b307431652e706e67.png")
+
+    *Assumendo 1GB/sec SSD*
+  ]
+)
+

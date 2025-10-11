@@ -31,3 +31,4 @@
 #set math.equation(numbering: none)
 
 #include "parallel_computing.typ"
+#include "mpi.typ"
