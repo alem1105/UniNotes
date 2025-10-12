@@ -1,5 +1,4 @@
 #import "@preview/showybox:2.0.4": showybox
-#import "@preview/finite:0.5.0": automaton
 #import "@preview/fontawesome:0.6.0": *
 #import "@preview/codly:1.2.0": *
 #import "@preview/codly-languages:0.1.8": *
@@ -71,6 +70,7 @@ Si basa sul concetto di *client e server*, il client è chi richiede dei servizi
     Host: [www.example.com](https://www.example.com)
     Accept-Language: en, it
     ```
+
     - La prima è la *linea di richiesta* dove viene indicato il metodo HTTP, in questo caso GET, l'URI della risorsa e la versione del protocollo.
     - Vari campi di intestazione, ad esempio *User-Agent*.
     - Corpo del messaggio opzionale.
@@ -256,7 +256,49 @@ I codici sono formati da 3 cifre nell'intervallo 100-599, la prima cifra indica 
 - `503 Service Unavailable`: Server sovraccarico o spento.
 - `504 Gateway Timeout`: Il server non ha ricevuto una risposta in tempo dal server a monte.
 
-= API Pubbliche
+= API - Application Programming Interface
+Un'API è la definizione delle interazioni consentite tra due parti di un software, specifica come un pezzo di codice o servizio può interagire con un altro.
+
+Possiamo vederle come un "contratto" tra il client e il server (consumer e servizio), questa specifica:
+- Richieste possibili
+- Parametri delle richieste
+- Valori di ritorno
+- Qualsiasi formato di dato richiesto
+
+Queste portano diversi vantaggi nell'architettura software:
+- L'interfaccia da utilizzare è *esplicita*, si conoscono quindi le modalità di interazione
+- Stabilisce delle regole che vanno rispettate da entrambe le parti
+- La logica interna del software rimane nascosta e viene resa pubblica soltanto l'interfaccia
+
+Esistono diverse categorie di API in base alla loro posizione e funzione:
+- *API Locali*: Ad esempio quelle per i linguaggi di programmazione, come le librerie standard di Python, le API del sistema operativo o API hardware
+- *API Remote (Web API)*: Interfacce di programmazione basate su protocolli di rete, tipicamente HTTP come ad esempio le API RESTful.
+
+Un'altra distinzione è:
+- *API Private*: Destinate solo a determinati utenti
+- *API Pubbliche*: Disponibili anche al pubblico, si può comunque limitare o controllare l'accesso attraverso dei *API Tokens* ovvero dei codici univoci che identificano ogni utente.
+
+Una buona API deve essere descritta e spiegata attraverso, ad esempio, una documentazione oppure un linguaggio di descrizione standardizzato.
+
+*OAS (OpenAPI Specification)* è il linguaggio di descrizione leader del settore per le API moderne basate su HTTP:
+- È vendor-neutral (indipendente dal fornitore) per le API remote basate su HTTP
+- Rappresenta lo standard industriale per la descrizione di API 
+- È ampiamente adottato dalla comunità
+
+I file OpenAPI sono spesso scritti in YAML, esempio:
+
+```yaml
+openapi: 3.0.0
+info:
+  title: An example OpenAPI document
+  description: |
+    This API allows writing down marks on a Tic Tac Toe board
+    and requesting the state of the board or of individual cells.
+  version: 0.0.1
+paths: {} # Gli endpoint dell'API verrebbero definiti qui
+```
+
+== API Pubbliche
 Ci permettono di capire come inviare delle richieste ad un server.
 
 Tramite il comando `curl` possiamo effettuare richieste tramite il terminale. Se non indichiamo un metodo di default verrà utilizzato il GET.
