@@ -230,6 +230,32 @@ Con un approccio lazy:
 
 $ dfrac(dfrac(dfrac(dfrac(dfrac(dfrac(E tack.r 7 arrow.r.squiggly 7,E tack.r x arrow.r.squiggly 7 )quad E tack.r 1 arrow.r.squiggly 1,(x,2)(y,x+1)(x,7) tack.r x+1 arrow.r.squiggly 8),(x,2)(y,x+1)(x,7) tack.r y arrow.r.squiggly 8),(x,2)(q,x+1) "let" x=7 "in" y arrow.r.squiggly 8),(x,2)tack.r "let" y=x+1 "in let" x=7 "in" y arrow.r.squiggly 8),emptyset tack.r "let" x=2 "in let" y=x+1 "in let" x=7 "in" y arrow.squiggly.r 8) $
 
+Con $E=(x,2)(y,x+1)(x,7)$
+
 Notiamo che otteniamo un risultato diverso, diciamo che lo consideriamo "errato" rispetto a quello che vogliamo. Per questo introduciamo il *lazy con scoping statico*, ci "portiamo dietro" insieme alle variabili da valutare anche l'ambiente in cui dovevamo valutarle in questo modo possiamo comunque calcolarle solo se necessario ma senza subire gli effetti dello scoping dinamico.
 
 Utilizziamo quindi la formula: $ frac(E(x,M,E) tack.r N arrow.r.squiggly v, E tack.r "let" x=M "in" N arrow.r.squiggly v) $
+
+Sviluppiamo l'albero: $ dfrac(dfrac(dfrac(dfrac(dfrac(dfrac(emptyset tack.r 2 arrow.r.squiggly 2, (x,2,emptyset) tack.r x arrow.r.squiggly 2) quad (x,2,emptyset) tack.r 1 arrow.r.squiggly 1,(x,2,emptyset)tack.r x+1 arrow.r.squiggly 3),E(x,7,E)tack.r y arrow.r.squiggly 3),(x,2,emptyset)(y,x+1,(x,2,emptyset)) tack.r "let" x=7 "in" y arrow.r.squiggly 3),(x,2,emptyset) tack.r "let" y=x+1 "in let" x=7 "in" y arrow.squiggly.r 3),emptyset tack.r "let" x=2 "in let" y=x+1 "in let" x=7 "in" y arrow.r.squiggly 3) $
+
+Notiamo che in questo modo otteniamo lo stesso risultato.
+
+#showybox(
+    frame: (
+        border-color: green.lighten(60%),
+        title-color: green.lighten(60%),
+        body-color: green.lighten(95%)
+    ),
+    title-style: (
+        color: black,
+        weight: "regular",
+        align: center,
+        boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Scoping statico e dinamico*],
+    [
+        Da notare che se utilizziamo un approccio lazy lo scoping può cambiare il valore dell'espressione, come abbiamo visto negli esempi precedenti. Per quanto riguarda gli approcci eager invece, lo scoping non cambia il valore perchè le variabili vengono valutate subito.
+    ]
+)
+
+Per vedere una differenza fra scoping dinamico e statico anche in approcci eager, dobbiamo complicare un po' il linguaggio andando a rendere la semantica e la sintassi più estese. Introduciamo il linguaggio *Fun*.
