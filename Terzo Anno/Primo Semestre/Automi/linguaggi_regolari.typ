@@ -372,8 +372,8 @@ Definiamo adesso delle operazioni sui linguaggi che ci torneranno utili.
   ]
 )
 
-== Introduzione alla proprietà di chiusura dei Linguaggi Naturali
-Vogliamo capire se dati due linguaggi naturali $L_1,L_2 in "REG"$ il linguaggio risultante di operazioni effettuate con questi linguaggi è naturale o no, ad esempio se $L_1 union L_2 in "REG"$ oppure se $L_1 inter L_2 in "REG"$.
+== Introduzione alla proprietà di chiusura dei Linguaggi Regolari
+Vogliamo capire se dati due linguaggi regolari $L_1,L_2 in "REG"$ il linguaggio risultante di operazioni effettuate con questi linguaggi è regolare o no, ad esempio se $L_1 union L_2 in "REG"$ oppure se $L_1 inter L_2 in "REG"$.
 
 Vedremo qualche dimostrazione ma in realtà sarà più semplice dimostrare tutte le chiusure utilizzando gli NFA, ovvero gli automi non deterministici.
 
@@ -395,7 +395,7 @@ Vedremo qualche dimostrazione ma in realtà sarà più semplice dimostrare tutte
   [Come prima idea possiamo dire che: $ L_1, L_2 in "REG" arrow.double.r exists M_1, M_2 in "DFA t.c. " L(M_1) = L_1 and L(M_2) = L_2 $ 
   ]
 )
-Quindi dati due linguaggi naturali esistono due automi che li hanno come linguaggi accettati. Noi dobbiamo definire un terzo automa $M$ tale che $L(M)=L_1 union L_2$, ma data una stringa $x$ candidata non possiamo provare a vedere prima cosa succede su $M_1$ e se non la accetta provare $M_2$ perchè perderemmo la sequenza corretta della stringa su $M$. 
+Quindi dati due linguaggi regolari esistono due automi che li hanno come linguaggi accettati. Noi dobbiamo definire un terzo automa $M$ tale che $L(M)=L_1 union L_2$, ma data una stringa $x$ candidata non possiamo provare a vedere prima cosa succede su $M_1$ e se non la accetta provare $M_2$ perchè perderemmo la sequenza corretta della stringa su $M$. 
 
 Quello che dobbiamo fare è testare ogni carattere di $x$ in parallelo su $M_1$ e $M_2$ e in base al risultato aggiorniamo lo stato di $M$.
 

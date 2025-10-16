@@ -368,7 +368,7 @@ Se l'automa $G$ accetta una stringa $w$ significa che esiste un ramo di computaz
 Se invece $q_("rip")$ è presente nella sequenza avremo comunque che gli stati a lui adiacenti ($q_1, q_2$) in $G'$ hanno degli archi che tengono conto di tutti i modi per percorrere un cammino da $q_1$ a $q_2$ direttamente o passando per $q_("rip")$ e quindi otteniamo di nuovo $L(G)=L(G')$.
 
 = Pumping Lemma
-Serve a dimostare che un linguaggio non è naturale.
+Serve a dimostare che un linguaggio non è regolare.
 
 #showybox(
   frame: (

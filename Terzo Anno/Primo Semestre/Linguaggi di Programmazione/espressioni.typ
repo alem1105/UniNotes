@@ -2,6 +2,10 @@
 #import "@preview/fontawesome:0.6.0": *
 #import "@preview/xarrow:0.3.1": xarrow
 
+#let nonumeq = math.equation.with(block: true, numbering: none)
+#let dm(x) = box[#nonumeq[#x]]
+#let dfrac(x,y) = math.frac(dm(x),dm(y))
+
 = Espressioni
 
 Definiamo un linguaggio $L$ come un insieme di stringhe. Per descrivere la sintassi di linguaggi formali (la grammatica), usiamo la *BNF (Backus-Naur Form)*, con questa sintassi: $ "<simbolo> ::= __espressione__" $
@@ -197,3 +201,35 @@ $ frac(E tack.r M arrow.squiggly.r v quad E{(x,v)} tack.r N arrow.squiggly.r v',
         Per tripla intendiamo $(M,E,k) in arrow.squiggly.r$, che leggiamo _"L'espressione $M$ nell'ambiente $E$ vale $v$"_. Ma se ad esempio prendiamo la tripla $(5, [E], 7)$ con $E$ un qualsiasi ambiente questa non apparterrà mai a $arrow.squiggly.r$, infatti in qualsiasi ambiente $5$ non potrà mai valere $7$.
     ]
 )
+
+Per valutare le espressioni possiamo usare *l'albero di derivazione*, proviamo a risolvere: $ "let" x=3 "in" (["let" x=("let" y=2 "in" x+y) "in" x+7]+x) $
+
+Costruiamo l'albero di derivazione:
+
+$ dfrac(emptyset tack.r 3 arrow.squiggly.r 3 quad dfrac(dfrac(dfrac((x,3)tack.r 2 arrow.r.squiggly 2 quad frac((x,3)(y,2)tack.r x arrow.r.squiggly 3 quad (x,3)(y,2) tack.r y arrow.r.squiggly 2, (x,3)(y,2) tack.r x+y arrow.r.squiggly 5),(x,3) tack.r "let" y=2 "in" x+y arrow.r.squiggly 5 )quad (x,3)(x,5)tack.r x+7 arrow.r.squiggly 12,(x,3) tack.r "let" x=("let" y=2 "in" x+y) "in" x+7 arrow.r.squiggly 12) quad (x,3)tack.r x arrow.r.squiggly 3, emptyset tack.r "let" x=("let" y=2 "in" x+y) "in" x+7]+x arrow.r.squiggly 15),emptyset tack.r "let" x=3 "in" (["let" x=("let" y=2 "in" x+y) "in" x+7]+x) arrow.squiggly.r 15) $
+
+Quindi, seguendo le regole definite prima, si valuta per prima $N$ e poi $M$.
+
+Questo è un approccio di tipo *eager* con scoping *statico*, questo significa che appena troviamo un'espressione la valutiamo in modo da poterla utilizzare dopo, ma se questa espressione dopo non ci servisse?
+
+Proviamo ad usare un approccio *lazy* con scoping *dinamico*, questo significa che se abbiamo: $ "let" x = M in N $ prima calcoliamo $N$ e se ci serve $x$ allora calcoliamo $M$.
+
+Con scoping intendiamo l'istante di valutazione delle variabili, statico viene effettuato subito (a tempo di compilazione) mentre dinamico solo se serve (in esecuzione).
+
+Usando un approccio lazy, le regole della somma e delle costanti rimangono uguali, ma quella del _let_ e delle variabili cambia:
+
+Il let diventa: $ frac(E(x,M) tack.r N arrow.squiggly.r v, E tack.r "let" x=M "in" N arrow.squiggly.r v) $
+
+Le variabili: $ frac(E tack.r M arrow.squiggly.r v, E tack.r x arrow.squiggly.r v) quad "Se" E(x)=M $
+
+Mettiamo i due approcci a confronto sulla stessa espressione, proviamo prima un approccio eager:
+
+$ dfrac(dfrac(dfrac((x,2)tack.r x arrow.r.squiggly 2 quad (x,2) tack.r 1 arrow.r.squiggly 1,(x,2) tack.r x+1 arrow.r.squiggly 3) quad dfrac((x,2)(y,3) tack.r 7 arrow.r.squiggly 7 quad (x,2)(y,3)(x,7) tack.r y arrow.r.squiggly 3,(x,2)(y,3)tack.r "let" x=7 "in" y arrow.r.squiggly 3),emptyset tack.r 2 arrow.r.squiggly 2 quad (x,2) tack.r "let" y=x+1 "in let" x=7 "in" y arrow.r.squiggly 3), emptyset tack.r "let" x =2  "in let" y=x+1 "in let" x=7 "in" y arrow.squiggly.r 3) $
+
+Con un approccio lazy:
+
+$ dfrac(dfrac(dfrac(dfrac(dfrac(dfrac(E tack.r 7 arrow.r.squiggly 7,E tack.r x arrow.r.squiggly 7 )quad E tack.r 1 arrow.r.squiggly 1,(x,2)(y,x+1)(x,7) tack.r x+1 arrow.r.squiggly 8),(x,2)(y,x+1)(x,7) tack.r y arrow.r.squiggly 8),(x,2)(q,x+1) "let" x=7 "in" y arrow.r.squiggly 8),(x,2)tack.r "let" y=x+1 "in let" x=7 "in" y arrow.r.squiggly 8),emptyset tack.r "let" x=2 "in let" y=x+1 "in let" x=7 "in" y arrow.squiggly.r 8) $
+
+Notiamo che otteniamo un risultato diverso, diciamo che lo consideriamo "errato" rispetto a quello che vogliamo. Per questo introduciamo il *lazy con scoping statico*, ci "portiamo dietro" insieme alle variabili da valutare anche l'ambiente in cui dovevamo valutarle in questo modo possiamo comunque calcolarle solo se necessario ma senza subire gli effetti dello scoping dinamico.
+
+Utilizziamo quindi la formula: $ frac(E(x,M,E) tack.r N arrow.r.squiggly v, E tack.r "let" x=M "in" N arrow.r.squiggly v) $

@@ -7,6 +7,10 @@
 #set text(lang: "it")
 #show raw: set text(font: "Cascadia Code")
 
+#let nonumeq = math.equation.with(block: true, numbering: none)
+#let dm(x) = box[#nonumeq[#x]]
+#let dfrac(x,y) = math.frac(dm(x),dm(y))
+
 #show: ilm.with(
   title: [Linguaggi di Programmazione],
   author: "Alessio Marini, 2122855",
