@@ -33,3 +33,4 @@
 #include "non_determinismo.typ"
 #include "chiusureNFA.typ"
 #include "espressioni_regolari.typ"
+#include "gramm_acontestuali.typ"

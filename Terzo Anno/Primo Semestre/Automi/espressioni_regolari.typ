@@ -475,3 +475,96 @@ Anche in questo caso aumentiamo solo gli 0 e quindi non rientriamo nel linguaggi
 - Assumendo $l>0$
 
 Tuttavia $|x y^2 z|=(p-k-l)+2k+p+l=2p+k$ ma il numero di 0 è $(p-k-l)+2k+l=p+k$ mentre quello degli 1 è $p<p+k$.
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: white
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esercizio*],
+  [
+    Costruire un DFA per il linguaggio $L={w in {0,1}^* : w in.not (01^+)^*}$. Realizzare dei DFA che non rispettano delle regole potrebbe essere complicato considerando solo questa richiesta. Un'idea però potrebbe essere quella di realizzare un DFA che rispetta quella regola e poi usare il complemento per ottenere un linguaggio, sempre regolare per la proprietà di chiusura, che rispetta la richiesta iniziale.
+
+    Costruiamo quindi un DFA che riconosce $(01^+)^*$:
+    #align(center,
+      automaton(
+        initial: "q0", final: none,
+        (
+          q0: (q1: "0"),
+          q1: (q2: "1"),
+          q2: (q2: "1", q1: "0")
+        ),
+        layout: (q0: (0, 0), q1: (3, 0), q2: (6, 0)),
+        style: (
+          q2: (fill: green.lighten(50%)),
+          q0: (fill: green.lighten(50%))
+        )
+      )
+    )
+
+    Per realizzare il complemento dobbiamo scambiare gli stati accettanti con quelli non accettanti, per non perdere delle stringhe però è importante *completare l'automa*:
+
+    #align(center,
+      automaton(
+        initial: "q0", final: none,
+        (
+          q0: (q1: "0", q3: "1"),
+          q1: (q2: "1", q3: "0"),
+          q2: (q2: "1", q1: "0"),
+          q3: (q3: ("0", "1"))
+        ),
+        layout: (q0: (0, 0), q1: (3, 0), q2: (6, 0), q3: (0, -3)),
+        style: (
+          q0-q3: (curve: -1),
+          q2: (fill: green.lighten(50%)),
+          q0: (fill: green.lighten(50%)),
+          q3-q3: (anchor: left+bottom)
+        )
+      )
+    )
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: white
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esercizio - continuo*],
+  [
+    A questo punto possiamo eseguire il complemento:
+    #align(center,
+      automaton(
+        initial: "q0", final: none,
+        (
+          q0: (q1: "0", q3: "1"),
+          q1: (q2: "1", q3: "0"),
+          q2: (q2: "1", q1: "0"),
+          q3: (q3: ("0", "1"))
+        ),
+        layout: (q0: (0, 0), q1: (3, 0), q2: (6, 0), q3: (0, -3)),
+        style: (
+          q0-q3: (curve: -1),
+          q1: (fill: green.lighten(50%)),
+          q3: (fill: green.lighten(50%)),
+          q3-q3: (anchor: left+bottom)
+        )
+      )
+    )    
+    Abbiamo ottenuto l'automa che cercavamo inizialmente.
+  ]
+)
