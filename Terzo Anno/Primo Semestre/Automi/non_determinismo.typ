@@ -240,7 +240,7 @@ Adesso dobbiamo calcolare $delta_D$, vediamo alcuni casi ma non tutti:
 
 - $delta_D (q_{2},b)=q_{3}$
 
-- $delta_D (q_{3},a)=q_{3}$ - Perché dobbiamo considerare anche l'$epsilon"-archi"$
+- $delta_D (q_{3},a)=q_{1,3}$ - Perché dobbiamo considerare anche l'$epsilon"-archi"$
 
 - $delta_D (q_{3},b)=q_{emptyset}$ - Infatti finisce la stringa ma non siamo in uno stato accettante
 
