@@ -254,7 +254,9 @@ Notiamo che in questo modo otteniamo lo stesso risultato.
     ),
     title: [*Scoping statico e dinamico*],
     [
-        Da notare che se utilizziamo un approccio lazy lo scoping può cambiare il valore dell'espressione, come abbiamo visto negli esempi precedenti. Per quanto riguarda gli approcci eager invece, lo scoping non cambia il valore perchè le variabili vengono valutate subito.
+        La differenza tra un approccio eager e lazy è che nell'approccio eager le variabili vengono valutate subito mentre nel lazy soltanto se necessario.
+
+        Lo scoping dinamico o statico invece cambia il "con cosa" valutiamo le variabili, nello scoping dinamico lo facciamo con l'ambiente che abbiamo in quel momento mentre con quello statico con l'ambiente "originale" ovvero quello a cui fa riferimento quella parte di espressione.
     ]
 )
 
