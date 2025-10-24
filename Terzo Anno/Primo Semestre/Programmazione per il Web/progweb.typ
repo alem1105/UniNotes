@@ -32,3 +32,4 @@
 #include "http.typ"
 #include "json_yaml.typ"
 #include "rest.typ"
+#include "open_api.typ"
