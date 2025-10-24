@@ -34,3 +34,4 @@
 #include "chiusureNFA.typ"
 #include "espressioni_regolari.typ"
 #include "gramm_acontestuali.typ"
+#include "pda.typ"
