@@ -172,3 +172,93 @@ $ frac(E tack.r M arrow.squiggly.r (x, (L, E')) quad E'{(x,( N, E))} tack.r L ar
 )
 
 Nel linguaggio _Fun_ *non esistono due semantiche equivalenti*.
+
+#showybox(
+  frame: (
+      border-color: green.lighten(60%),
+      title-color: green.lighten(60%),
+      body-color: green.lighten(95%)
+  ),
+  title-style: (
+      color: black,
+      weight: "regular",
+      align: center,
+      boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Insieme delle funzioni da X ad Y*],
+  [
+    Dati due insiemi $X, Y$ indichiamo con $(X arrow.r Y)$ l'insieme di tutte le funzioni da $X$ ad $Y$:
+
+    $ (X arrow.r Y) = {f | f : X arrow.r Y} $
+
+    Dove $|X arrow.r Y| = |Y|^(|X|)$
+  ]
+)
+
+#showybox(
+  frame: (
+      border-color: green.lighten(60%),
+      title-color: green.lighten(60%),
+      body-color: green.lighten(95%)
+  ),
+  title-style: (
+      color: black,
+      weight: "regular",
+      align: center,
+      boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Curryficazione*],
+  [
+    La curryficazione, data una funzione, ci permette di passare da: 
+
+    $ f(A_1, ..., A_n) arrow.r B $
+
+    Ad una forma:
+
+    $ f_c (A_1) arrow.r (A_2 arrow.r (... (A_n arrow.r B) ... )) $
+
+    Ovvero ci permette di spezzare una funzione con più parametri in tante funzioni, dette *applicazioni parziali*, tutte da un solo parametro.
+  ]
+)
+
+Vediamo un esempio di curryficazione con la funzione somma: 
+
+$ "sum": NN times NN arrow.r NN $
+
+Quindi una funzione che prende in input due naturali e restituisce un naturale, la sua versione curryficata sarà:
+
+$ "sum"_c: NN arrow.r NN arrow.r NN $
+
+Ovvero una funzione che prende come argomento un intero $a$ e restituisce una funzione che prende un intero e gli applica la somma di $a$.
+
+Quindi ad esempio: $"sum"(3,5)=8$ restituisce subito 8 mentre $"sum"_c (3,5)$ restituisce in un primo momento una funzione $f(x)=x+3$ ovvero una funzione che prende un intero e gli somma sempre 3, in un secondo momento applica questa funzione a 5 e restituisce 8. La notazione corretta infatti sarebbe $"sum"_c (3)(5)$
+
+#showybox(
+  frame: (
+      border-color: green.lighten(60%),
+      title-color: green.lighten(60%),
+      body-color: green.lighten(95%)
+  ),
+  title-style: (
+      color: black,
+      weight: "regular",
+      align: center,
+      boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Curryficazione in _Fun_*],
+  [
+    Dato il linguaggio _Fun_ definiamo la *contrazione sintattica*: 
+
+    $ "fn" x_1 x_2 ... x_n arrow.double.r M equiv "fn" x_1 arrow.double.r ("fn" x_2 arrow.double.r ... ("fn" x_n arrow.double.r M)...) $
+
+    Data dalla curryficazione del primo termine. 
+  ]
+)
+
+Ad esempio prendiamo l'espressione $("fn" x y arrow.double.r y x) 7 ("fn" x arrow.double.r x + 1)$ che corrisponde a:
+
+$ ("fn" x arrow.double.r "fn" y arrow.double.r y x)7("fn" x arrow.double.r x + 1) $
+
+Verrà valutata come 8:
+
+$ ("fn" x arrow.double.r "fn" y arrow.double.r y x)7("fn" x arrow.double.r x + 1) arrow.r ("fn" y arrow.double.r y 7)("fn" x arrow.double.r x+1) arrow.r 8 $

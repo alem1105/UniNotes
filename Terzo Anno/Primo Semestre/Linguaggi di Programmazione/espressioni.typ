@@ -260,4 +260,24 @@ Notiamo che in questo modo otteniamo lo stesso risultato.
     ]
 )
 
+Se vogliamo utilizzare un approccio *lazy con scoping statico* allora le regole diventano:
+
+- Insieme _Env_:
+
+$ "Env" = {f | f : "Var" xarrow("fin") "Exp" times "Env"} $
+
+- Dato $E in "Env"$ per le variabili si ha:
+
+$ frac(E' tack.r M arrow.r.squiggly v, E tack.r x arrow.r.squiggly v) quad ("se" E(x) = (M, E')) $
+
+- Per l'espressione _let_:
+
+$ frac(E{(x, (M,E))} tack.r N arrow.r.squiggly v, E tack.r "let" x = M "in" N arrow.squiggly.r v) $
+
+Utilizzando le regole si può notare che nel linguaggio *Exp* non c'è differenza tra semantica eager statica ed eager dinamica, si parla quindi direttamente di *sematica eager*. Nel linguaggio Exp si ha che:
+
+$ "Exp eager" equiv "Exp lazy statico" equiv.not "Exp lazy dinamico" $
+
+Due semantiche sono equivalenti se producono sempre li stessi risultati per le stesse valutazioni.
+
 Per vedere una differenza fra scoping dinamico e statico anche in approcci eager, dobbiamo complicare un po' il linguaggio andando a rendere la semantica e la sintassi più estese. Introduciamo il linguaggio *Fun*.
