@@ -32,3 +32,4 @@
 
 #include "parallel_computing.typ"
 #include "mpi.typ"
+#include "parallel_design.typ"

@@ -367,3 +367,72 @@ Per scrivere buon codice bisogna pensare alle send come se fossero sempre blocca
      4. Se il rank del processo destinatario è uguale a quello del mittente il processo potrebbe bloccarsi, o peggio, abbinarsi ad un messaggio sbagliato. (Questo comportamento può essere usato per inviare messaggi a se stessi ma va usato con attenzione perchè potrebbe portare a dei deadlock.)
   ]
 )
+
+== Point-to-Point Communication Modes
+`MPI_Send` utilizza il metodo di comunicazione *standard*, decide in base alla grandezza del messaggio se bloccare la chiamata fino alla ricezione da parte del destinatario o di ritornare prima che questo accada, questa seconda opzione avviene solo se il messaggio è piccolo e rende la `Send` *localmente bloccante* ovvero si blocca soltanto per copiare i dati nel buffer interno ma non per attendere una risposta da un altro processo.
+
+Esistono però altri 3 metodi di comunicazione:
+- *Buffered*: Funziona sempre con un buffer indipendentemente dalla grandezza del messaggio, l'unica differenza è che il buffer è fornito dall'utente.
+- *Synchronous*: L'operazione di `Send` ritorna soltante se il destinatario ha iniziato la ricezione dei dati, è un'operazione *globally blocking*, infatti i due processi si sincronizzeranno nello stesso punto per scambiare i dati senza ulteriori comunicazioni.
+- *Ready*: Il mittente invia i dati ma il destinatario deve essere già pronto, ovvero aver già chiamato una `Receive`, in caso contrario la `Send` ritorna un errore. Serve a ridurre l'overhead di handshake tra i due processi. Il lato negativo è che se il destinatario non è pronto alla ricezione l'invio fallisce, i due processi vanno quindi sincronizzati nel modo corretto.
+
+Per utilizzarle hanno questa firma:
+
+```c
+int [ MPI_Bsend | MPI_Ssend | MPI_Rsend ] (void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm);
+```
+
+== Non-Blocking Communication
+In generale le `Send` non bloccanti rovinano le performance perché il mittente deve fermarsi e aspettare che venga conclusa la copia sul buffer. Le non bloccanti invece permettono di ritornare subito un valore e permettono *comunicazione e computazione* nello stesso momento. Esistono delle varianti non bloccanti, *immediate*, sia per `Send` che per `Receive`.
+
+Un lato negativo è che il processo mittente per poter riutilizzare il buffer in altre comunicazioni deve comunque assicurarsi che i dati inviati siano stati ricevuti correttamente dal destinatario. Per controllare il buffer si utilizzano le operazioni `MPI_Wait` o `MPI_Test`. Anche il destinatario prima di poter utilizzare i dati deve assicurarsi che siano arrivati tutti correttamente, si utilizzano le stesse funzioni.
+
+Vediamo prima la firma delle due operazioni `Isend` e `Irecv`:
+
+```c
+int MPI_Isend (void         *buf,     // Address of data buffer
+               int          count,    // Number of data items
+               MPI_Datatype datatype, // Tipo di dato
+               int          source,   // Rank del destinatario
+               int          tag,      // Identificatore del tipo di messaggio
+               MPI_Comm     comm,     // Comunicatore
+               MPI_Request  *req      // Si usa per controllare lo stato della richiesta
+               )
+```
+
+```c
+int MPI_Irecv (void         *buf,     // Address of receive buffer
+               int          count,    // Capacità del buffer in items
+               MPI_Datatype datatype, // Tipo di dato
+               int          source,   // Rank del mittente
+               int          tag,      // Identificatore del tipo di messaggio
+               MPI_Comm     comm,     // Comunicatore
+               MPI_Request  *req      // Si usa per controllare lo stato della richiesta
+               )
+```
+
+Per controllare lo stato della ricezione o dell'invio utilizziamo quindi:
+
+- *Metodo bloccante*, distrugge l'handle:
+
+```c
+int MPI_Wait(MPI_Request *req, // Indirizzo dell'handle con lo stato della richiesta la chiamata lo invalida impostandolo a MPI_REQUEST_NULL
+             MPI_Status *st    // Indirizzo della struttura che conterrà le informazioni del comunicatore
+            )
+```
+
+- *Metodo non bloccante*, distrugge l'handle solo se la comunicazione è avvenuta con successo:
+
+```c
+int MPI_Test(MPI_Request *req, // Indirizzo dell'handle con lo stato della richiesta la chiamata lo invalida impostandolo a MPI_REQUEST_NULL
+             int         *flag,// Impostato a 1 se andata a buon fine
+             MPI_Status  *st   // Indirizzo della struttura che conterrà le informazioni del comunicatore
+            )
+```
+
+Esistono comunque altre funzioni per testare il successo dell'operazione:
+- Waitall
+- Testall
+- Waitany
+- Testany
+- ...
