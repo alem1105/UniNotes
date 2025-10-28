@@ -201,3 +201,65 @@ Graficamente abbiamo che:
   #align(center, image("img/Senza titolo-2025-10-07-0914.svg", width: 80%))
   ]
 )
+
+Dimostriamo quindi la seconda parte dell-implicazione.
+
+*Lemma* - Se $L$ è riconosciuto da un PDA $M$ allora $L$ è acontestuale.
+
+Abbiamo un PDA $P$ e vogliamo costruire una grammatica $G$ che genera tutte le stringhe accettate da $P$. Generiamo una grammatica che per ciascuna coppia di stati $p, q in P$ avrà una variabile $A_(p q)$, questa variabile genera tutte le stringhe che portano $P$ da $p$ con pila vuota a $q$ con pila vuota. Da notare che queste stringhe possono portare $P$ da $p$ a $q$ indpendentemente dal contenuto della pila ma lasciandola comunque nella stessa condizione di prima.
+
+Forniamo a $P$ delle caratteristiche per semplificare la dimsotrazione ma senza perdere di generalità:
+- Ha un unico stato accettante $p_"acc"$
+- Svuota lo stack prima di accettare
+- Ciascuna transizione o fa un POP o fa un PUSH, non può farle entrambe
+
+Per fornire l'ultima caratterstica al PDA dobbiamo sostituire tutte le transizione che sostituiscono simboli (POP e PUSH contemporaneamente) con una sequenza di transizioni, inoltre sostituiamo anche ogni transizione che non fa POP o PUSH con una sequenza di transizioni che inserisce ed elima un simbolo dalla pila.
+
+Per qualsiasi stringa $x$ che dobbiamo generare, l'automa $P$ farà come prima azione un PUSH, dato che non può eliminare dalla pila vuota, l'ultima azione invece sarà sicuramente un POP perchè la pila deve essere vuota.
+
+Durante questa computazione possono verificarsi due casi:
+
+1. Il simbolo eliminato alla fine è lo stesso simbolo che è stato inserito all'inizio, in questo caso la pila potrebbe essere vuota soltanto all'inizio e alla fine della computazione su $x$.
+
+Questa possibilità la gestiamo con la regola: $ A_(p q) arrow.r a A_(r s)b $ dove $a$ è l'input della prima transizione e $b$ nell'ultima, $r$ è lo stato che segue $p$ ed $s$ è lo stato che precede $q$.
+
+2. Il simbolo inserito all'inizio viene tolto durante la computazione ma non alla fine, la pila si svuota in quel punto.
+
+Questa possibilità la simuliamo con la regola:
+$ A_(p q) arrow.r A_(p r)A_(r q) $
+
+*Dimostrazione* - Prendiamo $P=(Q,Sigma,Gamma,delta,q_0,{q_"acc"})$ e assumiamo che sia nella forma di prima. La grammatica $G$ sarà definita da $V={A_(p q):p,q in Q}$ ed $S=A_(q_0 q_"acc")$. Le regole sono:
+- $forall p,q,r,s in Q; u in Gamma; a,b in Sigma_epsilon$
+  - Se $(r,u) in delta(p,a,epsilon)$ e $(q,epsilon) in delta(s,b,u)$ allora $A_(p q) arrow.r a A_(r s) b$
+- $forall p,q in Q; A_(p q) arrow.r A_(p r)A_(r q)$
+- $forall p in Q; A_(p p) arrow.r epsilon$
+
+Proviamo che questa costruzione funziona dimostrando che $A_(p q)$ genera $x$ se e solo se $x$ porta $P$ da $p$ con pila vuota a $q$ con pila vuota. Consideriamo la doppia implicazione.
+
+*Fatto 1* - Se $A_(p q)$ genera $x$ allora $x$ può portare $P$ da $p$ con pila vuota a $q$ con pila vuota. Dimostriamolo per induzione sul numero di passi nella derivazione di $x$ da $A_(p q)$
+
+- *Caso Base*: La derivazione è in un solo passo, in questo caso deve usare una regola dove nella parte destra non ci sono variabili, l'unica regola è $A_(p p) arrow.r epsilon$ e ovviamente questa regola porta da $p$ con pila vuota a $p$ con pila vuota.
+
+- *Induzione*: Assumiamo il fatto vero per $k$ derivazioni con $k gt.eq 1$ e dimostriamo per $k + 1$.
+
+Supponiamo che $A_(p q) arrow.double.r^* x$ in $k+1$ passi, il primo passo può usare una delle due regole di prima, vediamo entrambi i casi:
+
+- Caso $A_(p q) arrow.r a A_(r s)b$: Dividiamo $x$ in $x=a y b$ e consideriamo la parte $y$ generata da $A_(r s)$. Dato che $A_(r s) arrow.double.r^* y$ in $k$ passi, l'ipotesi induttiva ci dice che $P$ può andare da $r$ con la pila vuota a $s$ con la pila vuota. Dato che $A_(p q) arrow.r a A_(r s) b$ è una regola di $G$ allora $(r,u) in delta(p,a,epsilon)$ e $(q, epsilon) in delta(s,b,u)$ per qualche simbolo $u$ della pila. Quindi se $p$ inizia con pila vuota, legge $a$ e può andare in $r$ con $u$ nella pila, leggendo $y$ può andare in $s$ e lasciare $u$ sulla pila, poi può leggere $b$ ed andare in $q$ eliminando $u$.
+
+- Caso $A_(p q) arrow.r A_(p r)A_(r q)$: Consideriamo le parti di $x = y z$, dato che $A_(p r) arrow.double.r^* y$ in al più $k$ passi e $A_(r q) arrow.double.r^* z$ in al più $k$ passi, l'ipotesi induttiva ci dice che $y$ può portare $P$ da $p$ ad $r$ e $z$ può portare $P$ da $r$ a $q$ con la pila vuota all'inizio e alla fine.
+
+Quindi $x$ può portare $P$ da $p$ a $q$ con la pila vuota.
+
+*Fatto 2* - Se $x$ può portare $P$ da $p$ a $q$ con la pila vuota allora $A_(p q)$ genera $x$. Dimostriamo sempre per induzione sul numero di passi nella computazione da $p$ a $q$ con input $x$.
+
+- *Caso Base*: La computazione ha 0 passi quindi inizia e termina nello stesso stato $p$. Dobbiamo mostrare che $A_(p p) arrow.double.r^* x$. $P$ non può leggere alcun carattere in 0 passi quindi $x = epsilon$ e per costruzione di $G$ abbiamo la regola $A_(p p) arrow.r epsilon$ quindi il caso base è dimostrato
+
+- *Passo Induttivo*: Assumiamo l'enunciato vero per computazioni lunghe $k gt.eq 0$, dimostriamo per $k+1$. Supponiamo ci sia una computazione in $P$ dove $x$ lo porta da $p$ a $q$ con pile vuote in $k+1$ passi, anche qui o la pila è vuota solo all'inizio e solo alla fine o si svuota in altri momenti.
+
+Nel primo caso il simbolo inserito all'inizio deve essere quello rimosso alla fine, chiamiamo $u$ questo simbolo e sia $a$ il simbolo di input letto nella prima mossa e $b$ quello letto nell'ultima, $r$ lo stato dopo la prima mossa ed $s$ lo stato prima dell'ultima allora $(r,u) in delta(p,a,epsilon)$ e $(q, epsilon) in delta(s,b,u)$ e quindi la regola $A_(p q) arrow.r a A_(r s) b$ è in $G$.
+
+Consideriamo la parte $y "di" x=a y b$, l'input può portare $P$ da $r$ ad $s$ senza toccare $u$ e quindi far muovere $P$ da $r$ a $s$ con una pila vuota su input $y$, abbiamo eliminato il primo e l'ultimo passo dei $k+1$ quindi abbiamo ottenuto $k-1$ passi, per ipotesi induttiva abbiamo $A_(r s) arrow.double.r^* y$ e quindi $A_(p q) arrow.double.r^* x$
+
+Nel secondo caso sia $r$ uno stato in cui si svuota la pila oltre alla fine o inizio, allora le computazioni da $p$ a $r$ e da $r$ a $q$ contengono al più $k$ passi, sia $y$ l'input letto nella prima parte e sia $z$ l'input letto nella seconda, l'ipotesi induttiva ci dice che $A_(p r) arrow.double.r^* y$ e $A_(r q) arrow.double.r^* z$. Siccome la regola $A_(p q) arrow.r A_(p r)A_(r q)$ è in $G$ allora $A_(p q) arrow.double.r^* x$.
+
+Possiamo dire quindi che *ogni linguaggio regolare è context-free*.

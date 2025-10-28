@@ -220,3 +220,132 @@ int MPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
 ```
 
 = Performance Evaluation
+Per effettuare una valutazione dei tempi di computazione utilizziamo la funzione `double MPI_Wtime(void);`, va chiamata al tempo di inizio della misurazione e alla fine, per misurare il tempo basta calcolare la differenza fra i due tempi:
+
+```c
+double start, finish;
+start = MPI_Wtime();
+...
+finish = MPI_Wtime();
+printf("Process %d, elapsed time: %e", my_rank, finish - start);
+```
+
+Ovviamente i processi, in molti casi, finiranno in tempi diversi ad esempio quando il processo padre (rank 0) esegue più lavoro rispetto agli altri. Dobbiamo quindi stampare il tempo mmassimo fra tutti i processi. Possiamo farlo con `reduce`:
+
+```c
+double local_start, local_finish, local_elapsed, elapsed;
+
+local_start = MPI_Wtime();
+// Codice da valutare
+...
+local_finish = MPI_Wtime();
+local_elapsed = local_finish - local_start;
+
+MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+
+if (my_rank == 0) {
+  printf("Elapsed time: %e\n", elapsed);
+}
+```
+
+Un altro problema però è che non tutti i processi partiranno nello stesso momento e se questo accade allora il tempo che vedremo sarà elevato non perché abbiamo scritto male il programma ma perché semplicemente alcuni processi sono partiti più tardi di altri. Come ci assicuriamo quindi che i processi iniziano nello stesso momento?
+
+Utilizziamo `MPI_Barrier`, in alcune implementazioni potrebbe non garantire quello che serve a noi ma per lo scopo del corso va bene.
+
+- *Basta una sola misurazione per valutare le performance?*
+Ovviamente no, se eseguiamo il codice 100 volte vedremo molti risultati diversi, soprattutto se durante le esecuzioni cambiano le condizioni della macchina come ad esempio memoria utilizzata, utilizzo del processore e altro.
+
+Per eseguire una valutazione quindi eseguiamo il codice molte volte e facciamo un report della distribuzione totale dei tempi.
+
+_Ad esempio_
+
+#align(center, image("img/timing.png", width: 80%))
+
+Quindi, per raccogliere dati sui tempi d'esecuzione dobbiamo:
+1. Impostare un `Barrier` all'inizio in modo che tutti i processi inizino nello stesso momento
+2. Salvare il tempo massimo d'esecuzione fra tutti i rank
+3. Eseguire l'applicazione più volte e salvare la distribuzione dei tempi
+
+Confrontiamo adesso alcuni tempi d'esecuzione e diamo delle definizioni.
+
+#align(center, image("img/tempi1.png", width: 80%))
+
+- Notiamo che nel caso di un'esecuzione sequenziale, quindi con un solo thread, i tempi crescono con il crescere della grandezza del problema. (Basta guardare la prima riga)
+- Se scegliamo una grandezza (una colonna) e scendiamo verso il basso, quindi aumentiamo i processi, notiamo che i tempi diminuiscono
+
+Osserviamo però che con una matrice grande 1024 i tempi d'esecuzione con 8 e 16 thread sono uguale. Perché?
+
+Ci aspettiamo che se eseguiamo un programma con $p$ processi allora sarà $p$ volte pù veloce di quando lo eseguiamo con 1, non è sempre così. Definiamo
+- $T_"serieal" (n)$ come il tempo con esecuzione sequenziale e $n$ la dimensione del problema.
+- $T_"parallel" (n, p)$ come il tempo con esecuzione parallela con $p$ processi.
+- $S(n, p)$ come la *speedup* (incremento) dell'esecuzione parallela:
+
+$ S(n,p) = frac(T_"serial" (n), T_"parallel" (n,p)) $
+
+Idealmente, vorremmo avere $S(n,p) = p$, se questo accade diciamo che abbiamo *linear speedup*.
+
+Osserviamo i tempi di speedup con lo stesso problema di prima:
+
+#align(center, image("img/speedup.png", width: 80%))
+
+#showybox(
+  frame: (
+    border-color: red.lighten(60%),
+    title-color: red.lighten(60%),
+    body-color: red.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Parallelizzazione con un solo processo*],
+  [
+    E' importante notare che $T_"serial" (n) eq.not T_"parallel" (n,1)$.
+
+    In generale si ha che $T_"parallel" (n,1) gt.eq T_"serial" (n)$
+
+    Questo perché il codice parallelo richiede delle operazioni di preparazione anche per un solo processo e quindi sarà più lento rispetto ad un codice seriale.
+  ]
+)
+
+Oltre allo *speedup* possiamo calcolare la *scalability*:
+
+$ S(n,p) = frac(T_"parallel" (n,1), T_"parallel" (n,p)) $
+
+E anche l'efficienza:
+
+$ E(n,p) = frac(S(n,p), p) = frac(T_"serial" (n), p dot T_"parallel" (n,p)) $
+
+Vorremmo avere un'efficienza = 1 ma in pratica avremo sempre dei valori $lt.eq 1$ e andrà sempre peggio con problemi più piccoli.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Strong vs Weak Scaling*],
+  [
+    - *Strong Scaling*: Fissiamo la grandezza del problema e incrementiamo il numero di processi, se manteniamo un'efficienza alta allora il nostro programma è *strong scalable*.
+
+    - *Weak Scaling*: Incrementiamo la grandezza del problema insieme al numero dei processi, se manteniamo un'alta efficienza allora il programma è *weak scalable*.
+  ]
+)
+
+Vediamo dei dati esempio con lo stesso problema di prima ed i dati sull'efficienza:
+
+#align(center, image("img/strongscale.png", width: 80%))
+
+Notiamo che il programma non è strong scalable dato che l'efficienza non rimane alta.
+
+#align(center, image("img/weakscale.png", width: 80%))
+
+Notiamo che il programma è weak scalable dato che manteniamo un'alta efficienza.
