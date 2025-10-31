@@ -349,3 +349,157 @@ Notiamo che il programma non è strong scalable dato che l'efficienza non rimane
 #align(center, image("img/weakscale.png", width: 80%))
 
 Notiamo che il programma è weak scalable dato che manteniamo un'alta efficienza.
+
+#pagebreak()
+
+Possiamo capire in qualche modo come si comporterà il codice?
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Amdahl's Law*],
+  [
+    Ogni programma ha una parte che non può essere parallela (*serial fraction* $1-alpha$), ad esempio leggere dei dati o in generale calcoli dove abbiamo bisogno di un valore precedente alla computazione corrente.
+
+    La *Amdahl's Law* ci dice che la speedup è limitata da questo $1-alpha$ non parallelo:
+
+    $ T_"parallel" (p) = (1- alpha) T_"serial" + alpha frac(T_"serial", p) $
+  ]
+)
+
+I casi estremi della formula sono:
+- Se $alpha=0$ allora il codice non può essere parallelizzato e quindi $T_"parallel" (p) = T_"serial"$
+- Se $alpha=1$ allora tutto il codice può essere parallelizzato e $T_"parallel" (p) = frac(T_"serial", p)$ ovverlo lo speedup ideale.
+
+Per calcolare lo speedup: 
+
+$ S(p) = frac(T_"serial", (1-alpha) T_"serial" + alpha frac(T_"serial", p)) $
+
+E a questo punto vedere anche lo speedup massimo:
+
+$ lim_(p arrow.r infinity) S(p) = frac(1, 1- alpha) $
+
+Ad esempio se abbiamo il 60% parallelizzabile ovvero $alpha=0.6$ allora avremo uno speedup massimo di 2.5
+
+La formula è anche invertibile, quindi se vogliamo capire di quanti processi abbiamo bisogno per raggiungere un certo speedup possiamo farlo. Ad esempio se volessimo usare 100000 processi dovremmo avere $alpha >= 0.99999$
+
+#align(center, image("img/amdahl.png", width: 60%))
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Gustafson's Law*],
+  [
+    Se consideriamo il weak scaling, la parallel fraction aumenta insieme alla grandezza del problema, quindi il tempo seriale rimane costante ma quello parallelo aumenta. *Scaled Speedup*:
+
+    $ S(n,p)=(1-alpha) +alpha p $
+
+    Il carico su ogni thread rimane costante.
+  ]
+)
+
+Vediamo i due grafici a confronto:
+
+#align(center, image("img/amvsgu.png"))
+
+#showybox(
+  frame: (
+    border-color: red.lighten(60%),
+    title-color: red.lighten(60%),
+    body-color: red.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Amdahl's Law Limitations*],
+  [
+    La serial fraction potrebbe aumentare con l'aumentare del numero di processi, quindi nella realtà non sempre il codice seguirà le stime, infatti potrebbero verificarsi situazioni come:
+
+    #align(center, image("img/amdahlim.png", width: 50%))
+  ]
+)
+
+Vediamo altre funzioni utili di MPI:
+- *MPI_Scatter*: Si utilizza per spezzare un dato in più parti ed inviare ciascuna parte ad un processo, ad esempio il processo 0 legge un array, lo divide in parti uguali e invia ciascuna di queste agli altri processi.
+
+```c
+int MPI_Scatter(
+  void*         send_buf_p,
+  int           send_count,
+  MPI_Datatype  send_type,
+  void*         recv_buf_p,
+  int           recv_count,
+  MPI_Datatype  recv_type,
+  int           src_proc,
+  MPI_Comm      comm
+);
+```
+
+Il `send_count` è il numero di elementi da inviare a ciascun processo non il totale. Se i dati non possono essere divisi in maniera omogenea, ad esempio abbiamo un array da 5 elementi e vogliamo inviare a ciascun processo 2 elementi possiamo utilizzare `MPI_Scatterv`, altrimenti la Scatter normale va a prendere elementi fuori dal buffer.
+
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Risparmiare Spazio*],
+  [
+    Anche il processo 0 che invia i dati riceverà una parte di questi, se non vogliamo fargli allocare un nuovo buffer possiamo usare `MPI_IN_PLACE`:
+
+    ```c
+    if (rank == 0) {
+      MPI_Scatter(buff, 3, MPI_INT, MPI_IN_PLACE, 3, MPI_INT, 0, MPI_COMM_WORLD);
+    } else {
+      MPI_Scatter(buff, 3, MPI_INT, dest, 3, MPI_INT, 0, MPI_COMM_WORLD);
+    }
+    ```
+  ]
+)
+
+La sua "inversa" è `Gather`, permette di collezionare le parti di un dato in un unico processo:
+
+```c
+int MPI_Gather(
+  void*         send_buf_p,
+  int           send_count,
+  MPI_Datatype  send_type,
+  void*         recv_buf_p,
+  int           recv_count,
+  MPI_Datatype  recv_type,
+  int           dest_proc,
+  MPI_Comm      comm
+);
+```
+
+Anche qui il `send_count` è il numero di parti che ciascun processo manda e non il totale.
+
+== Matrici (slide103ipad)

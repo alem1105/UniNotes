@@ -263,3 +263,49 @@ Consideriamo la parte $y "di" x=a y b$, l'input può portare $P$ da $r$ ad $s$ s
 Nel secondo caso sia $r$ uno stato in cui si svuota la pila oltre alla fine o inizio, allora le computazioni da $p$ a $r$ e da $r$ a $q$ contengono al più $k$ passi, sia $y$ l'input letto nella prima parte e sia $z$ l'input letto nella seconda, l'ipotesi induttiva ci dice che $A_(p r) arrow.double.r^* y$ e $A_(r q) arrow.double.r^* z$. Siccome la regola $A_(p q) arrow.r A_(p r)A_(r q)$ è in $G$ allora $A_(p q) arrow.double.r^* x$.
 
 Possiamo dire quindi che *ogni linguaggio regolare è context-free*.
+
+= Pumping Lemma per i linguaggi CFL
+_Segue 1:1 il libro in modo che me la studio da qui_
+
+Se $A$ è un linguaggio context-free allora esiste un numero $p$ tale che, se $s$ è una stringa in $A$ di lunghezza almeno $p$ allora può essere divisa in cinque parti $s=u v x y z$ che soddisfano:
+- $forall i gt.eq 0, u v^i x y^i z in A$
+- $|v y| > 0$, serve per dire che entrambe non sono la stringa vuota altrimenti il teorema sarebbe banalmente vero.
+- $|v x y| lt.eq p$, afferma che queste 3 parti hanno al più lunghezza $p$, utile per dimostrare che alcuni linguaggi non sono context-free.
+
+Preso un CFL $A$ e una CFG $G$ che lo genera dobbiamo mostrare che ogni stringa sufficientemente lunga $s in A$ può essere iterata e restare in $A$. Sia $s$ una stringa molto lunga in $A$, essa è derivabile da $G$ e quindi ha un albero sintattico.
+
+Anche l'albero sintattico sarà molto lungo e ci deve essere un cammino dalla variabile alla radice a uno dei simboli terminali su una foglia. Per il principio della piccionaia qualche simbolo di variabile $R$ si deve ripetere in questo cammino lungo. Questa ripetizione ci permette di sostituire il sottoalbero sotto la seconda occorrenza di $R$ con il sottoalbero sotto la prima occorrenza di $R$ e ottenere un albero sintattico consentito:
+
+#align(center, image("img/palbero.png", width: 80%))
+
+Questo significa che possiamo dividere la stringa in cinque parti $u v x y z$ e possiamo replicare il secondo e quarto pezzo e ottenere ancora una stringa nel linguaggio, formalmente $u v^i x y^i z in A$ per ogni $i gt.eq 0$.
+
+Vediamo la *dimostrazione*:
+Sia $G$ una CFG per il CFL $A$ e sia $b$ il massimo numero di simboli nel lato destro di una regola (assumiamo che sia almeno 2), questo significa che in ogni albero sintattico di questa grammatica un nodo non può avere più di $b$ figli, abbiamo quindi che:
+- Ci sono al più $b$ foglie in un passo dalla variabile iniziale.
+- Ci sono al più $b^2$ foglie in 2 passi dalla variabile iniziale
+- Ci sono al più $b^h$ foglie in $h$ passi dalla variabile iniziale.
+
+Quindi se l'altezza dell'albero è al più $h$, la lunghezza della stringa generata è al più $b^h$. Viceversa se una stringa generata ha lunghezza maggiore o uguale a $b^h + 1$ allora ciascuno dei suoi alberi sintattici deve avere un'altezza maggiore o uguale a $h+1$.
+
+Sia $V$ il numero delle variabili in $G$, poniamo $p$ (lunghezza del pumping) uguale a $b^(|V + 1)$. Ora se $s$ è una stringa in $A$ e la sua lunghezza è maggiore o uguale a $p$ allora il suo albero sintattico deve avere altezza maggiore o uguale a $|V|+1$ dato che $b^(|V|+1) gt.eq b^|V|+1$.
+
+Presa la stringa $s$ e $tau$ il suo albero sintattico che abbia il più piccolo numero di nodi, $tau$ deve avere altezza maggiore o uguale a $|V|+1$ quindi il suo cammino più lungo radice-foglia ha lunghezza almeno $|V|+1$, questo cammino:
+- Ha almeno $|V|+2$ nodi
+- Uno etichettato da un terminale
+- Gli altri etichettati da variabili, almeno $|V+1$
+
+Siccome $G$ ha solo $|V|$ variabili allora qualche variabile $R$ è presente più volte su questo cammino, scegliamo una variabile che si ripete più in basso per comodità.
+
+Dividiamo la stringa in cinque parti come nella figura precedente, ogni occorrenza di $R$ ha un sottoalbero sotto essa che genera una parte della stringa $s$, l'occorrenza più in alto di $R$ ha un sottoalbero più grande e genera $v x y$ mentre quella più in basso soltanto $x$. Entrambi questi sottoalberi sono generati dalla stessa variabile, quindi possiamo sostituire l'uno con l'altro e ottenere comunque un albero corretto.
+
+- Sostituire continuamente il più piccolo con il più grande fornisce gli alberi per le stringe $u v^i x y^i z$ per ogni $i > 1$
+- Sostituire il più grande con il più piccolo genera la stringa $u x z$.
+
+Questo dimostra la condizione 1.
+
+Per ottenere la condizione 2 dobbiamo essere certi che $v,y eq.not epsilon$. Se lo fossero, l'albero ottenuto sostituendo il più piccolo al più grande avrebbe meno nodi di $tau$ e genererebbe ancora $s$, questo però non è possibile perché abbiamo scelto $tau$ in modo che sia l'albero per $s$ con meno nodi.
+
+Per ottenere la condizione 3 dobbiamo essere sicuri che la lunghezza di $v x y$ sia al più $p$. Nell'albero sintattico per $s$ l'occorrenza più in alto di $R$ genera $v x y$, abbiamo scelto $R$ in modo che entrambe le occorrenze di essa cadano nelle $|V|+1$ variabili più in basso del cammino e abbiamo scelto il più lungo cammino nell'albero sintattico, in modo che il sottoalbero in cui $R$ genera $v x y$ sia alto al più $|V|+1$. Ma un albero con questa altezza può generare una stringa di lunghezza al più $b^(|V|+1) = p$.
+
+_Esempi_
