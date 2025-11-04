@@ -502,4 +502,147 @@ int MPI_Gather(
 
 Anche qui il `send_count` è il numero di parti che ciascun processo manda e non il totale.
 
-== Matrici (slide103ipad)
+== Matrici
+Le matrici possiamo rappresentarle in C o come tanti array allocati dinamicamente oppure come un lungo array contiguo.
+
+Per allocare dinamicamente una matrice come tanti array dobbiamo:
+
+```c
+int **a;
+a = (int**) malloc(sizeof(int*) * num_rows);
+for (int i = 0; i < num_rows; i++) {
+  a[i] = (int*) malloc(sizeof(int) * num_cols;
+}
+```
+
+Se vogliamo però effettuare delle riduzioni, come ad esempio `Reduce` dobbiamo fare attenzione, a primo impatto vorremo scrivere:
+
+```c
+MPI_Reduce(a, recvbuf, num_rows * num_cols, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+// Oppure
+MPI_Reduce(a[0], recvbuf, num_rows * num_cols, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+```
+
+Ma sono entrambi degli approcci sbagliati dato che gli array allocati dinamicamente nel modo visto sopra non è detto che siano contigui in memoria. Il metodo corretto è fare una reduce per ogni array della matrice:
+
+```c
+for (int i = 0; i < num_rows; i++) {
+  MPI_Reduce(a[i], recvbuf[i], num_cols, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+}
+```
+
+Se invece allochiamo la matrice come un unico array:
+
+```c
+int *a;
+a = (int*) malloc(sizeof(int) * num_rows * num_cols);
+...
+...
+//Per accedere agli elementi
+a[i * num_cols + j] = ...
+```
+
+E in questo caso il metodo visto sopra per le `Reduce` è giusto, quindi:
+
+```c
+MPI_Reduce(a, recvbuf, num_rows * num_cols, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+```
+
+In alcuni casi vengono usate, una dopo l'altra, le operazioni `Gather` e `Broadcast`, in MPI se due operazioni vengono spesso usate una dopo l'altra allora molto probabilmente esiste un'operazione che le combina, vediamo infatti `Allgather`:
+
+```c
+int MPI:Allgather(
+  void*         send_buf_p,
+  int           send_count,
+  MPI_Datatype  send_type,
+  void*         recv_buf_p,
+  int           recv_count,
+  MPI_Datatype  recv_type,
+  MPI_Comm      comm
+);
+```
+
+Altre funzioni utili sono:
+- `Reduce-Scatter`: Esegue un'operazione di riduzione, una volta ottenuto il vettore risultato lo distribuisce in parti uguali a tutti i processi.
+- `MPI_Alltoall`: Tutti i processi inviano i dati a tutti gli altri processi (inclusi se stessi) e tutti ricevono dati da tutti.
+
+= Derived Datatypes
+Supponiamo di dover inviare le coordinate di punti sul piano ed il loro colore:
+
+Per ogni punto effettueremo 3 send
+
+```c
+MPI_Send(a_p, 1, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
+MPI_Send(b_p, 1, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
+MPI_Send(n_p, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
+```
+
+Stessa cosa per le `Receive`. Si può rendere più efficiente? Si, utilizzando i *Derived Datatypes*. Grazie a questi possiamo salvare in memoria una collezione di dati memorizzando sia il tipo di dato di ciascunno di essi sia la loro posizione. Grazie a questi tipi di dato possiamo, prima di inviare i dati, raccoglierli tutti e fare una sola send. Ragionamento analogo per le receive.
+
+Per costruire le struct utilizziamo:
+```c
+int MPI_Type_create_struct (
+  int           count,
+  int           array_of_blocklengths[],
+  MPI_Aint      array_of_displacements[],
+  MPI_Datatype  array_of_types[],
+  MPI_Datatype* new_type_p
+);
+```
+
+Ad esempio se vogliamo ricreare la struct:
+```c
+struct t {
+  double a;
+  double b;
+  int n;
+}
+```
+
+Avremo come paramentri:
+- `count = 3`
+- `blocklengths = 1,1,1`
+- `displacements = 0, 16, 24`
+- `types: MPI_DOUBLE, MPI_DOUBLE, MPI_INT`
+
+Non sempre siamo a conoscenza dei `displacements`, utilizziamo quindi:
+
+```c
+int MPI_Get_address(
+  void*     location_p,
+  MPI_Aint* address_p
+);
+```
+
+Serve a ottenere l'indirizzo di memoria referenziato dal puntatore `location_p`, il tipo `MPI_Aint` è un tipo speciale di MPI in grado di contenere qualsiasi indirizzo di sistema.
+
+Quindi usando la stessa struct di prima avremo:
+```c
+MPI_Aint a_addr, b_addr, n_addr;
+
+MPI_Get_address(&a, &a_addr);
+array_of_displacements[0] = 0;
+MPI_Get_address(&b, &b_addr);
+array_of_displacements[1] = b_addr - a_addr;
+MPI_Get_address(&n, &n_addr);
+array_of_displacements[2] = n_addr - a_addr;
+```
+
+_Per calcolare questi indirizzi ovviamente va prima creata un'istanza della struct in modo da calcolare gli indirizzi_
+
+Infine, per poter utilizzare il tipo appena creato nelle altre funzioni dobbiamo chiamare:
+```c
+int MPI_Type_commit(MPI_Datatype* new_mpi_t_p);
+```
+
+A questo punto possiamo utilizzarlo anche nelle altre funzioni, ricordiamoci però che una volta finito il suo utilizzo va eseguito un `free`:
+
+```c
+int MPI_Type_free(MPI_Datatype* old_mpi_t_p);
+```
+
+Possiamo creare in generale tipi di dati contigui e non per forza solo `struct`, con le varie funzioni:
+- `MPI_Type_contiguous`
+- `MPI_Type_vector`
+- `MPI_Type_create_subarray`
+- `MPI_pack / MPI_unpack`

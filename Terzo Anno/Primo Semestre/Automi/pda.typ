@@ -64,11 +64,11 @@ Cosa succede in una transizione? Prendiamo $(q,c) in delta(p, a, b)$, abbiamo di
 
 Notiamo quindi che le configurazioni di un PDA sono del tipo $Q times Sigma^* times Gamma^*$
 
-Quando, i PDA, si trovano in uno stato di accettazione? Un PDA $M$ accetta una stringa $w=w_1 ... w_n$ t.c. $w_i in Sigma$ se $exists r_0,...,r_m in Q$ e stringhe $s_0,...,s_m in Gamma^*$ t.c.:
+Quando, i PDA, si trovano in uno stato di accettazione? Un PDA $M$ accetta una stringa $w=w_1 ... w_m$ t.c. $w_i in Sigma$ se $exists r_0,...,r_m in Q$ e stringhe $s_0,...,s_m in Gamma^*$ t.c.:
 - All'inizio $r_0 = q_0$ e $s_0 = epsilon$
 - $r_m in F$
-- $forall i = 0,...,m$:
-  - $(r_(i+1), b) in delta(r_i, w_i,a)$
+- $forall i = 0,...,m-1$:
+  - $(r_(i+1), b) in delta(r_i, w_(i+1),a)$
   - $s_i = a t$ e $s_(i+1)=b t$ con $a,b in Gamma_epsilon$ e $t in Gamma^*$
 
 Quindi partiamo con $r_0$ uguale allo stato iniziale e con lo stack $s$ vuoto, ad ogni transizione passiamo da $r_i$ a $r_(i+1)$ se abbiamo in cima allo stack un carattere $a$ e leggendo $w_i$, infatti avremo che lo stack ad $s_i$ è uguale alla stringa composta da $a$ ovvero l'ultimo carattere e $t$ la stringa precedente, all'ultima transizione ovvero $s_(i+1)$ avremo come carattere in cima $b$ e poi $t$ che comprende tutti gli altri caratteri.
@@ -309,3 +309,14 @@ Per ottenere la condizione 2 dobbiamo essere certi che $v,y eq.not epsilon$. Se 
 Per ottenere la condizione 3 dobbiamo essere sicuri che la lunghezza di $v x y$ sia al più $p$. Nell'albero sintattico per $s$ l'occorrenza più in alto di $R$ genera $v x y$, abbiamo scelto $R$ in modo che entrambe le occorrenze di essa cadano nelle $|V|+1$ variabili più in basso del cammino e abbiamo scelto il più lungo cammino nell'albero sintattico, in modo che il sottoalbero in cui $R$ genera $v x y$ sia alto al più $|V|+1$. Ma un albero con questa altezza può generare una stringa di lunghezza al più $b^(|V|+1) = p$.
 
 _Esempi_
+
+Mostrare che $B={a^n b^n c^n | n gt.eq 0}$ non è context-free, dimostriamolo per assurdo quindi assumiamo che lo sia per poi arrivare ad una contraddizione.
+
+Quindi sia $B$ un CFL e $p$ la lunghezza del pumping per $B$ scegliamo la stringa $s=a^p b^p c^p$, $s in B$ e $|s| gt.eq p$. Il lemma afferma che $s$ può essere iterata ma noi mostreremo che non è vero, ovvero non importa come diviamo $s$ in $u v x y z$ infatti violeremo sempre una delle tre condizioni del lemma.
+
+Per prima cosa la condizione 2 stabilisce che $v$ o $y$ non sono vuote, consideriamo quindi i due casi dove le sottostringhe $v,y$ contengano più di un tipo di simbolo dell'alfabeto o no:
+1. Quando entrambe contengono solo un tipo di simbolo allora $v$ non contiene entrambi i simboli $a,b$ o entrambi i simboli $b,c$ e lo stesso vale per $y$, questo significa che la stringa $u v^2 x y^2 z$ non può contenere lo stesso numero di $a,b,c$ e quindi non può essere un elemento di $B$. Abbiamo violato la condizione 1.
+
+2. Quando $v$ o $y$ contengono più di un tipo di simbolo allora $u v^2 x y^2 z$ può contenere un ugual numero dei tre siboli ma non nell'ordine corretto. Non appartiene quindi a $B$.
+
+Uno di questi due casi deve verificarsi e poichè entrambi portano ad un assurdo la contraddizione si verifica sempre. $B$ non è un CFL.
