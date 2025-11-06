@@ -32,3 +32,4 @@
 #include "algebre.typ"
 #include "espressioni.typ"
 #include "fun.typ"
+#include "imp.typ"
