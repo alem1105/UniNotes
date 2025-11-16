@@ -36,3 +36,4 @@
 #include "gramm_acontestuali.typ"
 #include "pda.typ"
 #include "turing_machine.typ"
+#include "decidibilita.typ"

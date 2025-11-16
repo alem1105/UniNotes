@@ -254,4 +254,68 @@ Descriviamo quindi $D$:
 - Il nastro 1 contiene l'input $w$ e i nastri 2 e 3 sono vuoti.
 - Copia il nastro 1 sul nastro 2 ed inizializza la stringa sul nastro 3 a $epsilon$
 - Utilizza il nastro 2 per simulare $N$ con input $w$ su una ramificazione della sua computazione non deterministica. Prima di ogni passo però consulta il simbolo successivo sul nastro 3 per determinare quale scelta fare tra quelle consentite dalla funzione di transizione di $N$. Se non rimangono simboli o se non sono validi interrompe il cammino andando alla fase successiva. Si va alla fase successiva anche in caso di rifiuto, se invece troviamo un caso accettante allora accettiamo.
-- Sostituisce la stringa sul nastro 3 con la stringa successiva rispetto all'ordine delle stringhe, simula la ramificazione successiva della computazione di $N$ andando al passo 2.
+- Sostituisce la stringa sul nastro 3 con la stringa successiva rispetto all'ordine delle stringhe, simula la ramificazione successiva della computazione di $N$ andando al passo 2.ù
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Corollario*],
+  [
+    Un linguaggio è Turing-Riconoscibile se e solo se esiste una macchina di Turing non deterministica che lo riconosce.
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Corollario*],
+  [
+    Un linguaggio è decidibile se e solo se esiste una macchina di Turing non deterministica che lo decide.
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Storia degli Algoritmi*],
+  [
+    Lo metto perché sembra interessante.
+
+    Inizialmente non c'era una definizione formale di algoritmo, si consideravano un insieme di istruzioni da eseguire per l'esecuzione di un compito. Nel 1900, il matematico *David Hilbert* identificò 23 problemi matematici e li pose come sfida per il secolo successivo, il decimo di questi problemi riguardava proprio gli algoritmi.
+
+    Il problema consiste nell'ideare un algoritmo per verificare se un polinomio abbia o meno una radice intera, lui non usò il termine _algoritmo_ ma _"un processo in base al quale esso può essere determinato da un numero finito di operazioni"_.
+
+    Noi adesso sappiamo che non esiste un algoritmo per risolvere questo problema, ma al tempo per dimostrare che non esisteva c'era bisogno di una definizione formale di algoritmo, questa arrivò nel 1936 da *Alonzo Church* ed *Alan Turing*.
+
+    Church utilizzò un sistema di notazione chiamato $lambda$-calcolo mentre Turing con le sue "macchine", è stato dimostrato che queste definizioni sono equivalenti e adesso la definizione è chiamata *Tesi di Church-Turing*.
+
+    Nel 1970 fu dimostrato che non esiste algoritmo capace di verifcare se un polinomio ha radici intere.
+  ]
+)
