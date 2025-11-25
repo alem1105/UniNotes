@@ -267,3 +267,337 @@ func main() {
 ```
 
 == Struct
+Possiamo vedere le struct come una collezione di campi. Per accederci possiamo usare la notazione con il `.`, inoltre l'accesso tramite puntatore `(*p).campo` può essere abbreviato in `p.campo`. Quando creiamo un oggetto di tipo struct possiamo anche inizializzare alcuni suoi campi con `NomeCampo:`, ad esempio:
+
+```go
+type Vertex struct {
+  X, Y int
+}
+
+var (
+  v1 = Vertex{1, 2}
+  v2 = Vertex{X: 1} // Y:0 è implicito
+  v3 = Vertex{} // X,Y impliciti
+  p = &Vertex{1, 2} // Puntatore a Vertex
+)
+```
+
+Possiamo anche dichiarare delle struct anonime se dobbiamo utilizzarle soltanto localmente:
+
+```go
+a := struct {
+  i int
+  b bool
+} {1, true}
+```
+
+In questo modo abbiamo creato una struct locale e anonima con i due campi `i,b` inizializzati rispettivamente a `1, true`.
+
+== Array
+Per la dichiarazione di un array usiamo la sintassi `[n]T` dove `n` indica il numero di valori presenti nell'array e `T` il tipo degli elementi.
+
+_Esempi:_
+
+```go
+// Esempio di dichiarazione
+var a [10]int
+// Esempio di inizializzazione
+primes := [6]int{2, 3, 5, 7, 11, 13}
+```
+
+#showybox(
+  frame: (
+    border-color: red.lighten(60%),
+    title-color: red.lighten(60%),
+    body-color: red.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Attenzione!*],
+  [
+    La lunghezza di un array fa parte del suo tipo, quindi un `[6]int` è diverso da un `[5]int`. La loro lunghezza è fissa e non possono essere ridimensionati.
+  ]
+)
+
+Cosa succede quindi se ad esempio creiamo un array ma inseriamo meno valori di quanti ne può contenere?
+
+```go
+v := [6]int{2, 3, 5, 7}
+```
+
+I valori successivi verranno inizializzati al valore zero del tipo, in questo caso intero quindi 0 e avremo: `[2, 3, 5, 7, 0, 0]`.
+
+=== Slice
+Sono una vista a dimensione dinamica su un array, si usa la sintassi:
+
+```go
+a[low : high]
+```
+
+`a` è l'array mentre `low, high` sono i due estremi dell'intervallo, da notare che `low` è incluso mentre `high` no. In questo caso il tipo è semplicemente `[]T` senza dimensione quindi.
+
+Le slice non memorizzano loro stesse dei dati ma fanno riferimento ad una sezione dell'array che osservano, infatti modificare gli elementi di una slice va a modificare gli elementi dell'array originale.
+
+- Come valore zero hanno `nil`. Questo accade quando non hanno un array sottostante
+
+Possiamo creare un array e una slice che lo referenzia in una riga:
+
+```go
+[]bool{true, true, false}
+```
+
+Per le slice c'è da differenziare le due definizioni di:
+- *Lunghezza (len)*: Il numero di elementi contenuti nella slice.
+- *Capacità (cap)*: Il numero di elementi nell'array sottostante *a partire dal primo elemento della slice*.
+- Le ricaviamo entrambe con, data `s` slice, `len(s) e cap(s)`
+
+Una volta creata una slice è possibile estenderla verso destra aumentando quindi la sua lunghezza ma non possiamo superare la sua capacità:
+
+```go
+s := []int{2, 3, 5, 7, 11, 13} // len = 6, cap = 6
+
+// Rendiamo la slice di lunghezza 0
+s = s[:0] // s è [], len = 0, cap = 6
+
+// Estendiamo la lunghezza a 4
+s = s[:4] // s è [2, 3, 5, 7], len = 4, cap = 6
+```
+
+#showybox(
+  frame: (
+    border-color: red.lighten(60%),
+    title-color: red.lighten(60%),
+    body-color: red.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Attenzione!*],
+  [
+    Alcune cose da ricordare:
+    - *Non si può estendere una slice verso sinistra*, non si può quindi cambiare il suo indice di partenza.
+    - Non si può indicizzare oltre la `len` se questa è inferiore a `cap`.
+    - Si può indicizzare oltre la `len` se si effettua un *re-slicing*.
+  ]
+)
+
+_Esempi_:
+
+```go
+a := []int{0, 1, 2, 3, 4} // len = 5, cap = 5
+b := a[1:4]
+// b è [1, 2, 3], len = 3, cap = 4 perchè punta a [1, 2, 3, 4]
+
+fmt.Println(b[3])
+// Restituisce errore perchè l'indice 3 sta fuori dalla lunghezza.
+
+fmt.Println(b[:cap(b)][3])
+// Adesso l'indice 3 è valido
+```
+
+Nell'ultima riga è stato effettuato un *re-slicing*, abbiamo fatto uno slicing su `b` che in quel momento vale `[1, 2, 3]` e fa riferimento a `[0, 1, 2, 3, 4]`, lo slicing parte dall'inizio e quindi sempre `1` non `0` e arriva fino alla capacità ovvero 4 ma esclusa, ma se `1` ha indice `0` allora l'elemento `4` è quello a indice `3` e anche se è fuori la lunghezza sta comunque nella capacità e quindi possiamo accederci. Adesso la slicing è `[1, 2, 3, 4]` e possiamo quindi accedere all'elemento `3`.
+
+Se vogliamo creare un array azzerato e avere subito una slice che lo referenzia possiamo utilizzare la funzione `make`:
+
+```go
+a := make([]int, 5) // len(a) = 5, cap(a) = 5
+```
+
+Se vogliamo specificare una lunghezza diversa possiamo passare un terzo argomento:
+
+```go
+b := make([]int, 0, 5) // len(b) = 0, cap(b) = 5. La slice adesso è uguale a [] ma ha comunque capacità 5.
+```
+
+Per aggiungere elementi ad una slice possiamo utilizzare la funzione `append`, la sintassi è:
+
+```go
+func append(s []T, vs ...T) []T
+```
+
+- Il primo parametro è una slice di tipo `T`.
+- I successivi sono valori di tipo `T`
+- Restituisce una nuova slice di tipo `T` con i nuovi elementi aggiunti.
+- Se l'array su cui fa riferimento `s` non è abbastanza grande per contenere i nuovi elementi allora ne crea uno nuovo più grande.
+
+Se quindi eseguiamo:
+```go
+s := []int{9000}[:0]
+s = append(s, 0)
+```
+
+- Quanto vale `len(s)`? 1
+- Quanto vale `cap(s)`? 1
+- Cosa contiene `s`? `[0]`
+
+Questo perchè:
+  - Inizialmente contiene `[9000]` con `len = 1` e `cap = 1` ma facciamo lo slice a `[:0]` e quindi vale `[]` con `len = 0` e `cap = 1`.
+  - Con `append` usiamo la capacità esistente impostando l'elemento a `0` e restituendo quindi una slice uguale a `[0]` con `len = 1` e `cap = 1`.
+
+== Approfondimento sulle Slice
+Come detto prima le slice sono una vista dinamica, ovvero un puntatore, che referenzia una sezione di un array sottostante, la modifica di un elemento in una slice lo modifica nell'array originale e quindi anche per tutte le altre slice che referenziano lo stesso array.
+
+Ognuna è definita da 3 componenti:
+- *Puntatore*: L'indirizzo del primo elemento referenziato nell'array sottostante.
+- *Length*: Il numero di elementi nella slice.
+- *Capacity*: Il numero di elementi dall'inizio della slice fino alla fine dell'array sottostante.
+
+Si può estendere una slice solo fino al valore massimo della sua `cap` e non si può estendere verso sinistra.
+
+_Esempio di modifica di un array con slice_:
+```go
+array_originale := [5]int{10, 20, 30, 40, 50}
+
+slice_a := array_originale[1:4]
+// Contenuto: [20, 30, 40], len = 3, cap = 4
+
+slice_b := array_originale[2:5]
+// Contenuto: [30, 40, 50], len = 3, cap = 3
+
+slice_a[1] == 99 // Modifica l'elemento 1 della slice
+// Corrisponde a 30 nell'array originale
+
+fmt.Println("Array modificato: ", array_originale)
+// Stampa [10, 20, 99, 40, 50]
+fmt.Println("Slice B aggiornata: ", slice_b)
+// Stampa [99, 40, 50]
+```
+
+_Altro esempio più complesso:_
+
+```go
+BaseArray := [8]int{10, 20, 30, 40, 50, 60, 70, 80}
+A := BaseArray[1:5]
+B := BaseArray[3:6]
+
+// Slice A è [20, 30, 40, 50], len = 4, cap = 7
+fmt.Printf("1. A: %v (len %d, cap %d)\n", A, len(A), cap(A))
+// Slice B è [40, 50, 60], len = 2, cap = 5
+fmt.Printf("1. B: %v (len %d, cap %d)\n", B, len(B), cap(B))
+
+// Modifica condivisa, il 40 diventa 99
+A[2] = 99
+
+// Stampa [20, 30, 99, 50]
+fmt.Printf("2. A: %v\n", A)
+// Stampa [99, 50, 60]
+fmt.Printf("2. B: %v\n", B)
+
+// Aggiunge elementi alla slice A
+// A diventa [20, 30, 99, 50, 100, 110, 120, 130]
+// E' stato anche allocato un nuovo array dato che superiamo la capacità
+// B però rimane referenziato a quello vecchio
+A = append(A, 100, 110, 120, 130)
+
+// Stampa [20, 30, 99, 50, 100, 110, 120, 130], len = 8, cap = 16
+fmt.Printf("3. A: %v (len %d, cap %d)\n", A, len(A), cap(A))
+// Stampa [99, 50, 60]
+fmt.Printf("3. B: %v\n, B")
+```
+
+= Mappe
+Mappano *chiavi* a *valori*, il valore zero è *nil*, per inizializzare una mappa si usa la funzione *make*.
+
+```go
+package main
+
+import "fmt"
+
+var m map[string]string // m è nil, non si possono aggiungere elementi
+
+func main() {
+  m = make(map[string]string) // inizializzazione corretta
+  m["Bell Labs"] = "cooked"
+  fmt.Println(m["Bell Labs"])
+}
+```
+
+Come per le struct possiamo inizializzarle sul momento:
+
+```go
+type Vertex struct {
+  Last, Long float64
+}
+
+var m = map[string]Vertex {
+  "Bell Labs": Vertex {
+    40.68433, -74.39967,
+  },
+  "Google": Vertex {
+    37.42202, -122.08408,
+  },
+}
+```
+
+I principali metodi per le mappe sono:
+- *Inserimento / Aggiornamento*: `m[key] = elem`
+- *Lettura*: `elem := m[key]`
+- *Cancellazione*: `delete(m, key)`
+  - Se la chiave è assente fallisce l'eliminazione
+- *Test di Presenza*: `elem, ok := m[key]`
+  - `elem` prende il valore zero del tipo se la chiave non è presente
+  - `ok` è un booleano e vale `true` se la chiave è presente
+
+= Range
+È una forma del ciclo for che itera su una slice, un array, una stringa o una mappa.
+Restituisce due valori per iterazione, indice e copia dell'elemento
+
+```go
+for i, value := range pow {
+  // i è l'indice, value è la copia dell'elemento
+}
+
+// Per usare solo l'indice ed ignorare l'elemento
+for i, _ := range pow {
+  //
+}
+
+// Forma abbreviata per solo l'indice
+for i := range pow {
+  // ...
+}
+
+// Per usare solo il valore ed ignorare l'indice
+for _, value := range pow {
+  // ...
+}
+```
+
+= Cheat Codes
+Si possono raggruppare gli import:
+
+```go
+import "fmt"
+import "math"
+
+import (
+  "fmt"
+  "math"
+)
+```
+
+Possiamo raggruppare anche le variabili globali:
+
+```go
+import "complex"
+
+var (
+  ToBe bool = false
+  MaxInt uint64 = 1 << 64 - 1
+  z complex128 = complex128(complex.Sqrt(-5 + 12i))
+)
+```
+
+Per specificare il tipo di variabili multipli possiamo accorciare:
+
+```go
+x int, y int
+x, y int
+```
