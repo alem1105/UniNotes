@@ -456,12 +456,17 @@ $ "EQ"_"TM" = {<M_1, M_2> | M_1 "ed" M_2 "sono TM ed" L(M_1) = L(M_2)} $
 Dimostriamolo facendo una riduzione da $E_"TM"$.
 
 *Idea* - Mostriamo che se $"EQ"_"TM"$ fosse decidibile allora anche $E_"TM"$ lo sarebbe ottenendo quindi una contraddizione.
-PAG 129 PDF.
+$E_"TM"$ é il problema di determinare se il linguaggio di una TM é vuoto mentre $"EQ"_"TM"$ quello di determinare se i linguaggi di due TM sono uguali, se uno di questi due é vuoto allora ci ritroviamo con il problema di determinare se il linguaggio dell'altra macchina é vuoto cioé $E_"TM"$
 
+*Dimostrazione* - Consideriamo una TM $R$ che decide $"EQ"_"TM"$ e costruiamo la TM $S$ che decide $E_"TM"$:
+- $S=$ "Su input $<M>$, dove $M$ é una TM":
+  - Esegue $R$ su input $<M, M_1>$ dove $M_1$ é una TM che rifiuta ogni input
+  - Se $R$ accetta, accetta altrimenti rifiuta
 
+Se $R$ decide $"EQ"_"TM"$, $S$ decide $E_"TM"$. Ma sappiamo che $E_"TM"$ é indecidibile quindi anche $"EQ"_"TM"$ é indecidibile.
 
-
-
+== Riducibilitá tramite funzione
+Essere in grado di ridurre il problema A al problema B utilizzando una riduzione mediante funzione significa che esiste una funzione calcolabile che trasforma istanze del problema A in istanze del problema B. Questa funzione se esiste si chiama *riduzione* e ci permette di risolvere le istanze di A risolvendo le istanze di B.
 
 #showybox(
   frame: (
@@ -475,9 +480,9 @@ PAG 129 PDF.
     align: center,
     boxed-style: (anchor: (y: horizon, x: left))
   ),
-  title: [*Definizione*],
+  title: [*Funzione Calcolabile*],
   [
-    $f: Sigma^* arrow.r Sigma^*$ è *calcolabile* se $exists$ TM $M$ che calcola $f quad forall w in Sigma^*$.
+    Una funzione $f:Sigma^* arrow.r Sigma^*$ é una *funzione calcolabile* se esiste una macchina di Turing M che su qualsiasi input $w$ si ferma avendolo solo $f(w)$ sul nastro.
   ]
 )
 
@@ -493,11 +498,11 @@ PAG 129 PDF.
     align: center,
     boxed-style: (anchor: (y: horizon, x: left))
   ),
-  title: [*Definizione - Mapping Reduction*],
+  title: [*Riducibilitá tramite Funzione*],
   [
-    $A$ è *riducibile* tramite funzione a $B$ ($A lt.eq_m B$) se $exists f: Sigma^* arrow.r Sigma^*$ calcolabile tale che $forall w in Sigma^*$:
-
+    Un linguaggio $A$ si dice *riducibile mediante funzione* al linguaggio $B$, e si denota con $A attach(lt.eq, br:m) B$, se esiste una funzione calcolabile $f:Sigma^* arrow.r Sigma^*$ dove per ogni $w$:
     $ w in A arrow.double.r.l f(w) in B $
+    La funzione $f$ é chiamata *riduzione* da $A$ a $B$.
   ]
 )
 
@@ -515,9 +520,16 @@ PAG 129 PDF.
   ),
   title: [*Teorema*],
   [
-    Se $A lt.eq_m B$ e $B$ è *decidibile* allora $A$ è decidibile.
+    Se $A attach(lt.eq,br:m) B$ e $B$ è *decidibile* allora $A$ è decidibile.
   ]
 )
+
+*Dimostrazione* - Siamo $M$ il decisore per $B$ ed $f$ la riduzione da $A$ a $B$. Descriviamo un decisore $N$ per $A$ come segue:
+- $N=$ Su input $w$:
+  - Computa $f(w)$
+  - Esegue $M$ su input $f(w)$ e restituisce lo stesso output di $M$
+
+Quindi se $w in A$ allora $f(w) in B$ perché $f$ é una riduzione da $A$ a $B$. Quindi, $M$ accetta $f(w)$ ogni volta che $w in A$.
 
 #showybox(
   frame: (
@@ -537,15 +549,6 @@ PAG 129 PDF.
   ]
 )
 
-*Dimostrazione Corollario* - Se $B$ fosse decidibile allora $A$ sarebbe decidibile per il teorema.
-
-*Dimostrazione teorema* - Sia $M$ la TM che decide $B$ e sia $F$ la TM che calcola la mapping reduction $f$ da $A$ a $B$. Costruiamo il decisore $M'$ per $A$:
-- Su input $w$ calcola $f(w)$ usando $F$
-- Poi computa $M$ su $f(w)$ e accetta se e solo se $M$ accetta.
-
-$M'$ è decisore perché $M$ lo è e $F$ termina sempre. Inoltre:
-$ M'(w) = "acc" arrow.double.l.r.long cases(M(f(w)) = "acc", f(w) in B, w in A) $
-
 #showybox(
   frame: (
     border-color: green.lighten(60%),
@@ -560,7 +563,7 @@ $ M'(w) = "acc" arrow.double.l.r.long cases(M(f(w)) = "acc", f(w) in B, w in A) 
   ),
   title: [*Teorema*],
   [
-    Se $A attach(lt.eq, br: m) B$ e $B$ è *Turing-Riconoscibile*, allora $A$ è Turing-Riconoscibile, la dimostrazione è simile a prima ma $M,N$ sono riconoscitori invece di decisori.
+    Se $A attach(lt.eq,br:m) B$ e $B$ è *Turing-Riconoscibile* allora $A$ è Turing-Riconoscibile.
   ]
 )
 
@@ -578,6 +581,41 @@ $ M'(w) = "acc" arrow.double.l.r.long cases(M(f(w)) = "acc", f(w) in B, w in A) 
   ),
   title: [*Corollario*],
   [
-    Se $A attach(lt.eq, br: m) B$ e $A$ non è *Turing-Riconoscibile*, allora $B$ non è Turing-Riconoscibile,
+    Se $A attach(lt.eq,br:m) B$ e $A$ non è *Turing-Riconoscibile* allora $B$ non è Turing-Riconoscibile.
   ]
 )
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $"EQ"_"TM"$ non é né Turing-Riconoscibile né co-Turing riconoscibile
+  ]
+)
+
+*Dimostrazione* - Per prima cosa dimostriamo che $"EQ"_"TM"$ non é Turing-Riconoscibile, lo facciamo dismotrando che $A_"TM"$ é riducibile a $overline("EQ"_"TM")$. La funzione di riduzione $f$ opera nel seguente modo:
+- $F=$ Su input $<M,w>$ dove $M$ é una TM e $w$ una stringa:
+  - Costruisce le seguenti due macchine $M_1, M_2$
+    - $M_1$ = Su ogni input Rifiuta
+    - $M_2$ = Su ogni input eseuge $M$ su $w$, se accetta, accetta
+  - Restituisce $<M_1, M_2>$
+
+Quindi $M_1$ non accetta alcuna stringa e se $M$ accetta $w$ allora $M_2$ accetta qualsiasi stringa, le macchine non sono equivalenti. Viceversa se $M$ non accetta $w$ allora $M_2$ non accetta alcuna strina e le macchine sono equivalenti. Questo significa che $f$ riduce $A_"TM"$ a $overline("EQ"_"TM")$.
+Adesso per dimostrare che $overline("EQ"_"TM")$ non é Turing-Riconoscibile diamo una riduzione da $A_"TM"$ a $"EQ"_"TM"$, in questo modo dimostriamo che $A_"TM" attach(lt.eq,br:m) "EQ"_"TM"$. Costruiamo la TM $G$ che calcola la riduzione $g$ nel seguente modo:
+- $G=$ Su input $<M,w>$ dove $M$ é una TM e $w$ é una stringa:
+  - Costruisce le seguenti due macchine $M_1, M_2$:
+    - $M_1$ accetta su ogni input
+    - $M_2$ esegue $M$ su $w$ e se accetta, accetta.
+  - Restituisce $<M_1, M_2>$
+
+La differenza tra $f,g$ si trova in $M_1$, in $f$ rifiuta sempre mentre in $g$ rifiuta sempre mentre sia in $f$ che $g$ $M$ accetta $w$ se e solo se $M_2$ accetta ogni input, in $g$ $M$ accetta $w$ se e solo se $M_1$ e $M_2$ sono equivalenti ed é per questo che $g$ é una riduzione da $A_"TM"$ a $"EQ"_"TM"$
