@@ -1,0 +1,104 @@
+package main
+
+import (
+	"encoding/json"
+	"io"
+	"log"
+	"math/rand/v2"
+	"net/http"
+	"strconv"
+	"sync"
+
+	"github.com/gorilla/mux"
+)
+
+var gameCounter = 0
+var games = make(map[int]int)
+var m sync.Mutex
+
+type Game struct {
+	ID     int `json:"id"`
+	Number int `json:"number"`
+}
+
+type Message struct {
+	Result string `json:"result"`
+}
+
+func newGameHandler(w http.ResponseWriter, req *http.Request) {
+	// Imposta gli header
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated) // 201
+
+	// Genera le variabili e aggiorna la mappa
+	gameNumber := rand.IntN(100) + 1
+	m.Lock()
+	games[gameCounter] = gameNumber
+	id := gameCounter
+	gameCounter += 1
+	m.Unlock()
+
+	// Scrive la risposta in json
+	err := json.NewEncoder(w).Encode(Game{ID: id, Number: gameNumber})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func guessHandler(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	elem, ok := games[id]
+	if !ok {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	s := string(body)
+	guess, err := strconv.Atoi(s)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var result string
+	if guess == elem {
+		result = "correct"
+	} else if guess > elem {
+		result = "hi"
+	} else {
+		result = "lo"
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK) // 200
+	err = json.NewEncoder(w).Encode(Message{Result: result})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func main() {
+	r := mux.NewRouter()
+	r.HandleFunc("/games", newGameHandler).Methods("POST")
+	r.HandleFunc("/games/{id}/guess", guessHandler).Methods("POST")
+
+	log.Println("Listening on: 8080")
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatal(err)
+	}
+}

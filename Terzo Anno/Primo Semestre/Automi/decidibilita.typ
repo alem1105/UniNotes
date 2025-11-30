@@ -301,6 +301,168 @@ Se aggiungiamo $D$ alla tabella, dato che deve comparire, cosa inseriamo quando 
 = Riducibilità
 Una riduzione è un modo di convertire un problema in un altro problema in modo tale che una soluzione al secondo problema può essere usata per risolvere il primo problema.
 
+== Problemi indecidibili della Teoria dei Linguaggi:
+Prima abbiamo visto l'indecidibilità di $A_"TM"$, ovvero il problema di determinare se una macchina di Turing accetta un dato input. Adesso consideriamo il problema $"HALT"_"TM"$ ovvero quello di determinare se una macchina di Turing si ferma su un dato input, va bene sia un accettazione che un rifiuto. Questo è noto come il *problema della fermata*.
+
+Utilizziamo l'indecidibilità di $A_"TM"$ per dimostrare l'indecidibilità di $"HALT"_"TM"$, riducendo $A_"TM"$ a $"HALT"_"TM"$.
+
+Sia:
+
+$ "HALT"_"TM" = {<M,w> | M "è una TM e" M "si ferma su input" w} $
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $"HALT"_"TM"$ è *indecidibile*.
+  ]
+)
+
+Dimostriamo per assurdo il teorema, assumiamo $"HALT"_"TM"$ decidibile ed utilizziamo questa assunzione per dimostrare che $A_"TM"$ è decidibile, ottenendo quindi una contraddizione. Dobbiamo quindi mostrare che $A_"TM"$ è riducibile da $"HALT"_"TM"$.
+
+Supponiamo di avere una TM $R$ che decide $"HALT"_"TM"$, utilizziamo $R$ per verificare se $M$ si ferma su $w$, se $R$ indica che $M$ non si ferma su $w$, rifiutiamo perché $<M,w>$ non è in $A_"TM"$; se invece $R$ indica che $M$ si ferma su $w$ possiamo fare la simulazione senza rischiare di ciclare.
+
+Se la TM $R$ esistesse, potremmo decidere $A_"TM"$ ma sappiamo che $A_"TM"$ è indecidibile, abbiamo una contraddizione e possiamo quindi dire che $R$ non esiste, quindi $"HALT"_"TM"$ è indecidibile.
+
+*Dimostrazione* - Ricapitolando, per ottenere una contraddizione assumiamo che la TM $R$ decide $"HALT"_"TM"$, costruiamo la TM $S$ per decidere $A_"TM"$ che opera come segue:
+
+- $S=$ "Su input $<M,w>$, una codifica di una TM $M$ ed una stringa $w$":
+  1. Esegue la TM $R$ su input $<M,w>$
+  2. Se $R$ rifiuta, rifiuta
+  3. Se $R$ accetta, simula $M$ su $w$ finché non si ferma
+  4. Se $M$ ha accettato, accetta altrimenti rifiuta.
+
+Se $R$ decide $"HALT"_"TM"$ allora $S$ decide $A_"TM"$, poiché $A_"TM"$ è indecidibile allora anche $"HALT"_"TM"$ deve essere indecidibile.
+
+_Vediamo altri teoremi e le loro dimostrazioni come esempi per utilizzare la riducibilità per dimostrare l'indecidibilità_
+
+Sia:
+
+$ E_"TM" = {<M> | M "è una TM e" L(M) = emptyset} $
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $E_"TM"$ è *indecidibile*
+  ]
+)
+
+*Idea* - Come prima assumiamo $E_"TM"$ decidibile e mostriamo che $A_"TM"$ è decidibile ottenendo quindi una contraddizione.
+
+Sia $R$ una TM che decide $E_"TM"$, utilizziamo $R$ per costruire la TM $S$ che decide $A_"TM"$, come deve agire $S$ su input $<M,w>$?
+
+$S$ esegue $R$ su input $<M>$ e vede se $R$ accetta, se lo fa sappiamo che $L(M)$ è vuoto e quindi che $M$ non accetta $w$. Se $R$ rifiuta allora sappiamo che $L(M)$ non è vuoto e di conseguenza $M$ accetta qualche stringa ma non sappiamo se $w$ fa parte di queste.
+
+Cambiamo approccio, invece di eseguire $R$ su $<M>$, eseguiamo $R$ su una modifica di $<M>$, ovvero modifichiamo $M$ in modo da garantire che $M$ rifiuta tutte le stringhe tranne $w$, ma su $w$ funziona come al solito. Adesso possiamo utilizzare $R$ per determinare se la macchina modificata riconosce il linguaggio vuoto. Infatti l'unica stringa che adesso la macchina può accettare è $w$, per cui il suo linguaggio sarà non vuoto se e solo se accetta $w$. Se $R$ accetta quando riceve in input la descrizione della macchina modificata, sappiamo che la macchina modificata non accetta nulla e che $M$ non accetta $w$.
+
+*Dimostrazione* - Descriviamo la macchina modificata e chiamiamola $M_1$:
+
+- $M_1$ = "Su input $x$":
+  1. Se $x eq.not w$ rifiuta
+  2. Se $x = w$ esegue $M$ su input $w$ e accetta se $M$ accetta.
+
+La macchina ha $w$ come parte della sua descrizione, verifica se $x = w$ confrontando carattere per carattere con $w$ per determinare se coincidono. Assumiamo che la TM $R$ decide $E_"TM"$ e costruiamo la TM $S$ che decide $A_"TM"$ nel seguente modo:
+
+- $S = $ "Su input $<M,w>$, una codifica di una TM $M$ e una stringa $w$":
+  1. Usa la descrizione di $M$ e $w$ per costruire la TM $M_1$ vista sopra.
+  2. Esegue $R$ su input $<M_1>$
+  3. Se $R$ accetta, rifiuta; se $R$ rifiuta, accetta
+
+Se $R$ fosse un decisore per $E_"TM"$ allora $S$ lo sarebbe per $A_"TM"$ ma questo non può esistere, quindi $E_"TM"$ è indecidibile.
+
+Un altro problema è quello di determinare se una macchina di Turing riconosce un linguaggio che può essere riconosciuto anche da un modello di calcolo più semplice. Ad esempio sia $"REGULAR"_"TM"$ il problema di determinare se una macchina di Turing ha un automa finito equivalente, che equivale a determinare se la TM riconosce un linguaggio regolare. Sia:
+
+$ "REGULAR"_"TM" = {<M> | M "è una TM ed" L(M) "è un linguaggio regolare" } $
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $"REGULAR"_"TM"$ è *indecidibile*
+  ]
+)
+
+*Idea* - Anche in questo caso riduciamo da $A_"TM"$, assumiamo che $"REGULAR"_"TM"$ sia deciso da una TM $R$ e costruiamo una TM $S$ che decide $A_"TM"$.
+
+L'idea è che $S$ prenda il suo input $<M,w>$ e modifichi $M$ in modo che la risultante TM riconosca un linguaggio regolare se e solo se $M$ accetta $w$. Chiamiamo $M_2$ la macchina così modificata e progettiamo $M_2$ in modo che riconosca il linguaggio non regolare ${0^n 1^n | n gt.eq 0}$ se $M$ non accetta $w$ e riconosca il linguaggio regolare $Sigma^*$ se $M$ accetta $w$. 
+Va specificato come $S$ può costruire una tale $M_2$ da $M$ e $w$.
+La TM $M_2$ non è costruita con lo scopo di essere eseguita su qualche input ma soltanto per dare in input la sua descrizione al decisore per $"REGULAR"_"TM"$ che assumiamo esista. Quando il decisore da la sua risposta possiamo usarla per rispondere se $M$ accetta $w$ o meno, possiamo quindi decidere $A_"TM"$, contraddizione.
+
+*Dimostrazione* - Definiamo $R$ come una TM che decide $"REGULAR"_"TM"$ e costruiamo una TM $S$ che decide $A_"TM"$, funzionamento di $S$:
+
+- $S = $"Su input $<M,w>$ dove $M$ è una TM e $w$ è una stringa:"
+  1. Costruisce la seguente TM $M_2$
+    $M_2 = $"Su input $x$":
+      1. Se $x$ ha la forma $0^n 1^n$, accetta
+      2. Se $x$ non ha tale forma, esegue $M$ su input $w$ e accetta se $M$ accetta $w$
+  2. Esegue $R$ su input $<M_2>$
+  3. Se $R$ accetta, accetta altrimenti rifiuta
+
+Un altro problema indecidibile è quello di dimostrare se due macchine di Turing sono equivalenti.
+
+Sia:
+
+$ "EQ"_"TM" = {<M_1, M_2> | M_1 "ed" M_2 "sono TM ed" L(M_1) = L(M_2)} $
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $"EQ"_"TM"$ è *indecidibile*.
+  ]
+)
+
+Dimostriamolo facendo una riduzione da $E_"TM"$.
+
+*Idea* - Mostriamo che se $"EQ"_"TM"$ fosse decidibile allora anche $E_"TM"$ lo sarebbe ottenendo quindi una contraddizione.
+PAG 129 PDF.
+
+
+
+
+
+
 #showybox(
   frame: (
     border-color: green.lighten(60%),
@@ -383,3 +545,39 @@ Una riduzione è un modo di convertire un problema in un altro problema in modo 
 
 $M'$ è decisore perché $M$ lo è e $F$ termina sempre. Inoltre:
 $ M'(w) = "acc" arrow.double.l.r.long cases(M(f(w)) = "acc", f(w) in B, w in A) $
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Se $A attach(lt.eq, br: m) B$ e $B$ è *Turing-Riconoscibile*, allora $A$ è Turing-Riconoscibile, la dimostrazione è simile a prima ma $M,N$ sono riconoscitori invece di decisori.
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Corollario*],
+  [
+    Se $A attach(lt.eq, br: m) B$ e $A$ non è *Turing-Riconoscibile*, allora $B$ non è Turing-Riconoscibile,
+  ]
+)
