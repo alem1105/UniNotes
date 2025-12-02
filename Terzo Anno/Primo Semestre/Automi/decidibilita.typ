@@ -619,3 +619,166 @@ Adesso per dimostrare che $overline("EQ"_"TM")$ non é Turing-Riconoscibile diam
   - Restituisce $<M_1, M_2>$
 
 La differenza tra $f,g$ si trova in $M_1$, in $f$ rifiuta sempre mentre in $g$ rifiuta sempre mentre sia in $f$ che $g$ $M$ accetta $w$ se e solo se $M_2$ accetta ogni input, in $g$ $M$ accetta $w$ se e solo se $M_1$ e $M_2$ sono equivalenti ed é per questo che $g$ é una riduzione da $A_"TM"$ a $"EQ"_"TM"$
+
+= Teoremi di Incompletezza di Godel
+Uno dei più grandi problemi della matematica è stato quello di volerla formalizzare attraverso la logica in modo tale che fosse:
+- *Consistente*: Non può generare contraddizioni
+- *Completo*: In grado di dimostrare ogni affermazione vera.
+- *Decidibile*: Esiste un algoritmo per determinare la verità o la falsità di ogni affermazione.
+
+Questo è noto come *problema di Hilbert* ma in un solo giorno Godel dimostrò che non era possibile creare un sistema logico abbastanza complesso per contenere l'intera aritmetica, questo è noto come *primo teorema di incompletezza*.
+
+In poco tempo Godel dimostrò anche il *secondo teorema di incompletezza* secondo cui nessun sistema consistente può dimostrare la propria consistenza. Dobbiamo quindi soltanto sperare che il sistema logico attualmente in uso, ZFC, sia consistente.
+
+Le dimostrazioni fatte da Godel sono molto complesse ma grazie a Turing possiamo semplificarle, introduciamo un sistema di prova $Pi$:
+- Per ogni affermazione vera o falsa esiste una sua rappresentazione come stringa $<x>$ di lunghezza finita.
+- Per ogni dimostrazione esiste una rappresentazione $<Pi>$ come stringa di lunghezza finita.
+- Esiste $V in "TM"$ decisore t.c. $forall(<x,w>) in Sigma^*$ si ha che $<x,w> in L(V)$ se e solo se $w$ è una dimostrazione per $x$ in $Pi$.
+
+Un'affermazione $<x>$ è detta *dimostrabile* se $exists <w> in Sigma^*$ t.c. $<x,w> in L(V)$, è detta *indipendente* se né $x$ né $not x$ sono dimostrabili in $Pi$.
+Ma $Pi$ deve anche essere *computabile* ovvero gli assiomi devono essere riconoscibili, o meglio dato $A in Pi$ un assioma, $A$ deve essere decidibile.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione*],
+  [
+    Sia $Pi$ un sistema di prova. Diremo che:
+    - $Pi$ è *consistente* se $forall <x>$ (per ogni affermazione) al più uno tra $x$ e $not x$ è dimostrabile
+    - $Pi$ è *valido* se ogni affermazione vera è dimostrabile
+    - $Pi$ è *completo* se $forall <x>$ almeno uno tra $x$ e $not x$ è dimostrabile
+    - $Pi$ è *incompleto* se esiste un'affermazione indipendente
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Osservazioni*],
+  [
+    - Se un sistema è valido è anche consistente infatti se $x$ è dimostrabile allora è anche vera implicando che $not x$ è falsa.
+    - Un sistema consistente però non implica che sia valido
+    - Se un sistema è valido e completo allora $forall <x>$ solo uno tra $x$ e $not x$ è dimostrabile
+    - Se un sistema è consistente e completo allora $forall <x>$ solo uno tra $x$ e $not x$ è dimostrabile.
+    Quindi tutto e solo ciò che è vero è dimostrabile.
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmetica allora $Pi$ non può essere sia valido che completo
+  ]
+)
+
+*Dimostrazione* - Sia $L={<x>:x "è dimostrabile in" Pi}$ e definiamo la TM $R_Pi$ che prova a decidire $L$:
+- $R_Pi=$ Data la stringa $<x>$ in input:
+  - Ripeti per ogni $k=1,2,3...$:
+    - Ripeti per ogni $w in Sigma^*$ con $|w|=k$:
+      - Se $V(<x,w>)="ACC", R_Pi$ accetta
+      - Se $V(<x,w>)="REJ", R_Pi$ rifiuta
+
+Quindi:
+- Se $Pi$ è valido, quando $R_Pi$ termina fornisce una risposta corretta ma non è detto che termini.
+- Se $Pi$ è completo allora $R_Pi$ è un decisore, infatti se $R_Pi (<x>)="loop"$ allora né $x$ né $not x$ sono dimostrabili (non è completo).
+- Se $Pi$ è valido e completo allora $R_Pi$ è un decisore tale che $forall <x>$ se $x$ è vera $R(<x>)="ACC"$ e se $x$ è falsa $R(<x>)="REJ"$
+
+Supponiamo per assurdo che $Pi$ sia valido e completo e quindi abbia un dimostratore in $V$.
+Data $M in "TM"$ e $y$ input considero la seguente affermazione:
+
+$ Phi_(M,y) = M(y) "termina" $
+
+E definisco la TM $D(<M,w>)=R_Pi (<Phi_(M,y)>)$
+
+Se $Pi$ è sia valido che completo allora $R_Pi$ è un decisore e di conseguenza lo è anche $D$ ma $L(D)="HALT"_"TM"$ che non è decidibile, contraddizione, $R_Pi$ non può essere sia valido che completo.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Primo Teorema di Incompletezza*],
+  [
+    Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmetica. Se $Pi$ è consistente allora $Pi$ non è completo.
+  ]
+)
+
+*Dimostrazione* - Consideriamo la seguente affermazione $Phi_M = \"M(<M>)" termina"\"$ e definiamo la TM $R_Pi$:
+- $R_Pi=$ Data la stringa $<x>$ in input:
+  - Ripeti per ogni $k=1,2,3...$:
+    - Ripeti per ogni $w in Sigma^*$ con $|w|=k$:
+      - Se $V(<Phi_R_Pi, w>)="ACC"$, $R_Pi$ va in loop
+      - Se $V(<not Phi_R_Pi, w>)="ACC"$, $R_Pi$ termina
+
+*Claim* - Se $Phi_R_Pi$ o $not Phi_R_Pi$ è dimostrabile allora $Pi$ è incosistente.
+
+*Dimostrazione* - Supponiamo che $not Phi_R_Pi$ sia dimostrabile, allora esiste una dimostrazione $w$ t.c. $V(<not Phi_R_Pi, w>)="ACC"$ implicando che $R_Pi(<R_Pi>)$ termina.
+Poiché l'esecuzione termina esiste una dimostrazione che descrive l'esecuzione di $R_Pi$. (uguale a $Phi_R_Pi$)
+Allo stesso modo, supponiamo che $Phi_R_Pi$ sia dimostrabile allora esiste una dimostrazione $w$ t.c. $V(<Phi_R_Pi, w>)="ACC"$ implicando che $R_Pi(<R_Pi>)$ va in loop.
+Siccome l'esecuzione va in loop, è noto il comportamento delal traccia, ed esiste dunque una dimostrazione che descrive l'esecuzione. Abbiamo dimostrato che ci basta dimostrare $Phi_R_Pi$ o $not Phi_R_Pi$ per rendere $Pi$ inconsistente.
+
+Assumiamo $Pi$ consistente, allora per il claim né $Phi_R_Pi$ né $not Phi_R_Pi$ sono dimostrabili e dunque $Pi$ non è completo.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Secondo Teorema di Incompletezza*],
+  [
+    Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmetica. Se $Pi$ è consistente allora $Pi$ non può dimostrare l'affermazione "$Pi$ è consistente".
+  ]
+)
+
+*Dimostrazione* - Sia $Pi$ un sistema definito dal teorema, allora tale sistema è in grado di descrivere il funzionamento di una TM. Sia $R_Pi$ definita tramite $Phi_R_Pi$ come nel teorema precedente.
+
+*Claim* - Se $Phi_R_Pi$ o $not Phi_R_Pi$ è dimostrabile allora $Pi$ è inconsistente
+
+*Dimostrazione* - Uguale al teorema precedente
+
+Assumiamo che $Pi$ è consistente, allora per il claim né $Phi_R_Pi$ né $not Phi_R_Pi$ sono dimostrabili. Supponiamo ora per assurdo che l'affermazione "$Pi$ è consistente" sia dimostrabile tramite $w in Sigma^*$, allora unendo $w$ alla dimsotrazione del claim otteniamo una dismotrazione per l'affermazione "né $Phi_R_Pi$ né $not Phi_R_Pi$ sono dimostrabili in $Pi$".
+Tuttavia per costruzione di $R_Pi$, ciò corrisponde anche una dimostrazione per $not Phi_R_Pi$ in quanto è garantito che la TM va in loop creando una contraddizione.
+"$Pi$ è consistente" non è dimostrabile in $Pi$.
