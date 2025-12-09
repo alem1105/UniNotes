@@ -287,3 +287,162 @@ _Esempio 1_
     - Abbiamo 1024 threads per blocco che è molto più grande di 512 ovvero il massimo che possiamo avere.
 
 _Esempio 2_
+- Un dispositivo CUDA permette fino a 8 blocchi e 1536 threads per SM e 1024 threads per blocco
+
+- 8x8:
+    - Abbiamo 64 threads per blocco
+    - Ci servono 1536 / 64 = 24 blocchi per riempire i 1536 threads per SM
+    - Possiamo usare solo 8 blocchi quindi 8x64 = 512 threads per SM, non stiamo sfruttando l'hardware al massimo
+- 16x16:
+    - Abbiamo 256 threads per blocco
+    - Per riempire i blocchi di ogni SM ci servono 1536 / 256 = 6 blocchi
+    - Abbiamo la capacità massima
+- 32x32:
+    - Abbiamo 1024 threads per blocco
+    - Possiamo inserire al massimo un blocco in ogni SM, ma in questo modo stiamo utilizzando soltanto 2/3 della capacità massima del SM (1024 threads invece di 1536)
+
+_Esempio 3_
+- Abbiamo una griglia di 4x5x3 blocchi ognuno fatto da 100 threads
+- La GPU ha 16 SMs
+- Abbiamo 4x5x3=60 blocchi da distribuire in 16 SMs:
+    - Assumiamo una distribuzione round-robin
+    - Quindi 12 SMs riceveranno 4 blocchi mentre 4 ne riceveranno 3
+    - Questo è inefficiente perché mentre i primi 12 computano l'ultimo blocco gli altri 4 sono in idle.
+- Un blocco contiene 100 threads, che sono divisi in 100/32=4 warps
+    - I primi 3 warps hanno 32 threads mentre l'ultimo ne ha 4
+    - Assumiamo di poter farlo lo schedule di un solo warp alla volta (ad esempio perché abbiamo 32 CUDA Core per SM)
+    - L'ultimo warp userà solo 4 dei 32 core disponibili
+
+== Device Properties
+Sono delle istruzioni che ci permettono di ottenere informazioni sul dispositivo:
+
+Ad esempio per ottenere una lista delle GPU disponibili:
+```cuda
+int deviceCount = 0;
+cudaGetDeviceCount(&deviceCount);
+if (deviceCount == 0) {
+    printf("No CUDA compatible GPU exists.\n")
+} else {
+    cudaDeviceProp pr;
+    for (int i = 0; i < deviceCount; i++) {
+        cudaGetDeviceProperties(&pr, i);
+        printf("Dev #%i is %s\n", i, pr.name);
+    }
+}
+```
+
+Il `cudaGetDeviceProperties` è una struct con questi campi:
+
+```c
+struct cudaDeviceProp {
+    char name[256];
+    int major; // Compute capability major number
+    int minor; // * * minor *
+    int maxGridSize[3];
+    int maxThreadsDim[3];
+    int maxThreadsPerBlock;
+    int maxThreadsPerMultiProcessor;
+    int multiProcessorCount;
+    int regsPerBlock; // Number of registers per block
+    size_t sharedMemPerBlock;
+    size_t totalGlobalMem;
+    int warpSize;
+}
+```
+
+== Memory Hierarchy
+La memoria allocata dall'host non è visibile alla GPU e viceversa, non è possibile quindi, ad esempio:
+
+```cuda
+int *mydata = new int[N];
+...
+foo<<<grid, block>>>(mydata, N);
+```
+
+Come si passano quindi i dati fra le memorie?
+
+```cuda
+cudaError_t cudaMalloc (void** devPtr, size_t size)
+// Il primo parametro è un puntatore al puntatore della zona di memoria dove vogliamo che vengano salvati i dati (zona dell'host).
+//Il secondo parametro indica la grandezza in bytes dei blocchi richiesti
+
+cudaError_t cudaFree(void* devPtr);
+// Come parametro prende un puntatore alla zona dell'host, di solito è quello ritornato da un cudaMalloc
+
+cudaError_t cudaMemcpy(void* dst, const void* src, size_t count, cudaMemcpyKind kind);
+// Il primo parametro è l'indirizzo del blocco di destinazione
+// Il secondo parametro l'indirizzo della sorgente
+// Grandezza in bytes
+// Direzione della copia
+```
+
+I due tipi `cudaError_t, cudaMemcpyKind` sono delle enum, per la prima se una funzione ritorna qualcosa di diverso da `cudaSuccess (0)` allora si è verificato un errore. Mentre la seconda può assumere diversi valori:
+- 0 Host to Host
+- 1 Host to Device
+- 2 Device to Host
+- 3 Device to Device
+- 4 Si utilizza quando la Unified Virtual Address space capability è disponibile sull'hardware
+
+_Esempio somma fra vettori_
+Abbiamo due vettori della stessa dimensione e vogliamo sommare gli elementi con lo stesso indice:
+
+```cuda
+void vecAdd(float *h_A, float *h_B, float *h_C, int n) {
+    int size = n * sizeof(float);
+    float *d_A, *d_B, *d_C;
+
+    cudaMalloc((void **) &d_A, size);
+    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
+    cudaMalloc((void **) &d_B, size);
+    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
+
+    cudaMalloc((void **) &d_C, size);
+    // Kernel invocation code, da vedere
+    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
+
+    cudaFree(d_A); cudaFree(d_B); cudaFree(d_C);
+}
+```
+
+Per controllare gli errori, dopo una cudaMalloc dovremmo eseguire:
+
+```cuda
+cudaError_t err = cudaMalloc((void**) &d_A, size);
+if (error != cudaSuccess) {
+    printf("%s in %s at line %d\n", cudaGetErrorString(err), _),__FILE__,__LINE__);
+    exit(EXIT_FAILURE);
+}
+```
+
+Oppure ancora migliore:
+
+```cuda
+#define CUDA_CHECK_RETURN(value) {
+    cudaError_t _m_cudaStat = value;
+    if (_m_cudaStat != cudaSuccess) {
+        fprintf(stderr, "Error %s at line %d in file %s\n",
+            cudaGetErrorString(_m_cudaStat),
+            __LINE__,__FILE__);
+        exit(1);
+    }
+}
+```
+
+Per la chiamata al kernel invece dobbiamo eseguire:
+
+```cuda
+vedAddKernel<<<ceil(n/256.0), 256>>>(d A, d B, d C, n);
+```
+
+Ogni blocco ha 256 threads e abbiamo quindi n / 256 blocchi.
+Se n non è multiplo di 256? Potrebbero venir eseguiti più thread di quanti elementi ci sono nell'array, ogni thread deve controllare se vanno eseguiti alcuni elementi o no:
+
+```cuda
+__global__
+void vecAddKernel(float *A, float *B, float *C, int n) {
+    int i = blockDim.x*blockIdx.x + threadIdx.x;
+    if (i<n) C[i] = A[i] + B[i];
+}
+```
+
+Con questo if controlliamo se thread che stiamo eseguendo fa parte dell'array, quindi se accade facciamo il calcolo altrimenti no.
