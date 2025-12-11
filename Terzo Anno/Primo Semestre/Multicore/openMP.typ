@@ -608,3 +608,312 @@ z();
     Questo perché, se fosse abilitata, andrebbe a creare ad esempio su una macchina con 4 threads: $3*4=12$ threads
   ]
 )
+
+== Scheduling Loops
+Ci sono diversi modi per assegnare le iterazioni dei for ai threads. Ad esempio se vogliamo parallelizzare questo ciclo:
+
+```c
+sum = 0.0;
+for (i = 0; i <= n; i++) {
+  sum += f(i)
+}
+```
+
+Abbiamo due metodi.
+
+*Default Partitioning*:
+- Thread 0: Svolge le iterazioni $0, 1, 2, ..., n / t-1$
+- Thread 1: $n/t, n/t + 1, ..., 2n/t$
+- ...
+- Thread $t-1$: $n(t-1) / t, ..., n-1$
+
+*Cyclic partitioning*:
+- Thread 0: $0, n/t, 2n/t$
+- Thread 1: $1, n/t + 1, 2n/t + 1,...$
+...
+- Thread $t-1$: $t-1, n/t + t - 1, 2n / t + t - 1$
+
+Quindi nella default se abbiamo ad esempio 100 iterazioni e 4 threads allora avremo che:
+- Il thread 0 prende le iterazioni da 0 a 24
+- Thread 1 da 25 a 49
+- ...
+
+Il vantaggio è che in questo modo i thread lavorano su dati contigui della memoria e sfrutta al massimo la cache, inoltre c'è meno overhead per la scelta di "chi deve fare cosa". Lo svantaggio è che se una parte di iterazioni è più pesante i thread lavorano in modo non equo.
+
+Nella cyclic invece le iterazioni vengono assegnate in modo ciclico, in stile _Round Robin_, quindi con 4 thread ad esempio:
+- L'iterazione 0 va al T0
+- 1 a T1
+- 2 a T2
+- 3 a T3
+- 4 a T0
+- ...
+
+In questo modo se le iterazioni non sono eque avremo comunque un lavoro bilanciato fra i threads ma questi utilizzeranno male la cache richiedendo quindi più accessi in memoria.
+
+Ci sono due _pragma_ differenti per impostare gli schedule dei for:
+- *default*
+```c
+sum = 0.0;
+pragma omp parallel for num_threads(thread_count) reduction(+:sum)
+for (i = 0; i <= n; i++) {
+  sum += f(i)
+}
+```
+
+- *cyclic*
+```c
+sum = 0.0;
+pragma omp parallel for num_threads(thread_count) reduction(+:sum) schedule(static, 1)
+for (i = 0; i <= n; i++) {
+  sum += f(i)
+}
+```
+
+La pragma per impostare la schedule ha la firma `schedule(type, chunksize)` dove:
+- type può essere:
+  - `static`: Le iterazioni possono essere assegnate ai threads prima che il loop venga eseguito.
+  - `dynamic or guided`: Le iterazioni vengono assegnate ai threads mentre il loop viene eseguito.
+  - `auto`: Il compilatore e/o il sistema a runtime determina lo schedule da utilizzare.
+  - `runtime`: Lo schedule é determinato a runtime.
+- `chunksize`: Intero positivo che indica quante iterazioni contigue vengono assegnate a un thread prima di passare al thread successivo
+
+Esempi con schedule static:
+
+- `schedule(static, 1)`
+  - Thread 0: 0,3,6,9
+  - Thread 1: 1,4,7,10
+  - Thread 2: 2,5,8,11
+- `schedule(static, 2)`
+  - Thread 0: 0,1,6,7
+  - Thread 1: 2,3,8,9
+  - Thread 2: 4,5,10,11
+- `schedule(static, 4)`
+  - Thread 0: 0,1,2,3
+  - Thread 1: 4,5,6,7
+  - Thread 2: 8,9,10,11
+
+La schedule `dynamic` funziona sempre spezzando le iterazioni in chunksize, ma quando un thread finisce il suo chunk ne richiede un altro al sistema, questo procedimento é ripetuto finché il programma non termina. Ovviamente avremo più overhead dato che ogni volta va deciso a chi assegnare un chunk.
+
+Anche i thread con schedule `guided` eseguono i chunk e ne richiedono di nuovi quando hanno finito, ma ogni volta che un chunk termina la chunksize dei successivi diminuisce. La chunksize ha grandezza $"num_iterations" / "num_thread"$ dove `num_iterations` è il numero di iterazioni non ancora assegnate. L'ultimo chunk potrebbe essere più piccolo della chunksize.
+
+Nella `runtime` schedule il sistema usa la variabile d'ambiente `OMP_SCHEDULE` per determinare a runtime come impostare il loop. La variabile può assumere i valori visti prima, ad esempio `"export OMP_SCHEDULE = static,1"` oppure può essere impostata con la funzione `omp_set_schedule(omp_sched_t kind, int chunk_size)`
+
+Quale scegliamo quindi?
+- *static*: Se le iterazioni sono omogenee
+- *dynamic / guided*: Se il costo d'esecuzione delle iterazioni varia.
+
+Se siamo in dubbio impostiamo `#pragma omp parallel for schedule(runtime)` ma non è detto che scelga quella ottimale, conviene quindi provare opzioni diverse dato che i tempi ovviamente cambiano anche in base all'input del programma.
+
+== Synchronization Constructs
+Esistono due direttive: *Master, Single* entrambe forzano l'esecuzione del blocco successivo da un singolo thread. La differenza è che *single* implica una barriera all'uscita dal blocco, con *master* invece l'esecuzione del blocco è garantita dal thread master.
+
+La direttiva *barrier* serve a bloccare tutti i thread finché tutti hanno raggiunto quel punto.
+
+Possiamo anche identificare delle sezioni di codice con la direttiva `sections` per eseguirle in parallelo.
+
+```c
+# pragma omp parallel sections
+{
+  # pragma omp section
+  {
+    // concurrent block 0
+  }
+  # pragma omp section
+  {
+    // concurrent block M-1
+  }
+}
+```
+
+C'è una barriera implicita alla fine di una section a meno che non vengano specificate altre direttive.
+
+Un altro costrutto è `ordered`, si utilizza nei cicli for per assicurarci che i blocchi vengano eseguiti in un ordine specifico
+
+```c
+double data[N];
+# pragma omp parallel shared(data, N)
+{
+  # pragma omp for ordered schedule(static, 1)
+  for (int i = 0; i < N; i++) {
+    // process the data
+  # pragma omp ordered
+  cout << data[i];
+  }
+}
+```
+
+== OpenMP + MPI
+MPI definisce 4 livelli di thread safety:
+- `MPI_THREAD_SINGLE`: Nel programma esiste un solo thread
+- `MPI_THREAD_FUNNELED`: Solo il thread master può fare chiamate MPI, è lui quello che chiama `MPI_Init_thread()`
+- `MPI_THREAD_SERIALIZED`: Multithreaded ma un solo thread alla volta può fare chiamate MPI
+- `MPI_THREAD_MULTIPLE`: Multithreaded e qualsiasi thread può fare chiamate MPI in ogni momento
+
+La più semplice da utilizzare è `MPI_THREAD_FUNNELED`.
+
+== Data Dependencies
+Prendiamo una funzione che calcola la sequenza di fibonacci:
+
+```c
+fibo[0] = fibo[1] = 1
+for (i = 2; i < n; i++) {
+  fibo[i] = fibo[i - 1] + fibo[i - 2];
+}
+
+// parallelizzata
+fibo[0] = fibo[1] = 1
+# pragma omp parallel for num_threads(2)
+for (i = 2; i < n; i++) {
+  fibo[i] = fibo[i - 1] + fibo[i - 2];
+}
+```
+
+Il risultato corretto è: `1 1 2 3 5 8 13 21 34 55`, ma potremmo ottenere ad esempio: `1 1 2 3 5 8 0 0 0 0`. Perchè?
+
+OpenMP non controlla le dipendenze che ci sono fra un'iterazione ed un'altra in un loop che è stato parallelizzato con la direttiva *parallel*. Un loop di questo tipo non può essere parallelizzato in questo modo e diciamo che abbiamo un *loop-carried dependence*.
+
+Assumiamo di avere un for in questa forma:
+
+```c
+for (i = ...) {
+  S1: // operate on a memory location x
+  ...
+  S2: // operate on a memory location x
+}
+```
+
+In questo caso ci sono 4 diversi modi in cui S1 e S2 sono collegati, in base a come leggono e scrivono su $x$. Si crea un problema se queste scritture o letture dipendono fra loro tra un'iterazione ed un'altra.
+
+Ci sono due tipi di dipendenze:
+- *Flow Dependence: RAW*
+```c
+x = 10; // S1
+y = 2 * x + 5; // S2
+```
+
+In questo caso se S1 e S2 vengono eseguiti su thread diversi potrebbe accadere che S2 legge un dato prima che S1 lo scriva, leggerà quindi un dato sporco (non aggiornato). Per risolvere questo caso c'è bisogno di meccanismi di sincronizzazione.
+
+- *Anti-flow dependence: WAR*
+```c
+y = x + 3; // S1
+x ++; // S2
+```
+
+In questo caso S1 legge ed S2 scrive $x$, se parallelizziamo potrebbe accadere che S2 scrive x prima che S1 e quindi S1 legge un dato errato (più aggiornato), sbagliando il calcolo. Questo problema è risolvibile utilizzando una variabile temporanea diversa per S2
+
+- *Output dependence: WAW*
+```c
+x = 10; // S1
+x = c + c; // S2
+```
+
+Sia che S1 che S2 scrivono su x, l'ultimo valore dovrebbe essere quello di S2, ma siamo sicuri che in parallelo accada questo?
+
+- *Input dependence: RAR*
+```c
+y = x + c; // S1
+z = 2 * x + 1; // S2
+```
+
+Entrambi leggono il valore di x, ma non è un vero problema infatti più thread possono leggere la stessa locazione di memoria contemporanemante senza creare problemi. Il codice è quindi parallelizzabile.
+
+Vediamo dei metodi per risolvere le data dependency.
+
+=== Flow Dependence: Reduction, Induction Variables Fix
+_Esempio_
+
+```c
+double v = start;
+double sum = 0;
+for (int i = 0; i < N; i++) {
+  sum = sum + f(v); // S1
+  v = v + step; // S2
+}
+```
+
+- `RAW (S1)` causata dalla riduzione sulla varibile `sum`.
+- `RAW (S2)` causata dalla *induction variable* v, ovvero una variabile che viene aumentata o decrementata di un valore costante ad ogni iterazione.
+- `RAW (S2 -> S1)`: causata dalla induction variable v
+
+La dipendenza avviene tra un'iterazione $i$ e la $i+1$, infatti la somma viene letta alla iterazione $i+1$ dopo che è stata scritta nell'iterazione $i$.
+
+Siccome v è una induction variable possiamo calcolarla senza for ma semplicemente sapendo il numero di step in cui ci troviamo, modificando il codice possiamo rimuovere `RAW (S2) e RAW (S2 -> S1)`:
+
+```c
+double v;
+double sum = 0;
+for (int i = 0; i < N; i++) {
+  v = start + i * step;
+  sum = sum + f(v);
+}
+```
+
+Per rimuovere `RAW (S1)` usiamo le direttive:
+
+```c
+double v;
+double sum = 0;
+# pragma omp parallel for reduction(+:sum) private(v)
+for (int i = 0; i < N; i++) {
+  v = start + i * step;
+  sum = sum + f(v);
+}
+```
+
+=== Loop Skewing
+Consiste nel riordinamento del corpo di un loop, ad esempio:
+```c
+for (int i = 1; i < N; i++) {
+  y[i] = f(x[i-1]); // S1
+  x[i] = x[i] + c[i]; // S2
+}
+```
+
+Abbiamo una `RAW (S2 -> S1)` sulla variabile $x$. Per risolvere dobbiamo assicurarci che le operazioni che consumano i valori che causano la dipendenza usino valori generati nella stessa iterazione. Possiamo trasformare il for in:
+```c
+y[1] = f(x[0]);
+for (int i = 1; i < N - 1; i++) {
+  x[i] = x[i] + c[i];
+  y[i+1] = f(x[i]);
+}
+x[N-1] = x[N-1] + c[N-1];
+```
+
+Per riuscire ad applicarlo un consiglio è quello di scigliere il loop e trovare un pattern che si ripete, con lo stesso esempio di prima abbiamo le seguenti iterazioni:
+
+#codly(
+  highlights: ((line:8, fill: green), (line:9, fill:green), (line:13,fill:green), (line:14,fill:green))
+)
+```c
+for (int i = 1; i < N; i++) {
+  y[i] = f(x[i-1]); // S1
+  x[i] = x[i] + c[i]; // S2
+}
+
+// Iterazioni
+y[1] = f(x[0]);
+x[1] = x[1] + c[1];
+y[2] = f(x[1]);
+x[2] = x[2] + c[2];
+...
+y[N-2] = f(x[N-3]);
+x[N-2] = x[N-2] + c[N-2];
+y[N-1] = f(x[N-2]);
+x[N-1] = x[N-1] + c[N-1];
+```
+
+Il pattern è quello che inseriamo nel corpo del loop:
+
+#codly(
+  highlights: ((line:2, fill: green), (line:3, fill:green), (line:4,fill:green), (line:5,fill:green))
+)
+```c
+y[1] = f(x[0]);
+for (int i = 1; i < N - 1; i++) {
+  x[i] = x[i] + c[i];
+  y[i+1] = f(x[i]);
+}
+x[N-1] = x[N-1] + c[N-1];
+```
+
+=== Partial Parallelization
