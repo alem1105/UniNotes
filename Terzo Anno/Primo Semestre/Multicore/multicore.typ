@@ -34,5 +34,6 @@
 #include "mpi.typ"
 #include "parallel_design.typ"
 #include "openMP.typ"
+#include "caching.typ"
 #include "gpu_programming.typ"
 #include "memoryType.typ"

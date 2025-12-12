@@ -917,3 +917,95 @@ x[N-1] = x[N-1] + c[N-1];
 ```
 
 === Partial Parallelization
+Costruiamo un *ISDG (Iteration Space Dependency Graph)* ovvero un grafo dove ogni nodo rappresenta una singola iterazione e gli archi rappresentano le dipendenze da altre iterazioni, ad esempio prendiamo il ciclo:
+
+```c
+for (int i = 1; i < N; i++) {
+  for (int j = 1; j < M; j++) {
+    data[i][j] = data[i-1][j] + data[i-1][j-1];
+  }
+}
+```
+
+Abbiamo questo grafico:
+#align(center, image("img/isdg.png", width: 80%))
+Notiamo che non ci sono dipendenze tra nodi che si trovano sulla stessa linea, questo significa che possiamo parallelizzare il `j-for`:
+
+```c
+for (int i = 1; i < N; i++) {
+  # pragma omp parallel for
+  for (int j = 1; j < M; j++) {
+    data[i][j] = data[i-1][j] + data[i-1][j-1];
+  }
+}
+```
+
+=== Refactoring
+Consiste nel riscrivere il loop in modo da renderlo parallelizzabile, ad esempio partiamo con il loop:
+
+```c
+for (int i = 1; i < N; i++) {
+  for (int j = 1; j < M; j++) {
+    data[i][j] = data[i-1][j] + data[i][j-1] + data[i-1][j-1];
+  }
+}
+```
+
+Rappresentiamolo graficamente e vediamo le dipendenze:
+#align(center, image("img/refactorisdg.png", width: 80%))
+
+Notiamo che i nodi in diagonale non hanno dipendenze fra loro, ma per diagonalizzarli dobbiamo cambiare le variabili `i,j` del for:
+
+```c
+// Codice non completo
+for (wave = 0; wave < NumWaves; wave++) {
+  diag = F(wave);
+  # pragma omp parallel for
+  for (k = 0; k < diag; k++) {
+    int i = get_i(diag, k);
+    int j = get_j(diag, k);
+    data[i][j] = data[i-1][j] + data[i][j-1] + data[i-1][j-1];
+  }
+}
+```
+
+=== Fissioning
+Il fissioning consiste nello spezzare il loop in una parte sequenziale e in una parallela.
+
+_Esempio_
+```c
+s = b[0];
+for (int i = 1; i < N; i++) {
+  a[i] = a[i] + a[i-1]; // S1
+  s = s + b[i];
+}
+```
+
+Possiamo spezzarlo in:
+```c
+// Parte sequenziale
+for (int i = 1; i < N; i++) {
+  a[i] = a[i] + a[i-1];
+}
+// Parte parallela
+s = b[0];
+# pragma omp parallel for reduction(+:s)
+for (int i = 1; i < N; i++) {
+  s = s + b[i];
+}
+```
+
+=== Algorithm change
+Se tutti gli altri metodi non funzionano, forse la strada migliore è cambiare algoritmo :P. Ad esempio la sequenza di Fibonacci:
+
+```c
+for (int i = 2; i < N; i++) {
+  int x = F[i-1]; // S1
+  int y = F[i-1]; // S2
+  F[i] = x + y; // S3
+}
+```
+
+Può essere parallelizzata con la formula di Binet:
+
+$ F_n = frac(phi^n - (1 - phi)^n, sqrt(5)) $

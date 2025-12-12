@@ -82,3 +82,77 @@ Se prendiamo ad esempio l'operazione: `pixVal += in[curRow * w + curCol];`
 - Diciamo che questa applicazione è *memory bound*. Per aumentare le performance dobbiamo ridurre gli accessi in memoria.
 
 Definiamo *compute-to-global-memory-access ratio* come il numero di operazioni floating-point eseguite per ogni accesso nella memoria globale in una regione di programma. É anche conosciuta come la *arithmetic / operational intensity* misurata in FLOP/byte.
+
+== Shared Memory
+I dati presenti nella shared memory sono condivisi fra tutti i threads. Possiamo utilizzarla, ad esempio, per:
+- Memorizzare i dati usati molto frequentemente che altrimenti richiederebbero una memoria globale.
+- Un modo per condividere i dati fra cores dello stesso SM.
+Il modificatore `__shared__` viene usato per indicare che un dato va salvato nella memoria shared invece che la globale.
+
+Shared Memory vs L1 cache:
+- Sono entrambe on-chip
+- In alcuni casi avere i dati sulla shared-memory e avendo controllo su questa si ottengono risultati migliori rispetto alla cache.
+
+_Esempio di utilizzo: 1D Stencil_
+
+Per capire lo stencil, prendiamo una lista di valori e consideriamo un raggio di, ad esempio, 3. Ogni valore diventerà la somma di se stesso e i 6 elementi vicini a lui, 3 a sinistra e 3 a destra. Abbiamo quindi che ogni thread processa un elemento ma ogni elemento verrà letto più volte, con raggio 3 ogni elemento viene letto 7 volte.
+
+Possiamo salvare i dati nella shared memory per accedervi più velocemente:
+- Leggiamo gli elementi in `blockDim.x + 2 * radius` dalla memoria globale e li mettiamo nella shared memory
+- Calcoliamo l'elemento in `blockDim.x`
+- Scriviamo `blockDim.x` nella memoria globale.
+
+Ovviamente va creato un nuovo array altrimenti ogni stencil applicato influenzerebbe il successivo calcolo.
+
+_Esempio Codice_
+
+```c
+__global__ void stencil_1d(int *in, int *out) {
+  __shared__ int temp[BLOCK_SIZE + 2 * RADIUS];
+  int gindex = threadIdx.x + blockIdx.x * blockDim.x;
+  int lindex = threadIdx + RADIUS;
+
+  // Salva i dati nella shared memory
+  temp[lindex] = in[gindex];
+  if (threadIdx.x < RADIUS) {
+    temp[lindex - RADIUS] = in[gindex - RADIUS];
+    temp[lindex + BLOCK_SIZE] = in[gindex + BLOCK_SIZE];
+  }
+
+  // Applica lo stencil
+  int result = 0;
+  for (int offset = -RADIUS; offset <= RADIUS; offset++) {
+    result += temp[lindex + offset];
+  }
+  // Salva i risultati
+  out[gindex] = result;
+}
+```
+
+Quindi ogni thread carica il suo valore in shared memory va quelli più esterni caricano anche gli HALO ovvero i valori ai bordi del blocco.
+Ma cosa succede se ad esempio il thread 31 inizia la computazione quando il thread 32 ha già scritto i suoi risultati? Dobbiamo sincronizzare i threads in modo che i calcoli vengano effettuati soltanto quando i dati sono stati caricati in shared memory, aggiungiamo una barriera.
+
+```c
+__global__ void stencil_1d(int *in, int *out) {
+  __shared__ int temp[BLOCK_SIZE + 2 * RADIUS];
+  int gindex = threadIdx.x + blockIdx.x * blockDim.x;
+  int lindex = threadIdx + RADIUS;
+
+  // Salva i dati nella shared memory
+  temp[lindex] = in[gindex];
+  if (threadIdx.x < RADIUS) {
+    temp[lindex - RADIUS] = in[gindex - RADIUS];
+    temp[lindex + BLOCK_SIZE] = in[gindex + BLOCK_SIZE];
+  }
+  // Sincronizzazione dei threads
+  __syncthreads();
+
+  // Applica lo stencil
+  int result = 0;
+  for (int offset = -RADIUS; offset <= RADIUS; offset++) {
+    result += temp[lindex + offset];
+  }
+  // Salva i risultati
+  out[gindex] = result;
+}
+```
