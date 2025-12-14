@@ -54,4 +54,6 @@ Dopo il WIMP sono arrivate interfacce **widget-less** basate ad esempio sulla vo
 	- Anticipatory
 	- Synthesis
 
-
+# Progettare un Sistema Interattivo
+- Trovare i **needs** degli utenti
+- Rispettare i principi e le guidelines del design
