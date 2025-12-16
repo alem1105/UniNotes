@@ -368,3 +368,141 @@ Inoltre, quando impostiamo un range numerico:
 > - Domande con BIAS comportano risposte con BIAS
 
 # Task Analysis
+Design dei needs / goals come una rappresentazione intermedia prima del design dell'interfaccia finale.
+- Dobbiamo rendere i needs espliciti
+
+In realtà needs e goals non sono la stessa cosa, ma attraverso l'analisi li renderemo uguali.
+
+I needs sono quelli che ci guidano per i goals, ad esempio, se il need è _vivere bene_ i goals potrebbero essere:
+- Fare esercizio regolarmente
+- Dormire bene
+- Mangiare salutare
+
+Infatti più goals potrebbero derivare dallo stesso need, i goals permettono di tradurre i needs in azioni, **sono la forma concreta dei needs**.
+
+Il contesto può influenzare i goals ma non i needs, ad esempio se il need è "sentirsi al sicuro" i goal potrebbero essere, ottenere un lavoro stabile o installare un sistema di sicurezza a casa, che in base al contesto dell'utente possono essere più o meno realizzabili, mentre il need rimane lo stesso.
+
+Noi però faremo una semplficazione, **needs =goals**.
+
+Il **Task Analysis** è lo studio di come le persone svolgono le loro attività, l'obiettivo è quello di determinare:
+- What they **do** (steps)
+- What things they **use** (artifacts)
+- How well they **succeed** (goals)
+
+Un esempio di task può essere: Pulire la casa
+- Steps:
+	- Prendere l'aspirapolvere
+	- Collegarlo
+	- Pulire le stanze
+	- Se si riempie il sacco della polvere, svuotarlo
+	- Posare l'aspirapolvere
+- Bisogna conoscere ed utilizzare diversi **artifacts**:
+	- Aspirapolvere, come collegarlo, il sacchetto della polvere
+	- le stanze della casa
+	- ...
+
+Questo Task può essere collegato a più goals:
+- Rimuovere la polvere
+- Pulire la casa dopo una festa
+- Ospitare persone a cena
+
+Che cos'è un task?
+- Un goal con un insieme ordinato di azioni da compiere
+
+- Goal: Lo stato di un'applicazione che il sistema vuole raggiungere
+- Task: Un set di attività richieste o necessarie da un **agent** (umano o macchina) per raggiungere il goal usando delle tecnologie specifiche.
+- Action: Un action è un task che non richiede problem solving, sono dei task semplici.
+
+Il Task Analysis è il processo di imparare dagli utenti, osservandoli, come compiono i loro tasks e raggiungono i goals, questo aiuta in:
+- Identificare i tasks che l'applicazione dovrebbe supportare
+- Definire o ridefinire la navigazione nell'app
+- Raccogliere i requirements
+- Initial stage of Prototyping
+- Usability Testing
+
+_Esempio_
+- Needs / goals:
+	- Monitor my health
+	- Better organize my time
+- Derived tasks:
+	- Entering health data into a digital tracking system
+	- Settings reminders for daily exercise
+- Poorly defined tasks:
+	- Improve diet (troppo vago)
+	- Use the medical app (troppo generico e legato ad un'interfaccia)
+- Derived actions:
+	- Measure your health parameters
+	- Record the data in a way that allows for easy review later
+
+La difficoltà nel Task analysis sta nel fatto che noi non creiamo tasks ma interfacce e queste non hanno una relazione 1:1, una web app ha più di un task. Inoltre le persone usano la stessa interfaccia e applicazione per scopi diversi
+
+# Storyboard
+Lo storyboard è un "fumetto" fatto a mano che rappresenta l'esecuzione di un task, devono sempre far riferimento ad una persona. Servono a mostrare cosa accade nei **"key points"**. Non sono richieste particolari abilità nel disegnare, l'importante è che comunichino un'idea.
+
+Uno storyboard dovrebbe mostrare:
+- L'ambiente
+- Le persone coinvolte
+- Un task che viene compiuto
+Nel mostrare il task non dobbiamo mostrare in modo dettagliato la UI ma dobbiamo far capire come questa aiuta l'utente nel raggiungimento del goal.
+
+Ci sono diversi modi per disegnare uno storyboard e rappresentare la "dinamicità" :
+- **Traditional Storyboarding** - Ha lo stile dei classici "comic book", quindi con attori, bolle per i testi e delle note in ogni vignetta che spiegano cosa sta succedendo.
+- **Scored Storyboard** - Se l'interfaccia utente è molto dinamica o contiene dei media specifici, come suoni, colori o animazioni dobbiamo aggiungere delle note che si concentrano su questi.
+- **Text-only Storyboards** - Se fare un disegno risulto troppo confusionario allora è meglio fare una descrizione scritta, anche se molto lunga.
+
+Perché disegnato a mano?
+- É più veloce dato che non serve conoscere tool per disegnare
+- Permette di concentrarsi di più sul contenuto piuttosto che sul font o sulla "grafica".
+
+# Personas
+É uno strumento utilizzato nel design di interfacce, rappresenta un modello astratto di un utente reale e ci aiuta a comprendere meglio i need e i comportamenti (actions) degli utenti.
+
+Definizione:
+- Rappresentazione semi-fittizia di un utente reale creata sulla base di dati demografici, comportamentali e psicografici
+- Rappresenta una categoria di utenti con caratteristiche, obiettivi e necessità specifiche.
+
+Sono utili per:
+- Creare empatia nei confronti degli utenti permettendo ai progettisti di mettersi nei loro panni.
+- Aiutano ad ottimizzare l'esperienza utente.
+- Consentono di identificare le esigenze degli utenti e le possibili sfide.
+
+Per realizzarle abbiamo bisogno di:
+- nome, foto, caratteristiche demografiche: permettono una connessione più umana con la persona
+- obiettivi: cosa cerca di ottenere utilizzando l'interfaccia
+- frustrazioni: quali sono le sfide e i problemi che potrebbe incontrare?
+- comportamenti: Come utilizza il sistema? Quali sono le sue abitudini?
+
+Che vantaggi offrono quindi?
+- Creano empatia verso gli utenti
+- Rende più evidente che non è possibile progettare per tutti, si rischia di non progettare per nessuno.
+- Vedere il mondo con gli occhi dell'utente permette di prendere decisioni più facilmente
+- Misurare l'efficacia del sistema.
+
+# Prototyping
+Serve a simulare alcuni aspetti / funzioni / caratteristiche di un sistema interattivo e lo utilizziamo per valutare l'impatto sugli utenti. Possiamo utilizzarlo per provare e validare delle idee o anche per dare forma ad una versione del progetto, iniziale o finale che sia.
+
+Ci sono diversi approcci al prototyping:
+- Incrementale - Ad ogni prototipo vengono aggiunte nuove funzioni
+- Evolutivo - Ogni prototipo serve come base per il successivo che lo migliora.
+- Throw away - Dopo aver realizzato il prototipo e testato una funzionalità, lo scartiamo.
+
+Ovviamente la creazione di prototipi fa parte di un ciclo dove ogni prototipo viene sottoposto ad una validazione, se non va bene verrà creato un nuovo prototipo altrimenti abbiamo finito.
+In questo ciclo è importante avere:
+- Un buon punto di partenza
+- Capire cosa è sbagliato
+- Ipotizzare come migliorare
+
+I potenziali problemi sono:
+- Tempo
+	- Realizzarli richiede tempo e se vengono scartati può sembrare uno spreco ma in realtà lo stiamo risparmiando, in questo modo non abbiamo valutazioni affrettate e inoltre non abbiamo perso tempo a fare un prototipo molto complesso, per questo è importante farli su carta e semplici.
+- Pianificazione
+	- Utilizzando i prototipi è difficile pianificare un processo di design e valutarne i costi
+- Caratteristiche non funzionali
+	- Sicurezza
+	- Affidabilità
+	- Tempo di risposta
+	- Vengono tutte sacrificate nello sviluppo di un prototipo
+
+É importante, inoltre, fare attenzione a:
+- Non rivedere una decisione iniziale sbagliata
+- Capire le cause dei problemi e non soltanto i loro sintomi
