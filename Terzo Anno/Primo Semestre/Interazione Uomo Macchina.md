@@ -503,6 +503,18 @@ I potenziali problemi sono:
 	- Tempo di risposta
 	- Vengono tutte sacrificate nello sviluppo di un prototipo
 
-É importante, inoltre, fare attenzione a:
+È importante, inoltre, fare attenzione a:
 - Non rivedere una decisione iniziale sbagliata
 - Capire le cause dei problemi e non soltanto i loro sintomi
+
+## Low Fidelity Prototypes
+Un mock-up fatto a mano dell'interfaccia utente, di solito su più fogli di carta di diverse grandezze.
+
+I concetti chiavi per i prototipi sono:
+- Mockup interattivi che mostrano i menù e altri elementi
+- Rappresentare l'interazione, ad esempio schiacciare con il dito equivale ad un click del mouse
+- Non devono essere super fedeli al prodotto finale
+
+Utilizziamo prototipi di carta perché sono più semplici da realizzare, facili da cambiare e portano l'attenzione sul progetto finale (big picture). Inoltre anche i non programmatori possono aiutare.
+
+Come si testa un paper prototype?
