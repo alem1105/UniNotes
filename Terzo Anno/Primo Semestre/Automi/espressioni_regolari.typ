@@ -35,16 +35,16 @@ Possiamo vederle come delle espressioni algebriche, ma definiscono dei linguaggi
     boxed-style: (anchor: (y: horizon, x: left))
   ),
   title: [*Definizione*],
-  [Sia $Sigma$ un alfabeto possiamo definire un'espressione regolare ssu $Sigma$ (denotata con $"re"(Sigma)$) in modo ricorsivo: $ "caso base" cases(emptyset in "re"(Sigma) \ \ epsilon in "re"(Sigma) \ \ a in "re"(Sigma) " con " a in Sigma) $
+  [Sia $Sigma$ un alfabeto possiamo definire un'espressione regolare ssu $Sigma$ (denotata con $"re"(Sigma)$) in modo ricorsivo: $ "caso base" cases(emptyset in "re"(Sigma), epsilon in "re"(Sigma), a in "re"(Sigma) " con " a in Sigma) $
   
-  $ "induzione" cases(R_1 union R_2 " se " R_1\, R_2 in "re"(Sigma) \ \ R_1 circle R_2 " se " R_1\, R_2 in "re"(Sigma) \ \ (R_1)^* " se " R_1 in "re"(Sigma)) $]
+  $ "induzione" cases(R_1 union R_2 " se " R_1\, R_2 in "re"(Sigma), R_1 circle R_2 " se " R_1\, R_2 in "re"(Sigma), (R_1)^* " se " R_1 in "re"(Sigma)) $]
 )
 
 Ogni espressione regolare ha un solo linguaggio associato: $ L(r) " t.c. " r in "re"(Sigma) $
 
-Vediamolo ricorsivamente: $ "caso base" cases(L(r) = emptyset " se " r = emptyset \ \ L(r) = epsilon " se " r = epsilon \ \ L(r)={a} " se " r=a ) $
+Vediamolo ricorsivamente: $ "caso base" cases(L(r) = emptyset " se " r = emptyset, L(r) = epsilon " se " r = epsilon, L(r)={a} " se " r=a ) $
 
-$ "induzione" cases(L(r) = L(R_1) union L(R_2) " se " r = R_1 union R_2 \ \ L(r) = L(R_1) circle L(R_2) " se " r = R_1 circle R_2 \ \ L(r)=(L(R_1))^* " se " r=R_1^* ) $
+$ "induzione" cases(L(r) = L(R_1) union L(R_2) " se " r = R_1 union R_2, L(r) = L(R_1) circle L(R_2) " se " r = R_1 circle R_2, L(r)=(L(R_1))^* " se " r=R_1^* ) $
 
 Qualche esempio:
 - $0^* 1 0^* = {w: w " contiene esattamente un 1"}$

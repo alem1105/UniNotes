@@ -22,7 +22,7 @@ Infatti possiamo semplicemente considerare un NFA che come primo stato ci porta 
 
 - $forall q in Q, a in Sigma_epsilon$:
 
-$ delta(q,a) = cases(delta_1 (q,a) " se " q in Q_1 \ \ delta_2 (q,a) " se " q in Q_2 \ \ {q_0^1 , q_0^2} " se " q=q_0 and a = epsilon \ \ emptyset " se " q = q_0 and a eq.not epsilon) $
+$ delta(q,a) = cases(delta_1 (q,a) " se " q in Q_1, delta_2 (q,a) " se " q in Q_2, {q_0^1 , q_0^2} " se " q=q_0 and a = epsilon, emptyset " se " q = q_0 and a eq.not epsilon) $
 
 == Chiusura per Concatenazione
 
@@ -47,7 +47,7 @@ Formalmente:
 
 - $forall q in Q, forall a in Sigma_epsilon$:
 
-$ delta (q,a) = cases(delta_1 (q,a) " se " q in Q_1 and q in.not F_1 \ \ delta_1 (q,a) " se " q in F_1 and a eq.not epsilon \ \ delta_1 (q,a) union {q_0^2} " se " q in F_1 and a = epsilon \ \ delta_2 (q,a) " se " q in Q_2) $
+$ delta (q,a) = cases(delta_1 (q,a) " se " q in Q_1 and q in.not F_1, delta_1 (q,a) " se " q in F_1 and a eq.not epsilon, delta_1 (q,a) union {q_0^2} " se " q in F_1 and a = epsilon, delta_2 (q,a) " se " q in Q_2) $
 
 == Chiusura per Operazione "\*" star
 
@@ -66,4 +66,4 @@ Formalmente abbiamo $N^*=(Q', Sigma, delta', q_0 ', F')$ e $N=(Q, Sigma, delta, 
 
 - $forall q in Q', forall a in Sigma_epsilon$:
 
-$ delta(q,a) = cases(delta(q,a) " se " q in Q and q in.not F \ \ delta(q,a) " se " q in F and a in.not epsilon \ \ delta(q,a) union {q_0} " se " q in F and a = epsilon \ \ {q_0} " se " q = q_0 ' and a = epsilon \ \ emptyset " se " q=q_0 ' and a eq.not epsilon) $
+$ delta(q,a) = cases(delta(q,a) " se " q in Q and q in.not F, delta(q,a) " se " q in F and a in.not epsilon, delta(q,a) union {q_0} " se " q in F and a = epsilon, {q_0} " se " q = q_0 ' and a = epsilon, emptyset " se " q=q_0 ' and a eq.not epsilon) $
