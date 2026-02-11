@@ -37,3 +37,4 @@
 #include "caching.typ"
 #include "gpu_programming.typ"
 #include "memoryType.typ"
+#include "dataStructureOrganization.typ"
