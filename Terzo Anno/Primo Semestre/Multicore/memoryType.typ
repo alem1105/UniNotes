@@ -6,7 +6,7 @@
 #codly(languages: codly-languages)
 #show raw: set text(font: "Cascadia Code")
 
-= Memory Type
+== Memory Type
 Esistono diversi tipi di memorie:
 
 #align(center, image("img/memorie.png"))
@@ -35,7 +35,7 @@ Esistono diversi tipi di memorie:
   ]
 )
 
-== Registri
+=== Registri
 Servono a memorizzare le variabili locali dei threads, i registri sono condivisi fra i threads dello stesso core. La *compute capability* determina il numero massimo di registri che possono essere usati da un thread, se questo numero viene superato allora le variabili locali sono allocate nella global off-chip memory che è molto più lenta, anche se alcuni variabili potrebbero comunque trovarsi sulla cache L1. É il compilatore che deciderà quali variabili allocare nei registri e quali nella memoria.
 
 Il numero massimo di registri utilizzabili da un thread influenza anche il numero massimo di *resident thread* che possiamo avere in un SM.
@@ -55,7 +55,7 @@ L'occupancy di una kernel può essere analizzata con un profiler, ma come faccia
 - Riduciamo il numero di registri richiesti dalla kernel, ad esempio riducendo il numero di variabili o riutilizzandone alcune.
 - Usare una GPU con più registri per thread.
 
-== Constant Memory
+=== Constant Memory
 É importante ricordare che `Constant Memory != ROM`, la constant memory è soltanto una memoria che può contenere i valori delle costanti, su questa memoria ci scrive l'host. I vantaggi principali sono:
 - Ha una cache
 - Supporta il broadcast di un singolo valore a tutti i threads nello stesso warp
@@ -90,7 +90,7 @@ I dati saranno presenti in memoria fino alla terminazione dell'applicazione, que
   ]
 )
 
-== Performance Estimation
+=== Performance Estimation
 In che modo possiamo stimare le performance per capire se stiamo sfruttando al massimo la *computational capabilities*?
 - `FLOP/s` (floating point operations per second), ma va specificato che tipo di floating-point 64bit, 32bit, 16bit...
 - Oggi abbiamo sistemi capaci di gestire fino a 1 ExaFLOP/s ($10^(18) "FLOP/s"$)
@@ -104,7 +104,7 @@ Se prendiamo ad esempio l'operazione: `pixVal += in[curRow * w + curCol];`
 
 Definiamo *compute-to-global-memory-access ratio* come il numero di operazioni floating-point eseguite per ogni accesso nella memoria globale in una regione di programma. É anche conosciuta come la *arithmetic / operational intensity* misurata in FLOP/byte.
 
-== Shared Memory
+=== Shared Memory
 I dati presenti nella shared memory sono condivisi fra tutti i threads. Possiamo utilizzarla, ad esempio, per:
 - Memorizzare i dati usati molto frequentemente che altrimenti richiederebbero una memoria globale.
 - Un modo per condividere i dati fra cores dello stesso SM.
@@ -199,7 +199,7 @@ __global__ void stencil_1d(int *in, int *out) {
   ]
 )
 
-== Pinned Memory
+=== Pinned Memory
 Per trasferire i dati CPU - GPU durante le `cudaMemcpy()` viene utilizzato il *DMA (Direct Memory Access)*, in questo modo:
 - La CPU rimane libera per eseguire altre tasks.
 - Utilizza connessioni come le PCIe.
@@ -234,7 +234,7 @@ Per posizionare dati nella pinned memory:
 
 Il guadagno qui dipende dalla grandezza dei dati, possiamo andare da un miglioramento del 10% fino a un 2.5x !!
 
-== Bank Conflicts in Shared Memory
+=== Bank Conflicts in Shared Memory
 La memoria virtuale è organizzata in *banks*:
 
 #image("./img/banksmem.png")
@@ -266,13 +266,13 @@ Dobbiamo cercare di evitare che threads nello stesso warp accedano, nello stesso
   ]
 )
 
-== Global Memory Coalescing
+=== Global Memory Coalescing
 Quando un thread accede ad una locazione di memoria in realtà vengono lette più locazione, simile a quando viene caricato un intero blocco di dati nella cache.
 Quando tutti i threads in un warp eseguono una lettura l'hardware controlla se stanno accedendo a locazioni contigue di memoria, se questo accade allora viene effettuato un solo accesso.
 
 Ad esempio, se in un warp il Thread 0 accede alla locazione N, il Thread 1 alla locazione N+1 ecc... allora tutti questi accessi verranno effettuati in un singolo accesso. Alcuni device CUDA potrebbero richiedere degli allineamenti, ad esempio che N sia multiplo di 16.
 
-== Global Memory Access
+=== Global Memory Access
 Esistono due tipi di load:
 - Cached loads:
   - Sono quelli utilizzati di default dai dispositivi che hanno una L1.
