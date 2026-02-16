@@ -214,7 +214,7 @@ func main() {
 }
 ```
 
-== Deeper
+== Defer
 Questa keyword serve a posticipare l'esecuzione di una funzione fino a quando la funzione che la racchiude non ritorna.
 
 Gli argomenti della funzione `defer` vengono valutati immediatamente ma la chiamata alla funzione è posticipata. Queste istruzioni marcate da `defer` vengono eseguite in ordine *LIFO (Last In, First Out)* quindi l'ultima posticipata viene eseguita per prima.
