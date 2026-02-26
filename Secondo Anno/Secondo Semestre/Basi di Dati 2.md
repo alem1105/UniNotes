@@ -1,3 +1,9 @@
+
+> [!Danger] APPUNTI NON COMPLETI
+> IL CORSO È PRATICAMENTE TUTTO PRATICO, CI STA QUALCHE PATTERN MA BISOGNA FARE ESERCIZI
+
+---
+
 Impareremo a progettare applicazioni di basi di dati reali e di grandi dimensioni che sono impossibili da definire direttamente in un DBMS, va quindi investito molto tempo nella comprensione dei dati. Non esistono soluzioni uniche, si fanno delle scelte e si arriva ad una soluzione completa.
 
 # Contesto Organizzativo

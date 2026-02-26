@@ -2,4 +2,3 @@
 - [[BD1 - Organizzazione Fisica]]
 - [[BD1 - Concorrenza]]
 - [[BD1 - Ripasso Orale - 3NF]]
-- 

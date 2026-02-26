@@ -1,3 +1,9 @@
+
+> [!Danger] APPUNTI NON COMPLETI
+> CONSIGLIO DI PRENDERGLI DA [AGLAIA](https://github.com/AglaiaNorza/notes-ig)
+
+---
+
 # Ripasso Teoria degli Insiemi
 Possiamo vedere un insieme in modo generico come una **collezione di elementi**, per rappresentarli possiamo o descrivere chi ci appartiene o enumerare tutti gli elementi:
 

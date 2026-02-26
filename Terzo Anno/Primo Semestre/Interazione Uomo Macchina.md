@@ -1,3 +1,8 @@
+
+> [!Danger] APPUNTI NON COMPLETI
+> DATO IL CORSO MOLTO PRATICO NON HO FINITO GLI APPUNTI
+
+---
 # Introduzione e storia delle User Interface
 
 La **User Interface** è dove avviene l'interazione fra l'utente e la macchina, l'obiettivo dell'interfaccia è quello di permettere il controllo della macchina e fornire feedback all'utente per migliorare le decisione future.

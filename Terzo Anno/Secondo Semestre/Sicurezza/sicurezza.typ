@@ -1,21 +1,21 @@
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/fontawesome:0.6.0": *
-#import "@preview/xarrow:0.3.1": xarrow
+#import "@preview/codly:1.2.0": *
+#import "@preview/codly-languages:0.1.8": *
+#show: codly-init.with()
+#codly(languages: codly-languages, zebra-fill: none)
+#show raw: set text(font: "Cascadia Code")
 
+#codly()
 #import "@preview/ilm:1.4.1": *
 
 #set text(lang: "it")
-#show raw: set text(font: "Cascadia Code")
-
-#let nonumeq = math.equation.with(block: true, numbering: none)
-#let dm(x) = box[#nonumeq[#x]]
-#let dfrac(x,y) = math.frac(dm(x),dm(y))
 
 #show: ilm.with(
-  title: [Linguaggi di Programmazione],
+  title: [Sicurezza],
   author: "Alessio Marini, 2122855",
   date: datetime(year: 2025, month: 09, day: 27),
-  abstract: [Appunti presi durante il corso di *Linguaggi di Programmazione* nell'anno *2025/2026* del professsore Pietro Cenciarelli. \ 
+  abstract: [Appunti presi durante il corso di *Sicurezza* nell'anno *2025/2026* del professore Emiliano Casalicchio. \ 
   Gli appunti li scrivo principalmente per rendere il corso più comprensibile *a me* e anche per imparare il linguaggio Typst. Se li usate per studiare verificate sempre le informazioni 🙏🏻. \ \
   *Contatti*: \
   #fa-icon("github") #link("www.github.com/alem1105")[alem1105]\
@@ -29,7 +29,5 @@
 
 #set math.equation(numbering: none)
 
-#include "algebre.typ"
-#include "espressioni.typ"
-#include "fun.typ"
-#include "imp.typ"
+#include "cia.typ"
+#include "cryptographicTools.typ"
