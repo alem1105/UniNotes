@@ -1,0 +1,5 @@
+- Python
+- Image processing framework: OpenCV
+- Machine Learning framework: Scikit learn
+- Deep Learning framework: Pytorch
+- Jupyter Notebook
