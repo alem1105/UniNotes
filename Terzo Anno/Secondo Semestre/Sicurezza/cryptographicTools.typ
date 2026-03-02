@@ -143,7 +143,7 @@ Per firma digitale intendiamo gli algoritmi che ci permettono di verificare l'au
 
 L'idea è quella di creare un pacchetto di dati che accompagna il messaggio. Per fare questo vengono utilizzati algoritmi di cifratura e i 3 più importanti sono _DSA_, _RSA_ e _Algoritmi a curva ellittica ECDSA_.
 
-#align(center, image("/assets/image-14.png", width: 80%))
+#align(center, image("/assets/image-14.png", width: 60%))
 
 Il mittente deve:
 - Calcolare l'hash del messaggio.
@@ -173,13 +173,13 @@ Ma come si crea un certificato?
 5. La CA allega la firma digitale al certificato non verificato.
 6. Invia il certificato verificato all'utente
 
-#align(center, image("/assets/image-15.png", width: 80%))
+#align(center, image("/assets/image-15.png", width: 50%))
 
 Adesso il certificato potrà essere pubblicato dall'utente e chiunque può verificarlo utilizzando la chiave pubblica della CA, nello specifico:
 1. L'utente calcola l'hash del certificato (senza la firma).
 2. Tramite la chiave pubblica della CA decifra la firma e verifica che combacia con l'hash ottenuto.
 
-#align(center, image("/assets/image-16.png", width: 80%))
+#align(center, image("/assets/image-16.png", width: 50%))
 
 Lo standard per la formattazione dei certificati è X.509
 

@@ -44,7 +44,7 @@ In questa struttura dobbiamo tenere a mente che:
 
 A ogni round il testo viene diviso in due parti uguali, la funzione _F_ prende in input la parte destra ed effettua delle sostituzioni, l'output della funzione viene poi messo in _XOR_ con la parte sinistra del testo. A questo punto viene effettuata una sostituzione tra le due parti ovvero mettiamo quella sinistra a destra e quella di destra a sinistra, in questo modo il round successivo effettua le stesse operazioni perché si troverà a destra la parte non cifrata e a sinistra quella cifrata.
 
-#align(center, image("/assets/image-19.png", width: 80%))
+#align(center, image("/assets/image-28.png", width: 50%))
 
 Per progettare una struttura di cifrario a blocchi dobbiamo considerare diversi parametri:
 - *Block Size*: Se il blocco è grande ho più sicurezza ma meno velocità nelle operazioni, un tradeoff ottimale è 128-bit.
@@ -67,11 +67,12 @@ Per progettare una struttura di cifrario a blocchi dobbiamo considerare diversi 
     align: center,
     boxed-style: (anchor: (y: horizon, x: left))
   ),
-  title: [*Calcolareryptanalysis*],
+  title: [*Cryptanalysis*],
   [
     Processo utilizzato per cercare di scoprire il testo in chiaro o la chiave, sfruttando soltanto la conoscenza dell'algoritmo di cifratura, conoscendo quest'ultimo ed i suoi punti deboli si cerca di risalire al testo in chiaro.
   ]
 )
+
 ==== DES - Data Encryption Standard
 Il DES era un algoritmo complesso da analizzare.
 
@@ -98,29 +99,47 @@ Per effettuare una cifratura con 3DES si applica:
 Mentre per la decifratura:
 - $P = D(K_1, E(K_2, D(K_3, C)))$
 
+_Graficamente_:
+
+#align(center, image("/assets/image-29.png", width: 50%))
+
 Utilizzare la funzione di decifratura come secondo step in 3DES non offre vantaggi in termini di crittografia ma permette la retrocompatibilità con il DES classico, o meglio permette a chi usa 3DES di decriptare anche messaggi cifrati con DES.
 
 Per migliore sicurezza si è passati poi all'AES.
 
 ==== AES - Advanced Encryption Standard
-- Blocchi da 128-bits e chiavi da 128-192-256-bits.
-- L'input delle funzioni di cifratura e decifratura sono blocchi singoli da 128-bits, questi vengono rappresentati in una matrice 4x4 con un byte su ogni cella (16 byte = 128bits). La matrice durante il processo viene copiata nello *State Array* che viene modificato ad ogni passo.
-- La chiave viene estesa in un array per lo schedule delle key words. Ogni word è composta da 4 bytes e per una chiave da 128bit generiamo 44 words, abbastanza da coprire ogni round (dato che in un round usiamo 4 words per generare una sottochiave)
-- L'ordine con cui leggere le matrici è seguendo le colonne, quindi:
+AES utilizza blocchi da 128-bits e chiavi da 128, 192 o 256-bits, negli esempi più avanti la assumiamo da 128.
+È strutturato in questo modo:
 
-  #align(center, image("/assets/image-21.png", width: 50%))
+Vuole come input un blocco da 128-bit, questo blocco viene rappresentato come una matrice di byte. Durante l'esecuzione dell'algoritmo, questo blocco viene copiato nello *State array* che viene modificato ad ogni stage di cifratura o decifratura. Dopo l'ultimo stage l'array viene copiato in una matrice di output.
+Anche la chiave viene rappresentata in una matrice di bytes, questa chiave viene estesa in un array di words, ogni words è composta da 4 bytes e l'array in totale contiene 44 words, ovviamente aumentando i bit della chiave aumentiamo anche le words nell'array.
 
-Quindi, ricapitolando, abbiamo due matrici ordinate in questo modo una per le chiavi da utilizzare e una per il testo.
+L'ordine usato nelle matrici è per colonne, quindi ad esempio i primi 4 bytes del plaintext occuperanno la prima colonna della matrice:
+#align(center, image("/assets/image-21.png", width: 50%))
 
 In questo algoritmo i round:
 - Non seguono architettura Feistel.
-- Hanno tutti lo stesso tipo e numero di operazioni tranne l'ultimo round della cifratura e il primo della decifratura.
-- Abbiamo una chiave iniziale da cui vengono generate sottochiavi. (come visto prima)
+- La chiave iniziale viene estesa in un array di 44 words da 32bit, 4 words (128 bit) costituiscono una chiave utilizzabile in un round.
+- Vengono utilizzati 4 diversi stage, 1 di permutazione e 3 sostituzioni:
+  - *Substitute bytes*: Utilizza delle tabelle per fare sostitutizioni byte-a-byte.
+  - *Shift Rows*: Permutazione effettuata sulle righe.
+  - *Mix Columns*: Sostituzione che altera ogni byte in una colonna andandoli a smistare sulle restanti colonne.
+  - *Add Round Key*: Un semplice _XOR_ del blocco corrente con la chiave del round corrente.
 
-#align(center, image("/assets/image-20.png", width: 80%))
+#align(center, image("/assets/image-30.png", width: 50%))
 
-Vediamo le operazioni da svolgere in ogni round, partiamo da questa situazione:
+La struttura è relativamente semplice sia per la cifratura che la decifratura.
+La cifratura inizia con una _Add Round Key_ seguita da 9 round contenenti tutti gli stage visti sopra, seguiti infine da un round di tre stage.
 
+Nella figura sono rappresentati tutti gli stage di un round:
+
+#align(center, image("/assets/image-31.png", width: 80%))
+- Solo lo stage _Add Round Key_ utilizza la chiave e per questo viene svolto all'inizio e alla fine della cifratura, tutti gli altri stage applicati all'inizio o alla fine sono invertibili senza conoscenza della chiave e non aggiungerebbero sicurezza.
+- Anche gli altri sono utili però perchè servono a creare confusione nei dati, ma come detto prima da soli non bastano perchè non utilizano la chiave.
+- L'algoritmo di decifratura utilizza le funzioni inverse degli stage e per la chiave basta fare lo _XOR_ come per la cifratura, inoltre va anche utilizzata la chiave estesa ma in ordine inverso.
+- Dato che tutti gli stage sono invertibili, noteremo che allo stesso _livello verticale_ nello _state array_ avremo sempre lo stesso array.
+
+Vediamo adesso i principali passaggi:
 #align(center, image("/assets/image-22.png", width: 80%))
 
 1. Effettuiamo una *Substitute Bytes*, una sostituzione byte a byte del blocco attraverso una tabella. Ovviamente esiste anche la matrice per la decifratura e queste due devono essere progettate in modo che ci sia poca correlazione fra byte in input e di output. Inoltre non deve essere possibile definire una relazione matematica per capire l'output dall'input.
@@ -156,7 +175,7 @@ In questa operazione prendiamo in input i 4 byte di una colonna e otteniamo in o
 
 Per quanto riguarda l'algoritmo di espansione della chiave:
 - Ha come input la chiave composta da 4 words, ovvero 16bytes (128-bits).
-- Restituisce come output un vettore da 44 words ovvero 176bytes, questo è sufficiente per garantire il numero di chiavi necessario per tutti i round.
+- Restituisce come output un vettore da 44 words ovvero 156bytes, questo è sufficiente per garantire il numero di chiavi necessario per tutti i round.
 
 Queste bastano per tutto l'algoritmo dato che le prime 4 word vengono usate per il primo _Add Round Key_ e le restanti 40 nei successivi 10 round.
 Ovviamente all'aumentare della lunghezza della chiave aumentano anche i round.
@@ -168,7 +187,7 @@ Esistono diversi complessi algoritmi _finite-field_ per generare questa chiave e
 
 Nello specifico otteniamo:
 
-#align(center, image("/assets/image-27.png", width: 80%))
+#align(center, image("/assets/image-27.png", width: 70%))
 
 === Stream Ciphers
 La cifratura a flusso va a cifrare i byte continuamente, dobbiamo generare sequenze di chiavi che cambiano continuamente, non possiamo cifrare ogni byte con la stessa chiave.
@@ -194,41 +213,35 @@ Data una chiave, viene generata sempre la stessa sequenza di chiavi per i succes
 )
 
 ==== RC4
-Un algoritmo che ha:
-  - Dimensione della chiave variabile da 128-192-256-bits.
-  - Estremamente veloce.
-  - Si basa su permutazioni casuali.
+È un algoritmo estremamente semplice, utilizza una chiave di lunghezza variabile da 1 a 256bytes (da 8 a 2048bits) che viene usata per inizializzare lo *state array* _S_ di 256-byte.
+In ogni momento dell'algoritmo avremo che _S_ contiene una permutazione di tutti i numeri a 8 bit ovvero di tutti i numeri da 0 a 255.
+Per la cifratura e decifratura, un byte _k_ viene generato da _S_ selezionando una delle 255 entries, ad ogni valore _k_ selezionato viene effettuata una nuova permutazione dei valori di _S_.
 
 Si compone di diverse fasi
-- *Inizializzazione*: Si prende la chiave e viene utilizzata per inizializzare un vettore _S_ di 256byte, se la chiave è lunga 256 viene usata tutta, se più piccola viene ripetuta.
-- Questo vettore conterrà sempre una permutazione dei bit della chiave.
-- Per cifrare e decifrare, viene generato un byte _k_ dal vettore _S_ selezionandolo a caso.
-- Ad ogni valore generato viene effettuata una permutazione su _S_.
-
-La chiave viene anche copiata su un array _T_, infatti se la chiave è più piccola di _S_ allora viene ripetuta in _T_ altrimenti se di uguale grandezza avremo _T_ ed _S_ uguali con al loro interno soltanto la chiave.
-
-*Inizializzazione*:
+- *Inizializzazione*: Viene inizializzato un array _S_ con tutti i valori da 0 a 255 in modo che `S[0] = 0, S[1] = 1, ..., S[255] = 255`.
+Viene anche inizializzato anche un vettore _T_, se la lunghezza della chiave _K_ è 256bytes allora _K_ viene trasferita su _T_, altrimenti per una chiave di lunghezza _keylen_ bytes, i primi _keyleb_ bytes di _K_ vengono copiati in _T_ e poi _K_ viene ripetuta tante volte quanto necessario per riempire _T_. Possiamo riassumere questa operazione con il seguente pseudocodice:
 ```
 for i = 0 to 255 do
 S[i] = i;
 T[i] = K[i mod keylen]
 ```
 
-Effettuo la *prima permutazione*:
+#align(center, image("/assets/image-32.png", width: 80%))
+
+Viene poi effettuata la *prima permutazione*:
 Per fare questa utilizziamo _T_, scorriamo tutto _S_ e per ogni `S[i]` lo swappiamo con un altro byte in _S_ basandoci sullo schema fornito da `T[i]`. Nello specifico:
 
 ```
 j = 0;
 for i = 0 to 255 do
-j = (j + S[i] + T[i]) mod 256;
-Swap (S[i], S[j]);
+  j = (j + S[i] + T[i]) mod 256;
+  Swap (S[i], S[j]);
 ```
 
-Iniziamo la *generazione delle chiavi*:
-Si scorre tutto l'array _S_ e per ogni elemento si swappa `S[i]` con un altro byte di _S_ seguendo _S_ stesso, se si raggiunge il massimo si rinizia dall'elemento 0.
-- Per cifrare, si fa uno _XOR_ del valore _k_ con l'elemento successivo del plaintext.
-- Per decifrare, si fa uno _XOR_ di _k_ con l'elemento successivo nel ciphertext.
+#align(center, image("/assets/image-33.png", width: 80%))
 
+Iniziamo la *generazione delle chiavi*:
+A questo punto la chiave non è più necessaria e la generazione avviene ciclando su _S_ e per ogni elemento `S[i]` lo swappiamo con un altro elemento di _S_ basandoci sulla corrente configurazione di _S_. Se raggiungiamo l'elemento in posizione 255 torniamo a 0. Possiamo usare il seguente pseudocodice:
 ```
 i, j = 0;
 while (true)
@@ -239,3 +252,6 @@ while (true)
   k = S[t];
 ```
 
+#align(center, image("/assets/image-34.png", width: 80%))
+
+Per cifrare effettuiamo uno _XOR_ del valore _k_ con il successivo byte del plaintext mentre per decifrare usiamo sempre lo _XOR_ del valore _k_ con il byte successivo del ciphertext.
