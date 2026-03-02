@@ -133,5 +133,85 @@ Tra i principali algoritmi a chiave asimmetrica troviamo:
   title: [*Vero vantaggio della chiave asimmetrica*],
   [
     La crittografia asimmetrica è *computazionalmente lentissima* rispetto a quella simmetrica, nel mondo reale infatti viene si utilizzata ma soltanto all'inizio delle comunicazioni per scambiare in modo sicuro una chiave segreta temporanea simmetrica, dopo questo scambio il resto della comunicazione avviene con cifratura simmetrica tramite AES.
+
+    _Si vede più avanti_
   ]
 )
+
+== Digital Signatures
+Per firma digitale intendiamo gli algoritmi che ci permettono di verificare l'autenticità del mittente di un messaggio, la sua integrità e la non repudiabilità.
+
+L'idea è quella di creare un pacchetto di dati che accompagna il messaggio. Per fare questo vengono utilizzati algoritmi di cifratura e i 3 più importanti sono _DSA_, _RSA_ e _Algoritmi a curva ellittica ECDSA_.
+
+#align(center, image("/assets/image-14.png", width: 80%))
+
+Il mittente deve:
+- Calcolare l'hash del messaggio.
+- Cifriamo l'hash appena ottenuto.
+- Inviare il messaggio in chiaro insieme all'hash cifrato.
+
+Il destinatario, per leggere il messaggio deve:
+- Effettuare l'hash del messaggio in chiaro.
+- Decifrare tramite la chiave pubblica del mittente l'hash ricevuto.
+- Verificare che i due hash combacino.
+
+Il problema principale in questo tipo di algoritmi è che qualcuno potrebbe essersi finto Bob quando ha pubblicato la sua chiave pubblica. Come risolviamo questo problema? utilizziamo un *certificato a chiave pubblica*.
+
+I certificati a chiave pubblica sono composti da:
+- La chiave pubblica da distribuire.
+- Informazioni sul possessore di questa chiave (ID)
+- Informazioni sul verificatore dell'identità che chiamiamo *Certification Authority (CA)* (Aruba, Infocert, PosteItaliane ...), ovvero un'entità fidata che si occupa di verificare l'appartenenza delle chiavi.
+- Periodo di validità di questo certificato.
+
+Ma come si crea un certificato?
+1. L'utente crea la coppia di chiavi, una pubblica e una privata. 
+2. Prepara un certificato non verificato che include il suo ID e la sua chiave pubblica.
+3. Fornisce questo certificato ad una CA in *modo sicuro*.
+4. La CA crea il certificato seguendo questi passaggi:
+  - Usa una funzione hash su tutto il certificato.
+  - Genera una firma digitale utilizzando la propria chiave privata.
+5. La CA allega la firma digitale al certificato non verificato.
+6. Invia il certificato verificato all'utente
+
+#align(center, image("/assets/image-15.png", width: 80%))
+
+Adesso il certificato potrà essere pubblicato dall'utente e chiunque può verificarlo utilizzando la chiave pubblica della CA, nello specifico:
+1. L'utente calcola l'hash del certificato (senza la firma).
+2. Tramite la chiave pubblica della CA decifra la firma e verifica che combacia con l'hash ottenuto.
+
+#align(center, image("/assets/image-16.png", width: 80%))
+
+Lo standard per la formattazione dei certificati è X.509
+
+== Digital Envelope
+Utilizzare algoritmi a chiave asimmetrica è molto pesante dal punto di vista delle prestazioni.
+Per allegerire il sistema ma mantenere comunque una trasmissione sicura viene utilizzata una chiave asimmetrica per scambiare una chiave simmetrica che verrà poi utilizzata per il resto della conversazione.
+
+Questo metodo di cifratura non viene utilizzato solo per questo ma in generale per scambiare messaggi cifrati con chiave simmetrica.
+
+I passaggi da seguire sono:
+1. Si prepara il messaggio da inviare.
+2. Generiamo una chiave simmetrica casuale che verrà usata soltanto in questa comunicazione.
+3. Si cifra il messaggio utilizzando la chiave simmetrica appena generata.
+4. Si cifra la chiave simmetrica utilizzando la chiave pubblica del destinatario.
+5. Si allega la chiave cifrata al messaggio cifrato e si invia.
+
+#align(center, image("/assets/image-17.png", width: 80%))
+
+Quindi il destinatario per leggere il messaggio dovrà semplicemente decifrare prima la chiave simmetrica e poi con questa il messaggio.
+Ovviamente per garantire autenticità si possono utilizzare i certificati visti prima.
+
+#align(center, image("/assets/image-18.png", width: 80%))
+
+== Random Numbers
+Vengono usati moltissimo nel mondo della crittografia in algoritmi a chiave pubblica o cifratura a flusso ma anche per generare token per sessioni o altro ...
+
+Quali caratteristiche devono soddisfare?
+- *Randomness*
+  - *Uniform Distribution*: La frequenza con cui un determinato numero viene generato deve essere _circa_ la stessa per ogni numero.
+  - *Independence*: Non deve essere possibile prevedere la sequenza di numeri che vengono generati. (È difficile da provare)
+- *Unpredictability*
+  - Ogni numero è statisticamente indipendente dagli altri numeri della sequenza. Un attaccante non deve essere in grado di predirre i numeri futuri basandosi su quelli usciti.
+
+Generare numeri completamente casuali in informatica è molto difficile e per questo si generano, invece, dei numeri detti *pseudocasuali* ovvero delle sequenze di numeri che soddisfano dei *test di randomicità*.
+Per generare questi numeri ci si basa su delle fonti non deterministiche o in generale eventi fisici, ad esempio gli *Hardware RNG* ovvero delle statistiche della macchina come la temperatura, il jitter dei circuiti o i quantum effects.
