@@ -255,3 +255,173 @@ while (true)
 #align(center, image("/assets/image-34.png", width: 80%))
 
 Per cifrare effettuiamo uno _XOR_ del valore _k_ con il successivo byte del plaintext mentre per decifrare usiamo sempre lo _XOR_ del valore _k_ con il byte successivo del ciphertext.
+
+== Block Cipher Mode Operation
+Gli algoritmi con chiave simmetrica e a blocchi processano un blocco alla volta, quindi quando il testo è più lungo è necessario spezzarlo in più blocchi. Possiamo applicare i block cipher in 5 *modes of operation* individuate dal NIST:
+
+#align(center, image("/assets/image-35.png", width: 80%))
+
+=== Electronic Codebook Mode (ECB)
+È il metodo più semplice, infatti se i blocchi hanno dimensione _b_ bits allora processiamo il testo _b_ bits alla volta cifrandoli sempre con la stessa chiave.
+Per messaggi molto lunghi questa tecnica non è molto sicura infatti se ci sono ripetizioni nel testo queste avranno la stessa cifratura; oppure se il messaggio è molto strutturato potrebbe essere possibile effettuare cryptanalysis, ad esempio se ogni pagina inizia con gli stessi header abbiamo già delle combinazioni che possiamo sfruttare.
+
+Per risolvere questo problema abbiamo bisogno di una tecnica che, anche se troviamo blocchi uguali, produce una cifratura diversa.
+
+=== Cipher Block Chaining Mode (CBC)
+In questa modalità di cifratura a blocchi l'input dell'algoritmo è lo _XOR_ del blocco in plaintext corrente e il precedente blocco cifrato, viene comunque utilizzata la stessa chiave.
+
+#align(center, image("/assets/image-36.png", width: 80%))
+
+Per la decifratura ogni blocco cifrato viene passato all'algoritmo, il risultato viene messo in _XOR_ con il precedente blocco cifrato per produrre il blocco in chiaro.
+
+Per capire come funziona e soprattutto dimostrare il funzionamento possiamo scrivere: $ C_j = E(K, [C_(j-1) xor P_j]) $
+
+Dove $E[K,X]$ è la funzione di cifratura effettuata sul blocco $X$ utilizzando la chiave $K$. Continuiamo la dimostrazione scrivendo:
+
+$ D(K, C_j) = D(K, E(K, [C_(j-1) xor P_j])) \ D(K,C_j) = C_(j-1) xor P_j \ C_(j-1) xor D(K, C_j) = C_(j-1) xor C_(j-1) xor P_j = P_j $
+
+Per produrre il primo blocco cifrato abbiamo bisogno di un *initilization vector* (IV) con cui effettuare lo _XOR_ con il primo blocco di plaintext. Per la decifratura facciamo lo stesso ragionamento quindi il vettore IV viene messo in _XOR_ con l'output dell'algoritmo di decifratura per recuperare il primo blocco di plaintext.
+Il vettore IV deve essere noto a mittente e destinatario e per avere più sicurezza possiamo proteggere anch'esso con una chiave. Possiamo farlo mandando il vettore usando cifratura ECB.
+Perché è importante proteggere IV? Perché anche se un attaccante non conosce la chiave ma riesce a leggere e modificare IV può modificare il primo blocco del messaggio, infatti: $ C_1 = E(K, [I V xor P_1]) \ P_1 = I V xor D(K, C_1) $
+
+Adesso usiamo la notazione $X[j]$ per indicare il bit in posizione $j$: $ P_1[i] = I V[i] xor D(K, C_1)[i] $
+
+E utilizzando la proprietà dello _XOR_: $ P_1[i]' = I V[i]' xor D(K, C_1)[i] $
+
+Dove la notazione con <'> indica il complemento, questo significa che se un attccante può modificare i bit in IV allora può modificare anche i bit nel primo blocco senza conoscere la chiave.
+
+==== *Propagazione degli errori*
+In ECB se avviene un errore di trasmissione nel testo cifrato, solo il corrispondente blocco in chiaro viene compromesso.
+In CBC l'errore si propaga, se avviene un errore in $C_k$ allora corrompe sicuramente anche $P_k$ e $P_(k+1)$, ma corrompe anche i successivi?
+
+No, supponiamo $C_k$ corrotto e notiamo come il blocco in chiaro $P_(k+2)$ dipenda soltanto da $C_(k+1)$ e $C_(k+2)$:
+- $C'_k eq.not C_k$ corrotto
+- $P_k = C_(k-1) xor D(K, C_k)$ corrotto
+- $P_(k+1) = C_k xor D(K, C_(k+1))$ corrotto
+- $P_(k+2) = C_(k+1) xor D(k, C_(k+2))$ non corrotto
+
+Se invece c'è un errore nella versione originale di $P_k$? Attraverso quanti blocchi si propaga l'errore? Che effetti nota il destinatario?
+Un errore in $P_k$ corrompe $C_k$ ma dato che $C_k$ è l'input per calcolare $C_(k+1)$ anche quest'ultimo viene corrotto. Questo errore viene portato avanti in modo indefinito su tutti i blocchi cifrati successivi a $C_k$.
+Alla fine della ricezione però l'algoritmo di decifratura ricostruisce il messaggo corretto per tutti i blocchi ad eccezione del blocco contentente l'errore.
+
+_Cifratura (sempre corrotti)_
+
+- $P'_k eq.not P_k$
+- $C_k = E(K, [C_(k-1) xor P'_k])$
+- $C_(k+1) = E(K, [C_k xor P_(k+1)])$
+- $C_(k+2) = E(K, [C_(k+1) xor P_(k+2)])$
+
+_Decifratura_
+
+- $P_k = C_(k-1) xor D(K, C_k) = C_(k-1) xor C_(k-1) xor P'_k$ corrotto
+- $P_(k+1) = C_k xor D(K, C_(k+1)) = C_k xor C_k xor P_(k+1)$ ok
+- $P_(k+2) = C_(k+1) xor D(K, C_(k+2)) = C_(k+1) xor C_(k+1) xor P_(k+2)$ ok
+
+=== Cipher Feedback Mode (CFB)
+Con questa modalità possiamo convertire qualsiasi block cipher in uno stream cipher.
+
+#align(center, image("/assets/image-37.png", width: 80%))
+
+Nell'immagine sopra viene assunta come unità di trasmissione $s$, di solito sono 8 bits.
+Anche qui il plaintext viene concatenato nella funzione, quindi il testo cifrato di ogni unità di testo in chiaro è in funzione dell'unità precedente.
+
+La funzione di cifratura prende in input uno shift di $b$ bit che per la prima unità viene applicato ad un vettore IV, i $s$ bit più significativi del risultato della funzione vengono messi in _XOR_ con la prima unità di plaintext $P_1$ per produrre la prima unità di testo cifrato $C_1$ che verrà trasmessa. Il contenuto dello shift register viene shiftato a sinistra di $s$ bits e $C_1$ viene piazzato negli $s$ bits più a destra del registro. Questo processo continua finché non vengono cifrate tutte le unità di plaintext.
+
+Per la decifratura viene utilizzato lo stesso schema, l'unica differenza è che le unità di testo cifrato ricevute vengono messe in _XOR_ con l'output che viene prodotto dalla funzione di cifratura.
+
+=== Counter Mode (CTR)
+
+#align(center, image("/assets/image-38.png", width: 80%))
+
+Viene utilizzato un _counter_ che corrisponde alla grandezza dei blocchi del plaintext, l'unico requisito è che il valore counter sia diverso per ogni blocco plaintext che viene cifrato. Di solito questo valore viene inizializzato e poi incrementato ogni volta di 1.
+Per la cifratura viene cifrato il counter e poi messo in _XOR_ con il blocco in chiaro, per la decifratura viene usato il processo inverso.
+
+Questa tecnica presenta diversi vantaggi:
+- *Hardware Effiency*: Questa tecnica può essere utilizzata in parallelo su più blocchi.
+- *Software Efficiency*: Praticamente uguale a quella hardware, abbiamo molte opportunità per sfruttare il parallelismo ad esempio con processori che utilizzano istruzioni SIMD.
+- *Preprocessing*: La cifratura non dipende dall'input, questo significa che se abbiamo abbastanza memoria possiamo precalcolarci dei valori per poi effettuare solo gli _XOR_ quando arriva l'input.
+- *Random Access*: L'i-esimo blocco del testo in chiaro o del testo cifrato può essere processato senza dipendenze temporali da altri blocchi.
+- *Provable Security*: È dimostrato essere sicuro quanto le altre tecniche di block cipher.
+- *Simplicity*: A differenza di ECB e CBC, il CTR ha bisogno soltanto di implementare un algoritmo di cifratura e non di decifratura.
+
+== Cryptanalysis
+Il processo con il quale un attaccante ricava delle informazioni su un messaggio o una chiave.
+La strategia dell'attaccante dipende da:
+- Algoritmo di cifratura
+- Informazioni a disposizione dell'attaccante (cosa viene inviato nel messaggio o altro)
+
+Ci sono vari attacchi in base a cosa si conosce:
+- Ciphertext only
+- Known plaintext
+- Chosen plaintext
+- Chosen ciphertext
+- Chosen text
+
+Supponiamo che l'attaccante conosca sempre l'algoritmo di cifratura utilizzato (non sempre vero nella realtà)
+
+*Ciphertext only*
+
+L'attaccante conosce soltanto il testo cifrato, può provare attacchi *bruteforce* sulla chiave, provare a capire dei pattern del test se, ad esempio, conosce in che lingua è scritto il messaggio originale e quindi capire quali sono le parole più ripetute.
+
+*Known plaintext*
+
+L'attaccante conosce uno o più messaggi in chiaro e la loro cifratura, oppure alcuni pattern presenti nel testo in chiaro.
+Con queste conoscenze l'attaccante potrebbe essere in grado di dedurre la chiave in base a come viene trasformato il testo.
+
+*Chosen plaintext*
+
+L'attaccante è in grado di accedere al sistema e inserire un suo messaggio che presenta dei pattern in grado di rilevare la struttura della chiave. Ovviamente deve essere in grado di ottenere il messaggio cifrato risultante
+
+*Chosen ciphertext*
+
+L'attaccante ha accesso al sistema per decifrare, seleziona un testo cifrato e lo invia al sistema, analizza il risultato per capire informazioni sulla chiave.
+
+*Chosen text*
+
+L'attaccante ha accesso sia alla cifratura che alla decifratura, può far cifrare messaggi scelti da lui e anche decifrare.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Computationally Secury Encryption Schemes*],
+  [
+    La cifratura è computazionalmente sicura se:
+    - Il costo per romperla è maggiore al valore delle informazioni che si ricavano.
+    - Il tempo per romperla supera il tempo utile di quell'informazione.
+  ]
+)
+
+== Key Distribution
+Abbiamo visto che questi algoritmi funzionano con chiave simmetrica, questo significa che mittente e destinatario devono condividerla in modo sicuro. Ci sono diversi modi per farlo, supponiamo le due parti siano _A_ e _B_:
+- _A_ potrebbe portare fisicamente la chiave a _B_.
+- Qualcuno di esterno potrebbe selezionare e portare la chiave a _B_.
+- Se _A_ e _B_ già avevano una chiave per parlare potrebbero usarla per trasmettere la nuova chiave.
+- Se _A_ e _B_ hanno una connessione sicura con _C_ questo potrebbe inviare la chiave al loro posto.
+
+Le prime due opzioni prevedono uno scambio fisico, la terza è possibile ma se un attaccante entra in possesso di una chiave allora avrà anche tutte le successive. L'opzione 4 rimane la più attuabile:
+
+#align(center, image("/assets/image-39.png", width: 80%))
+
+In questo schema ignoriamo la cifratura nei collegamenti, potrebbe esserci o no, identifichiamo però due tipi di chiave:
+- *Session Key*: Quando due _end systems_ vogliono comunicare stabiliscono una connessione logica, per tutta la durata della sessione tutti i dati vengono cifrati con una one-time session key, alla fine della sessione la chiave viene distrutta.
+- *Permanent Key*: Questa chiave viene utilizzata per distribuire le sessions key.
+
+Questa configurazione consiste in:
+- *Key Distribution Center:* Il Key Distribution Center (KDC) determina quali sistemi sono autorizzati a comunicare fra di loro, quando due di loro ottengono l'autorizzazione questo gli invia una session key per la connessione.
+- *Security Service Module (SSM)*: Esegue la cifratura e ottiene le session key degli utenti.
+
+1. Un host invia una richiesta per parlare con un altro host
+2. il SSM salva il pacchetto e chiede al KDC l'autorizzazione
+3. Tra SSM e KDC avviene una comunicazione cifrata usando una master key condivisa solo fra loro, se il KDC approva la comunicazione genera una session key e la invia ai due SSM utilizzando una chiave permanente per ogni SSM.
+4. L'SSM può adesso stabilire la connessione tra i due sistemi e rilasciare il pacchetto di connessione.
+
+Tutti i dati che vengono scambiati adesso saranno cifrati dall'SSM utilizzando la session key.
