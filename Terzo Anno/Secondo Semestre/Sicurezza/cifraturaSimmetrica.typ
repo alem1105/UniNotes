@@ -392,7 +392,7 @@ L'attaccante ha accesso sia alla cifratura che alla decifratura, può far cifrar
     align: center,
     boxed-style: (anchor: (y: horizon, x: left))
   ),
-  title: [*Computationally Secury Encryption Schemes*],
+  title: [*Computationally Secure Encryption Schemes*],
   [
     La cifratura è computazionalmente sicura se:
     - Il costo per romperla è maggiore al valore delle informazioni che si ricavano.

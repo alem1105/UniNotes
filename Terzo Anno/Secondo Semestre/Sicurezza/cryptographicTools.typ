@@ -84,10 +84,15 @@ Quando è utile avere autenticazione ma non confidenzialità?
 - Protocolli di rete, l'header del pacchetto IP non deve essere alterato ma non abbiamo bisogno di nasconderlo dato che i router devono leggerlo.
 
 == Funzioni di Hash
-Una funzione Hash $H(M)$ è un'alternativa al _MAC_ che non richiede una chiave in input, prende un messaggio di dimensione variabile e restituisce un'impronta di dimensione fissa (_digest_). Per essere sicura, una funzione Hash deve possedere:
-- *One-Way or preimage resistant*: Dato un hash, deve essere impossibile risalire al messaggio originale.
-- *Second preimage or Weak Collision resistant*: Dato un messaggio _X_, deve essere impossibile trovare un altro messaggio _Y_ diverso che produca lo stesso hash.
-- *Strong collision resistant*: Deve essere impossibile trovare qualsiasi coppia di messaggi _X_ e _Y_ che abbiano lo stesso Hash
+Una funzione Hash $H(M)$ è un'alternativa al _MAC_ che non richiede una chiave in input, prende un messaggio di dimensione variabile e restituisce un'impronta di dimensione fissa (_digest_). Esistono 6 proprietà da ricordare per le hash function. Data una funzione _H_:
+1. $H$ può essere applicata a blocchi di qualsiasi dimensione.
+2. $H$ produce un output di lunghezza fissa.
+3. $H(x)$ è relativamente semplice da calcolare per ogni $x$ in input.
+4. Per ogni codice hash $h$ dato, deve essere difficile calcolare un $x$ tale che $H(x) = h$. Una funzione con questa proprietà si dice *one-way* o *pre-image resistant*.
+5. Per ogni blocco $x$ dato, deve essere difficile trovare un $y$ con $y eq.not x$ tale che $H(y) = H(x)$. Una funzione con questa proprietà si dice *second preimage resistant* o *weak collision resistant*.
+6. Deve essere difficile trovare una coppia $(x,y)$ tale che $H(x) = H(y)$. Una funzione che soddisfa questa proprietà si dice *collision resistant* o *strong collision resistant*.
+
+Le proprietà 1,2 e 3 sono necessarie soltanto per le hash function utilizzare per message authentication mentre 4, 5 e 6 sono generali ma comunque vanno rispettate se vogliamo avere una buona funzione di hash.
 
 Possiamo utilizzare l'hash a scopo di autenticazione in diversi modi:
 - *One-Way Hash function + Symmetric Encryption*

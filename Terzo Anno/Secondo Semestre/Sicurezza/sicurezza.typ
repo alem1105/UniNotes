@@ -32,3 +32,4 @@
 #include "cia.typ"
 #include "cryptographicTools.typ"
 #include "cifraturaSimmetrica.typ"
+#include "cifraturaAsimmetrica.typ"
