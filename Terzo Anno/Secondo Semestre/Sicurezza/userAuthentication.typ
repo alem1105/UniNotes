@@ -78,7 +78,7 @@ Possiamo descrivere questo test usando un Reference Standard, lo standard di rif
 
 Possiamo misurare il successo dell'analisi usando 4 misure standard: *sensitivity, prevalence, accuracy e specificity*, per vedere come funzionano assegnamo delle variabili ai match in questo modo:
 
-#align(center, image("/assets/image-46.png", width: 80%))
+#align(center, image("/assets/image-46-1.png", width: 80%))
 
 - Sensitivity: È il grado di sensibilità con il quale il sensore fa match o no. Rappresenta la proporzione di risultati positivi tra tutti i possibili match corretti e si calcola come: $ a / (a+c) $
 - Specificity: Misura la proporzione di risultati negativi fra tutte le persone non ricercate in quel momento, si calcola come: $ d / (b+d) $
@@ -93,7 +93,7 @@ Con lo stesso ragionamento possiamo calcolare il _negative predictive value_ com
 Il *receiver operating characteristic (ROC) curve* è una rappresentazione grafica del trade-off tra falsi negativi e falsi positivi, di base questo mostra il rate di falsi positivi (1 - specificity) sull'asse delle _x_ e il rate dei veri positivi (sensitivity oppure 1 - rate dei falsi negativi) sull'asse _y_.
 Vogliamo cercare di rimanere il più a sinistra e il più in alto possibile, questo significa avere tanti veri positivi e un basso rate di falsi positivi. Nel grafico più l'area sotto la curva è grande più avviene quello scritto prima:
 
-#align(center, image("/assets/image-47.png", width: 80%))
+#align(center, image("/assets/image-47-1.png", width: 80%))
 
 L'amministratore di sistema, in base all'utilizzo che verrà fatto di questo test deciderà il giusto compromesso tra i due valori.
 
