@@ -290,7 +290,7 @@ E utilizzando la proprietà dello _XOR_: $ P_1[i]' = I V[i]' xor D(K, C_1)[i] $
 
 Dove la notazione con <'> indica il complemento, questo significa che se un attccante può modificare i bit in IV allora può modificare anche i bit nel primo blocco senza conoscere la chiave.
 
-==== *Propagazione degli errori*
+==== Propagazione degli errori
 In ECB se avviene un errore di trasmissione nel testo cifrato, solo il corrispondente blocco in chiaro viene compromesso.
 In CBC l'errore si propaga, se avviene un errore in $C_k$ allora corrompe sicuramente anche $P_k$ e $P_(k+1)$, ma corrompe anche i successivi?
 

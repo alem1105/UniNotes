@@ -254,6 +254,167 @@ Sia mittente che destinatario devono conoscere i valori di $n$ ed $e$, inoltre s
 
 Riguardo al primo requisito, significa che dobbiamo trovare una relazione nella forma $ M^(e d) "mod" n = M $
 
-Questa relazione vale se $e$ e $d$ sono inversi moltiplicativi modulo $phi(n)$ dove $phi(n)$ è il *Euler totient function*. Per due numeri primi $p,q$ abbiamo che $phi(p q) = (p-1)(q-1)$, indica il numero di interi positivi minori di $n$ e primi rispetto ad $n$, la relazione tra $e$ e $d$ può essere espressa come $ e d "mod" phi(n) = 1 $ Che è equivalente a dire che: $ e d "mod" phi(n) = 1 \ d "mod" phi(n) = e^(-1) $
+Per soddisfare questa equazione, dato che usiamo numeri interi, é necessario soddisfare: $ e dot d "mod" Phi(n) = 1 $
+Dove con $Phi(n)$ indichiamo la *funzione toziente di Eulero*, questa rappresenta il numero di interi positivi piú piccoli di $n$ che sono "relativamente primi" a $n$ cioé che non hanno divisori in comune con $n$ a parte 1.
+Calcolare questa funzione per numeri grandi é si molto semplice ma praticamente impossibile dato che andrebbero controllati tutti i numeri prima di $n$ per vedere se sono primi rispetto ad esso.
+É qui che sono d'aiuto i numeri primi, infatti la matematica ci dice che se prendiamo $n = p dot q$ con $p$ e $q$ primi allora possiamo calcolare $Phi(n) = (p-1)(q-1)$, infatti se un numero é primo non condivide divisori con nessuno dei numeri che lo precedono e quindi $Phi(q)=q-1$.
+Quindi se conosciamo i due numeri che hanno "creato" $n$ allora calcolare $Phi(n)$ si calcola subito altrimenti ci vorrebbero tantissimi anni.
 
-Che equivale a dire che $e$ e $d$ sono inversi moltiplicativi modulo $phi(n)$
+Adesso utilizziamo quindi $Phi(n)$ per creare le chiavi:
+- L'esponente pubblico $e$, lo scegliamo a caso e lo usiamo per cifrare le chiavi. L'unica regola é che non deve avere divisori in comune con $Phi(n)$. La chiave pubblica che diamo a tutti é $(e,n)$.
+- L'esponente privato $d$ lo scegliamo quindi tale che rispetti $e dot d "mod" Phi(n) = 1$, quindi un numero che moltiplicato per $e$ ci dia come resto 1 se diviso per $Phi(n)$.
+
+Per cifrare il messaggio dobbiamo prendere il messaggio $M$, elevarlo per $e$ e dividerlo per $n$ prendendo il resto: $ C = M^e "mod" n $
+
+Per decifrare, riceviamo $C$ lo eleviamo per $d$. Matematicamente stiamo facendo: $ (M^e)^d "mod" n = M^(e d) "mod" n $
+
+Grazie al fatto che abbiamo costruito $e$ e $d$ usando la funzione di Eulero possiamo dire che elevare alla potenza $e$ e poi alla potenza $d$ sono due operazioni che si annullano lasciandoci il messaggio originale $M$.
+
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Passaggi da eseguire*],
+  [
+    Prima di tutto generiamo le chiavi
+    1. Selezioniamo $p, q$ primi e diversi fra loro
+    2. Calcoliamo $n = p dot q$
+    3. Calcoliamo $Phi(n) = (p-1)(q-1)$
+    4. Selezioniamo un intero $e$ con M.C.D.$(Phi(n), e) = 1; 1 < e < Phi(n)$
+    5. Calcoliamo $d$ sapendo che $d dot e "mod" Phi(n) = 1$
+    6. Creiamo la chiave pubblica $K U={e,n}$
+    7. Creiamo la chiave privata $K R = {d,n}$
+
+    Poi possiamo cifrare un messaggio (un intero)
+    - Testo in chiaro $M$ con $M < n$
+    - Testo cifrato é dato da $C= M^e "mod" n$
+
+    Per decifrare
+    - Dal testo cifrato $C$ otteniamo $M = C^d "mod" n$
+  ]
+)
+
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempio di utilizzo*],
+  [
+    1. Selezioniamo due numeri primi $p=17, q=11$
+    2. Calcoliamo $n = p q = 187$
+    3. Calcoliamo $Phi(n) = (p-1)(q-1) = 160$
+    4. Selezioniamo $e$ tale che é primo e minore rispetto a $Phi(n)=160$, ad esempio $e=7$.
+    5. Determiniamo $d$ tale che $d dot e "mod" 160 = 1$ e $d < 160$, in questo caso $d=23$
+
+    Otteniamo come chiavi chiave pubblica ${7, 187}$ e come chiave privata ${23, 187}$
+    Vogliamo inviare il numero 88:
+    1. Lo cifriamo calcolando $88^7 "mod" 187$ e otteniamo $11$
+    2. Per decifrare calcoliamo $11^(23) "mod" 187$ e riotteniamo 88
+  ]
+)
+
+=== Sicurezza dell'RSA
+Esistono 4 diversi modi per attaccare l'algoritmo RSA:
+- *Brute Force*: Provare tutte le possibili chiavi private.
+- *Mathematical Attacks*: Ci sono diversi approcci possibili, tutti equivalenti per quanto riguarda gli sforzi da fare per fattorizzare il prdotto di due numeri primi.
+- *Timing Attacks*: Questi dipendono dal tempo di esecuzione dell'algoritmo di decifratura.
+- *Chosen ciphertext attacks*: Sfruttano le proprietá dell'RSA. Non affronteremo questo argomento.
+
+La difesa contro il primo tipo di attacchi é uguale a molti altri algoritmi ovvero usare uno spazio delle chiavi enorme, in questo caso maggiore é il numero di bit di $d$ maggiore sará il tempo necessario a "trovarlo", in questo caso peró visti i calcoli necessari, maggiore é la grandezza della chiave e maggiore sará il tempo necessario per cifrare e decifrare.
+
+==== Il problema della fattorizzazione
+Ci sono 3 approcci per attaccare RSA matematicamente:
+- Fattorizzare $n$ nei suoi due fattori primi, questo permette di calcolare subito $Phi(n)$ e determinare anche $d$.
+- Determinare $Phi(n)$ direttamente senza determinare prima $p, q$, come prima ci permette di calcolare subito $d$
+- Determinare direttamente $d$ senza trovare prima $Phi(n)$.
+
+Il problema principale é quello di fattorizzare $n$ nei suoi due fattori primi, infatti determinare $Phi(n)$ é equivalente a fattorizzare $n$. Possiamo quindi vedere i tempi di fattorizzazione di $n$ come "benchmark" della sicurezza di RSA.
+Per un $n$ grande con grandi fattori primi, la fattorizzazione é un problema difficile ma non quanto lo era prima.
+Nella seguente tabella sono misurati i tempi in MIPS-years ovvero un anno in cui un processore che puó eseguire un milione di istruzioni al secondo processa senza interruzioni.
+Il numero di cifre fa riferimento al numero di cifre della chiave.
+
+#align(center, image("/assets/image-46.png", width: 80%))
+
+Col tempo sono stati scoperti diversi algoritmi per la fattorizzazione dei numeri ma in generale, per ora, una chiave nel range di 1024-2048 bits è ritenuta sicura. Inoltre i ricercatori hanno dato qualche restrizione aggiuntiva per rendere meno semplice la fattorizzazione di $n$:
+- $p$ e $q$ devono avere una lunghezza simile ma non troppo piccoli.
+- Sia $(p-1)$ che $(q-1)$ devono avere un fattore primo grande, questo perché se hanno solo fattori primi piccoli possono essere ricavati subito da un algoritmo chiamato *Pollard's $p-1$*
+- Il M.C.D.$(p-1, q-1)$ deve essere piccolo, questo perché se é grande significa che genera meno chiavi possibili.
+
+Inoltre é stato dimostrato (*Michael Wiener*) che se $e < n$ e $d < n^(1/4)$ allora $d$ puó essere facilmente determinato.
+
+==== Timing Attacks
+Come detto prima si basano sul tempo di esecuzione dell'algoritmo di decifratura, *Paul Kocher* ha dimostrato che in alcuni casi é possibile determinare la chiave privata solamente tenendo traccia di quanto tempo ci mette il computer a decifrare il messaggio.
+
+Per usare questo attacco si indovina la chiave bit a bit, procedendo da sinistra verso destra:
+- L'attaccante crea un messaggio cifrato e lo invia, questo messaggio é costruito in modo tale che quando il computer arriva al bit che lui sta cercando di indovinare, se quel bit é 1 allora l'operazione sará lentissima mentre se é 0 allora sará normale.
+- Si cronometra il tempo totale che impiega il computer a rispondere
+- Se il tempo é stato estremamente lungo allora puó impostare quel bit a 1 altrimenti a 0. Si passa al bit successivo.
+
+Esistono tre difese contro questo tipo di attacchi:
+- *Constant Exponentiation Time*: Si forza il computer ad impiegare sempre lo stesso tempo massimo per ogni bit, ovviamente andiamo a peggiorare le prestazioni.
+- *Random Delay*: Si aggiunge del "rumore" facendo fare delle piccole pause casuali al processore, il difetto é che l'hacker puó inviare il messaggio tante volte e fare una media dei tempi di risposta rilevando i tempi reali.
+- *Blinding*: Consiste nel modificare il messaggio ricevuto per imbrogliare il cronometro dell'hacker.
+
+In alcuni RSA é implementato il Blinding nel seguente modo:
+1. Genera un segreto casuale $r$ tra $0$ e $n-1$.
+2. Calcola $C'=C(r^e) "mod" n$ dove $e$ é l'esponente pubblico.
+3. Calcola $M'=(C')^d "mod" n$ come il classico RSA
+4. Calcola $M=M' dot r^(-1) "mod" n$
+
+Ovvero:
+1. Viene scelto un numero casuale
+2. Lo cifriamo e moltiplichiamo per il messaggio ricevuto.
+3. Decifriamo questo valore ottenuto andando a imbrogliare il cronometro dell'hacker
+4. Moltiplichiamo il valore ottenuto con l'inverso del numero inventato prima per ottenere il messaggio originale.
+
+Questa operazione di blinding diminuisce le performance di un 2-10%.
+
+== Diffie-Hellman
+L'algoritmo permette a due utenti di scambiarsi una chiave segreta in modo sicuro.
+
+Vengono scelti due elementi pubblici:
+- Un numero primo $q$
+- $alpha < q$ e $alpha$ deve essere una radice primitiva di $q$
+Una radice primitiva modulo $n$ é un numero $g$ che elevato a potenza riesce a generare da solo tutti i numeri possibili di quel modulo. Ad esempio se $n=7$ allora 3 é una radice primitiva infatti elevando 3 a tutte le potenze da 1 a 6 e calcolando il resto della divisione con 7 otteniamo tutti i numeri da 1 a 6.
+Non tutti i numeri possiedono radici primitive, cioé avviene solo per $2,4,p^k$ o $2p^k$ dove $p$ é un primo dispari.
+- L'utente A genera le sue chiavi, prima seleziona una chiave privata $X_A$ t.c. $X_A < q$ e poi calcola la chiave pubblica $Y_A = alpha^(X_A) "mod" q$
+- L'utente B genera le sue chiavi nello stesso modo quindi $X_B < q$ e $Y_B=alpha^(X_B) "mod" q$
+- Devono scambiarsi la loro chiave pubblica e poi possono calcolare la chiave in comune:
+  - A la puó calcolare eseguendo $K=(Y_B)^(X_A) "mod" q$
+  - B la puó calcolare eseguendo $K=(Y_A)^(X_B) "mod" q$
+- Questa chiave K é il valore che si sono "scambiati" e che possono usare per le loro future comunicazioni.
+
+=== Sicurezza del Diffie-Hellman
+Prendiamo questo esempio dove un algoritmo utilizza Diffie-Hellman per scambiare le chiavi:
+
+#align(center, image("/assets/image-47.png", width: 80%))
+
+Questo tipo di comunicazione non é sicura contro attacchi del tipo *man-in-the-middle*. Alice e Bob devono scambiarsi la chiave e Darth é l'avversario:
+1. Darth prepara l'attacco generando due chiavi private casuali $X_(D 1)$ e $X_(D 2)$ e genera anche le corrispettive chiavi pubbliche.
+2. Alice trasmette la sua chiave pubblica a Bob.
+3. Darth intercetta $Y_A$ e trasmette $Y_(D 1)$ a Bob, inoltre calcola anche $K 2=(Y_A)^(X_(D 2)) "mod" q$
+4. Bob riceve $Y_(D 1)$ e calcola $K 1 = (Y_(D 1))^(X_B) "mod" q$
+5. Bob trasmette $Y_B$
+6. Darth intercetta $Y_B$ e trasmette $Y_(D e)$ ad Alice, inoltre calcola anche $K 1=(Y_B)^(X_(D 1)) "mod" q$
+7. Alice riceve $Y_(D 2)$ e calcola $K 2 = (Y_(D 2))^(X_A) "mod" q$
+
+A questo punto Alice e Bob sono convinti di essersi scambiati le chiavi ma invece tutte le loro future comunicazioni saranno lette da Darth che potrá anche modificare i messaggi.
+Questo algoritmo é vulnerabile a questo tipo di attacchi perché non c'é autenticazione del mittente, é possibile quindi risolvere questi problemi utilizzando firme digitali o certificati a chiave pubblica.
