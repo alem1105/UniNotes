@@ -35,3 +35,5 @@
 #include "cifraturaAsimmetrica.typ"
 #include "userAuthentication.typ"
 #include "accessControl.typ"
+#include "programAndProgramming.typ"
+#include "malware.typ"
