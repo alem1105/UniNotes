@@ -79,4 +79,81 @@ Uno dei dataset più vecchi è il **Iris dataset**, una collezione di misurazion
 
 **Unsupervised learning algorithms** - Prendono il dataset ed imparano proprietà della struttura di quel dataset, in deep learning vogliamo imparare l'intera distribuzione della probabilità che ha generato il dataset.
 
-**Supervised learning algorithms** - 
+**Supervised learning algorithms** - In questo caso ogni esempio del dataset viene affiancato con una **label o target**, ad esempio l'Iris dataset è annotato con la specie di ogni pianta.
+
+In generale, unsupervised learning significa osservare diversi examples di un vettore casuale $x$ e provare ad imparare, in modo implicito o esplicito, la distribuzione di probabilità $p(x)$ o alcune sue proprietà.
+Il supervised learning invece significa osservare gli examples di un vettore $x$ e un altro vettore associato $y$ e imparare a predire $y$ da $x$, quindi con $p(y|x)$.
+Il termine _supervised_ deriva dal fatto che di solito il vettore $y$ viene fornito da un insegnante (rispetto al modello) che appunto insegna all'algoritmo come pensare. Nell'unsupervised learning ovviamente manca questa figura.
+
+La linea che separa queste due metodologie è molto vaga e spesso molte tecnologie di ML possono essere usate per entrambe, di solito le persone si riferiscono a problemi di regression, classification e strctured output come supervised learning mentre density estimation in supporto ad altra task viene considerata unsupervised learning.
+
+Esistono però anche altri tipi di algoritmi di ML che non utilizzano dei dataset fissi, ad esempio gli algoritmi di **reinforcement learning** che interagiscono con un ambiente tramite un feedback loop tra il learning systems e le esperienze su di questo, è praticamente un _trials and errors_ dove l'algoritmo va appunto a tentativi.
+
+---
+
+In generale però la maggior parte degli algoritmi di ML imparano da dei dataset, un dataset può essere descritto in molti modi ma in tutti i casi è semplicemente una collezione di examples che a loro volta sono collezione di features.
+Uno dei modi più utilizzati per descrivere i dataset sono le **design matrix**, queste contengono un examples su ogni riga mentre ogni colonna corrisponde ad una diversa feature.
+Prendiamo come esempio l'Iris dataset, contiene 150 examples con 4 features ciascuno, questo significa che possiamo rappresentarlo con una design matrix $X\in \mathbb{R}^{150 \times 4}$.
+
+Ovviamente per descrivere un dataset in questo modo è necessario che ogni example sia rappresentabile con un vettore e che tutti questi vettori abbiano la stessa dimensione.
+Non sempre è possibile, ad esempio se abbiamo diverse foto come examples non è detto che abbiano tutte la stessa dimensione. In casi come questo invece che descrivere il dataset come una matrice con $m$ righe, lo descriviamo come un set che contiene $m$ elementi: $\{ x^{(1),x^{(2)}},\dots,x^{(m)} \}$, questa notazione non implica che due vettori $x^{(i)}$ e $x^{(j)}$ abbiano la stessa dimensione.
+In casi come il supervised learning avremo bisogno anche di strutture aggiuntive per le label di ogni example, dato che non ci sono definizioni formali non ci sono nemmeno regole precise su queste strutture, è sempre possibile quindi realizzarne di nuove più adatte alle nostre esigenze.
+
+## Esempio: Linear Regression
+L'obiettivo è quello di costruire un sistema che prende in input un vettore $x\in \mathbb{R}^n$ e predice il valore di uno scalare $y\in \mathbb{R}$ come output. Nel caso della linear regression, l'output è una funzione lineare dell'input.
+Diciamo che $\overset{\wedge}{y}$ è il valore che il nostro modello predice e lo definiamo come: 
+
+$$\overset{\wedge}{y}=w^Tx$$
+dove $w\in \mathbb{R}^n$ è un vettore di **parametri**.
+I parametri sono valori che controllano il comportamento del sistema, in questo caso il coefficiente $w_{i}$ verrà moltiplicato con la feature $x_{i}$ prima di sommare i contributi di tutte le feature.
+Possiamo pensare a $w$ come un insieme di **pesi (weights)** che determinano come ogni feature modifica la predizione. Se una feature $x_i$ riceve un peso positivo $w_{i}$ allora incrementare il valore di quella feature incrementerà il valore della predizione $\overset{\wedge}{y}$. Al contrario, se una feature riceve un peso negativo, incrementare il valore di quella feature abbasserà il valore della predizione.
+
+Abbiamo quindi una definizione per la nostra task _T_: predire il valore $y$ dall'input $x$ dando in output il valore $\overset{\wedge}{y}=w^Tx$.
+Adesso abbiamo bisogno della definizione della misura della performance _P_.
+
+Supponiamo di avere una design matrix di $m$ examples in input che **non** è stata utilizzata per la fase di training, la utilizzeremo solo per la valutazione.
+Abbiamo anche un vettore che per ogni example ci dice qual è il valore corretto di $y$ che vogliamo ottenere.
+Chiamiamo questo dataset **test set** e ci riferiamo alla sua design matrix con $X^{(\text{test})}$ e al vettore dei target con $y^{(\text{test})}$.
+
+Un modo per misurare le performance del modello è quello di calcolare il **mean squared error** sul test set. Se $\overset{\wedge}{y}^{(\text{test})}$ sono le predizioni fatte dal modello sul test set allora il mean squared error è dato da:
+
+$$\text{MSE}_{\text{test}}=\frac{1}{m}\sum_{i}(\overset{\wedge}{y}^{(\text{test})}-y^{(\text{test})})^2_{i}$$
+
+> [!info] Mean Squared Error
+> - Si calcola la differenza tra il valore giusto e quello ottenuto
+> - Si eleva al quadrato in modo da eliminare i valori negativi ma anche per aumentare di molto il peso di errori grandi, un errore di 2 diventa 4 ma un errore di 10 diventa 100.
+> - Si calcola la media di tutti questi errori.
+
+Per creare un algoritmo di ML dobbiamo fare in modo che questo migliori i pesi $w$ in modo da ridurre l'errore $\text{MSE}_{\text{test}}$ quando l'algoritmo impara osservando il training set.
+Un modo per farlo è quello di minimizzare il MSE nel training set, per farlo ci basta risolvere per quando il gradient è 0:
+
+$$
+\begin{align}
+\nabla_{w}\text{MSE}_{\text{train}}&=0 \\
+\implies \dots \\
+\implies w &= \left(X^{(\text{train}) \ T} X^{(\text{train})}\right)^{-1} X^{(\text{train}) \ T} y^{(\text{train})}
+\end{align}
+$$
+
+Il sistema di equazioni le cui soluzioni sono date dall'equazione sopra le chiamiamo **normal equations**, risolvere quell'equazione corrisponde ad un semplice algoritmo di ML.
+
+_Esempio_
+
+![[Pasted image 20260416112741.png|500]]
+
+Il training set è formato da solo 10 punti, ciascuno composto da una sola feature, dato che c'è una sola feature il vettore $w$ contiene un solo parametro da imparare, $w_1$.
+Nella figura a sinistra vediamo come l'algoritmo ha imparato a impostare $w_{1}$ in modo che la linea $y=w_{1}x$ passi il più vicino possibile a tutti i punti.
+A destra invece vediamo come il valore di $w_{1}$ trovato dalla normal equations minimizza il MSE nel training set.
+
+> [!info] Significato del MSE
+> Il MSE è una generalizzazione della derivata di una funzione. Immaginiamo l'errore come una funzione a forma di "U", più alti ci troviamo più alto sarà l'errore e le nostre coordinate sono i pesi $w$, l'obiettivo è raggiungere il punto più basso.
+> Il gradiente ci indica la "pendenza", quindi se raggiungiamo pendenza 0 significa che siamo nel punto più basso dato che il "terreno" è piatto.
+> Non possiamo fare normali derivate dato che non abbiamo una sola variabile ma avendo più pesi facciamo un vettore composto da "derivate parziali", una per ogni peso, questo vettore prende il nome di gradiente.
+
+Da notare che di solito con il termine linear regression ci si riferisce a dei modelli _leggermente_ più complessi con un parametro aggiuntivo $b$, usando sempre questo modello avremo: 
+
+$$\overset{\wedge}{y}=w^Tx+b$$
+
+Il termine $b$ viene spesso chiamato **bias**, questo deriva dal fatto che la predizione del modello viene trasformata $b$ anche in assenza di input.
+
+## Capacity, Overfitting e Underfitting
