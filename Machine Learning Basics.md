@@ -152,8 +152,37 @@ A destra invece vediamo come il valore di $w_{1}$ trovato dalla normal equations
 
 Da notare che di solito con il termine linear regression ci si riferisce a dei modelli _leggermente_ più complessi con un parametro aggiuntivo $b$, usando sempre questo modello avremo: 
 
-$$\overset{\wedge}{y}=w^Tx+b$$
+$$
+\overset{\wedge}{y}=w^Tx+b
+$$
 
 Il termine $b$ viene spesso chiamato **bias**, questo deriva dal fatto che la predizione del modello viene trasformata $b$ anche in assenza di input.
 
 ## Capacity, Overfitting e Underfitting
+La sfida principale nel machine learning è che il modello deve performare bene su dati _nuovi e mai visti prima_ e non soltanto su quelli usati in addestramento.
+L'abilità di un modello di saper gestire inputs mai visti prima si chiama **generalization**.
+Quando alleniamo un modello abbiamo accesso ad un _training set_ sul quale possiamo misurare degli errori che chiamiamo **training error**, dobbiamo ridurre questi errori.
+Quello che separa il Machine Learning dall'Optimization è che noi vogliamo il **generalization error** o **test error** basso allo stesso modo del training error.
+Il generalization error è definito come il valore di errore che ci aspettiamo da un nuovo input, questo nuovo input deve comunque essere coerente con gli altri e quindi non "assurdo".
+
+Di solito stimiamo il generalization error di un modello misurando le sue performance su un **test set** di examples che abbiamo raccolto separatamente dal training set.
+Ma come possiamo modificare le performance sul test set se possiamo osservare e imparare soltanto dal training set? La **statistical learning theory** ci fornisce delle risposte.
+Se i due set sono raccolti in modo arbitrario c'è poco che possiamo fare ma se invece possiamo fare delle assunzioni sul come sono stati raccolti allora otteniamo dei progressi.
+I dati dei due set sono generati da una distribuzione di probabilità chiamata **data generating process**.
+Facciamo inoltre un set di assunzioni chiamate **i.i.d. assumptions** che ci dicono che gli examples in ogni dataset sono indipendenti fra loro e che i due set sono **identicamente distribuiti** e provengono dalla stessa distribuzione di probabilità.
+Chiamiamo questa distribuzione **data generating distribution** denotata da $p_{\text{data}}$, questi dati ci permettono di studiare matematicamente la relazione tra training e test error.
+
+Una relazione immediata che possiamo notare è che l'expected training error di un modello scelto casualmente è uguale all'expected test error del modello.
+Supponiamo di avere una distribuzione di probabilità $p(x,y)$ da cui generiamo train e test set. Per qualche valore fissato $w$ l'expected training set error è esattamente lo stesso dell'expected test set error perché entrambe le expectations sono formate utilizzando lo stesso processo di creazione. Quindi finché il modello non impara dal training set avremo lo stesso livello di errore.
+
+Infatti, quando utilizziamo modelli di ML non fissiamo $w$, creiamo il training set con il quale l'algoritmo sceglie il $w$ più appropriato e poi gli mandiamo in input il test set. In questo modo otteniamo che l'expected test error sarà maggiore o uguale all'expected training error.
+Per capire quanto un modello performa bene dobbiamo vedere le sue abilità nel:
+1) Rendere piccolo il training error.
+2) Rendere piccola la differenza fra training e test error.
+
+Questi due concetti sono collegati alle due sfide principali del ML:
+- **Underfitting**: accade quando il modello non è in grado di ottenere un valore sufficientemente basso nel training set. (detto in modo semplice, il modello è stupido)
+- **Overfitting**: accade quando la differenza tra training error e test error è troppo alta. (il modello "sa troppo" e usa male queste conoscenze, oppure non gli servono proprio)
+
+Possiamo controllare il comportamento del modello alterando la sua **capacity**, informalmente la capacity è l'abilità del modello di saper utilizzare una vasta quantità di funzioni. Modelli con capacity bassa avranno difficoltà nel lavorare con il training set mentre modelli con capacity alta andranno in overfit memorizzando proprietà del training set che non serviranno nel test set.
+La capacity possiamo dire che è data dal numero di parametri che utilizziamo, ad esempio se il modello sa disegnare solo rette o se aggiungiamo esponenti sarà in grado di disegnare più curve.
