@@ -218,3 +218,10 @@ La curva richiesta è una curva quadratica.
 - Il primo modello che conosce solo funzioni lineari va in underfit.
 - Il secondo, conosce fino alle funzioni quadratiche e predice correttamente la curva.
 - Il terzo conosce polinomi di grado 9, quindi infinite altre funzioni.
+
+Per ora abbiamo visto solo un modo per modificare la capacity di un modello: cambiare il numero di features in input e aggiungendo anche nuovi parametri associati a queste features. Esistono però diversi altri modi per cambiare la capacity di un modello, questa non è determinata soltanto dalle scelte del modello, questo infatti specifica quale famiglia di funzioni il learning algorithm può scegliere quando cambia i suoi parametri durante l'allenamento. Questa è chiamate **representational capacity** del modello e indica appunto quello che può "raggiungere" il modello modificando i suoi pesi.
+Trovare la funzione migliore fra queste però è un grande problema di ottimizzazione quindi il nostro algoritmo non troverà mai la combinazione di pesi perfetta del modello ma una configurazione abbastanza buona. Dunque la vera capacity che riusciamo a sfruttare si chiama **effective capacity** e sarà sempre inferiore a quella representational.
+
+Quindi non importa la capacity del modello perché quella che riusciremo effettivamente a sfruttare è data dal learning algorithm.
+
+Nel _Statistical Learning_ esistono diverse teorie per quantificare la capacity di un modello, fra queste la più conosciuta è la **Vapnik-Chervonenkis dimension** o **VC dimension**. La VC dimension misura la capacity di un binary classifier, questa è definita come il valore più grande possibile di $m$ per cui esiste un training set di $m$ diversi punti che il classifier può etichettare arbitrariamente (in due categorie).
