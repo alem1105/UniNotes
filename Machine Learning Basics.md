@@ -186,3 +186,35 @@ Questi due concetti sono collegati alle due sfide principali del ML:
 
 Possiamo controllare il comportamento del modello alterando la sua **capacity**, informalmente la capacity è l'abilità del modello di saper utilizzare una vasta quantità di funzioni. Modelli con capacity bassa avranno difficoltà nel lavorare con il training set mentre modelli con capacity alta andranno in overfit memorizzando proprietà del training set che non serviranno nel test set.
 La capacity possiamo dire che è data dal numero di parametri che utilizziamo, ad esempio se il modello sa disegnare solo rette o se aggiungiamo esponenti sarà in grado di disegnare più curve.
+
+Un modo che abbiamo per controllare la capacity di un algoritmo è scegliendo il suo **hypothesis space**, ovvero il set di funzioni che l'algoritmo può scegliere come soluzione. Ad esempio, l'algoritmo per la linear regression ha l'intero set di funzioni lineari del suo input come hypothesis space. Possiamo generalizzare la linear regression includendo polinomi nello spazio, facendolo incrementiamo la capacity.
+
+Un polinomio di grado 1 ci fornisce il modello di linear regression che già conosciamo:
+
+$$
+\overset{\wedge}{y}=b + wx
+$$
+
+Se introduciamo $x^2$ come feature aggiuntiva al modello otteniamo:
+
+$$
+\overset{\wedge}{y}=b+w_{1}x+w_{2}x^2
+$$
+
+Nonostante il modello utilizzi una funzione quadratica dell'input, l'output è comunque una funzione lineare dei parametri, possiamo quindi utilizzare le normal equations per allenare il modello. Possiamo continuare ad aggiungere feature, potenze di $x$ e ottenere polinomi di grado 9:
+
+$$
+\overset{\wedge}{y}=b+\sum_{i=1}^9 w_{i}x^i
+$$
+
+Gli algoritmi di ML generalmente performano meglio quando la loro capacity è appropriata per la complessità del task che devono compiere e per la quantità di dati sui quali vengono allenati.
+Modelli con poca capacity non sono in grado di risolvere task complesse, ma modelli con alta capacity potrebbero andare in overfit.
+
+_Esempi_
+
+![[Pasted image 20260417150748.png|500]]
+
+La curva richiesta è una curva quadratica.
+- Il primo modello che conosce solo funzioni lineari va in underfit.
+- Il secondo, conosce fino alle funzioni quadratiche e predice correttamente la curva.
+- Il terzo conosce polinomi di grado 9, quindi infinite altre funzioni.
