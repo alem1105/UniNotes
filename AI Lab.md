@@ -1,5 +1,1 @@
-- Python
-- Image processing framework: OpenCV
-- Machine Learning framework: Scikit learn
-- Deep Learning framework: Pytorch
-- Jupyter Notebook
+Faccio qualche appunto tramite i Jupyter Notebook ma non so quanto seguiranno il corso dato che sto studiando gli argomenti principalmente per fare la tesi.
