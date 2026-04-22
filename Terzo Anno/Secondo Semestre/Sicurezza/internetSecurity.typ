@@ -92,3 +92,38 @@ Utilizzare un integrity checker aiuta l'amministratore del sito a verificare che
 Bisogna fare attenzione però perché anche un'azienda malintenzionata può ricevere un certificato valido e distribuire quindi codice.
 
 === Web Bug
+Si tratta di sfruttare un'immagine minuscola, spesso una GIF 1x1 trasparente invisibile all'utente per tracciare la sua navigazione e inviare i dati all'attaccante, nello specifico l'attaccante può sapere, ad esempio, se hai aperto la mail contente questa foto e sapere quindi che la tua casella di posta è attiva.
+
+== Furto di Dati: Scripting e SQL Injection
+Questi attacchi colpiscono la logica delle applicazioni web sfruttando le vulnerabilità nella validazione dell'input dell'utente.
+
+- *Cross-Site Scripting (XSS)*: Sfruttano il fatto che le comunicazioni HTTP trasmettono in chiaro script incorporati, in questo modo costringono il browser o il server ad eseguire codice malevolo mascherato da contenuto legittimo. Un esempio è l'inserimento di uno script malevolo nei commenti di un blog, chiunque carichi quella pagina eseguirà lo script senza accorgersene.
+
+- *SQL Injection (SQLi)*: Sfrutta la scarsa sanitizzazione degli input per inviare comandi SQL direttamente al database backend. L'attacco interrompe prematuramente la stringa attesa dal database utilizzando il singolo apice `'` e aggiunge un nuovo comando, inserisce poi alla fine il simbolo del commento per omettere tutto il resto del codice legittimo.
+  - *Inband Attacks*: Sfruttano lo stesso canale di comunicazione per iniettare l'attacco e ricevere i risultati, mostrandoli direttamente sulla pagina web.
+  Questi comprendono tecniche di *tautology* ovvero che inseriscono una condizione sempre vera come `OR 1=1` per aggirare l'atuenticazione e le *Query Piggybacked* ovvero accodare una query distruttiva come `DROP table` a una query legittima.
+  - *Inferential Attacks (Blind SQLi)*: Non c'è alcun trasferimento visibile di dati, l'attaccante inietta query specifiche e ricostruisce la struttura e il contenuto del database osservando i comportamenti del sistema o gli errori logici raccogliendo informazioni per futuri attacchi.
+  - *Out-of-Band Attacks*: Utilizzati quando le informazioni non possono tornare indietro via HTTP ma il database possiede connettività in uscita vulnerabile per inviare i dati tramite altri canali.
+
+La *contromisura principale* è la *sanitizzazione dell'input* che rimuove o codifica caratteri pericolosi prima di elaborarli, e il rigoroso controllo degli accessi sul server backend per limitare l'estrazione dei dati.
+
+== Sicurezza delle Applicazioni Mobile (App)
+A differenza dei siti web, le app risiedono fisicamente sul dispositivo ed interagiscono in profondità con hardware e software, inoltre *funzionano continuamente in background* e spesso raccolgono e trasmettono tanti dati senza dirlo all'utente.
+
+Le vulnerabilità delle app derivano dal fatto che ci sono tantissimi utenti da sfruttare e l'architettura stessa di queste, l'utente infatti non sa cosa fanno realmente e possono ottenere privilegi enormi agendo come da _spyware_ esportando tantissimi dati non necessari al loro funzionamento.
+Tra i problemi più comuni troviamo:
+- *Insecure Direct Object References*: Le app non dovrebbero esporre la struttura interna delle risorse ma agire da intermediario traducendo i comandi dell'utente.
+- *Mancanza di Logging e Monitoring*: L'app è l'unico ponte tra utente e risorse, se fallisce nel registrare e generare allarmi per attività sospette, blocca l'indagine sulla compromissione dei dati.
+- *Problemi di Crittografia*: Un'errata gestione o memorizzazione delle chiavi crittografiche o il mancato utilizzo di funzioni di hashing per verificare l'integrità dei dati.
+- *Componenti vulnerabili o non aggiornati*: Molte app si basano su librerie di terze parti, se una di queste è vulnerabile l'app diventa vulnerabile, o almeno finché lo sviluppatore non la aggiorna.
+- *Errori di configurazione*: Mantenere la password predefinita o esporre informazioni involontariamente.
+
+È necessario quindi che li sviluppatori implementino rigidi controlli automatizzati e utilizzino sistemi per l'analisi statica e strumenti di _Interactive Application Security Testing (IAST)_ per individuare i difetti durante l'esecuzione.
+
+== Attacchi tramite Email e Messaggi
+L'indirizzo email del mittente è facilmente falsificabile e gli attaccanti sanno che le persone riconoscono le mail false ma puntano sui grandi numeri, inviando milioni di mail basta una minima percentuale di vittime per generare profitti.
+
+È importante utilizzare *Crittografia PGP (Pretty Good Privacy)* per garantire confidenzialità, integrità e autenticazione nelle comunicazioni.
+- *Confidenzialità*: Il sistema genere una chiave di sessione casuale simmetrica per cifrare il corpo del messaggio, poi la chiave di sessione viene cifrata utilizzando la chiave pubblica del destinatario e viene allegata al messaggio.
+- *Integrità e Autenticazione*: Viene creato un hash del messaggio che viene firmato cifrandolo con la chiave privata del mittente.
+- *Distribuzione delle chiavi*: Si basa su certificati convalidati gerarchicamente (formato X.509) permettendo a mittente e destinatario di scambiarsi informazioni in sicurezza senza doversi scambiare materialmente le chiavi in anticipo, purché condividano un'autorità di certificazione (CA) fidata.
