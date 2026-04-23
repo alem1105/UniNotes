@@ -4,3 +4,4 @@ Seguono molto il tutorial base presente sul sito di PyTorch e aggiungo qualcosa 
 - [Tensors](https://colab.research.google.com/github/alem1105/UnNotes/blob/main/Terzo%20Anno/Secondo%20Semestre/AI_Lab/tensors.ipynb)
 - [Datasets and DataLoader](https://colab.research.google.com/github/alem1105/UniNotes/blob/main/Terzo%20Anno/Secondo%20Semestre/AI_Lab/datasets.ipynb)
 - [Neural Network](https://colab.research.google.com/github/alem1105/UniNotes/blob/main/Terzo%20Anno/Secondo%20Semestre/AI_Lab/neuralnetwork.ipynb)
+- [Autograd](https://colab.research.google.com/github/alem1105/UniNotes/blob/main/Terzo%20Anno/Secondo%20Semestre/AI_Lab/autograd.ipynb)
