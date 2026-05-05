@@ -405,7 +405,7 @@ Non tutti i numeri possiedono radici primitive, cioé avviene solo per $2,4,p^k$
 === Sicurezza del Diffie-Hellman
 Prendiamo questo esempio dove un algoritmo utilizza Diffie-Hellman per scambiare le chiavi:
 
-#align(center, image("/assets/image-47.png", width: 80%))
+#align(center, image("/assets/image-57.png", width: 60%))
 
 Questo tipo di comunicazione non é sicura contro attacchi del tipo *man-in-the-middle*. Alice e Bob devono scambiarsi la chiave e Darth é l'avversario:
 1. Darth prepara l'attacco generando due chiavi private casuali $X_(D 1)$ e $X_(D 2)$ e genera anche le corrispettive chiavi pubbliche.
