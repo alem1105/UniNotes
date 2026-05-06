@@ -6,3 +6,4 @@ Seguono molto il tutorial base presente sul sito di PyTorch e aggiungo qualcosa 
 - [Neural Network](https://colab.research.google.com/github/alem1105/UniNotes/blob/main/Terzo%20Anno/Secondo%20Semestre/AI_Lab/neuralnetwork.ipynb)
 - [Autograd](https://colab.research.google.com/github/alem1105/UniNotes/blob/main/Terzo%20Anno/Secondo%20Semestre/AI_Lab/autograd.ipynb)
 - [Optimizing Parameters](https://colab.research.google.com/github/alem1105/UniNotes/blob/main/Terzo%20Anno/Secondo%20Semestre/AI_Lab/optimizing_parameters.ipynb)
+- 
