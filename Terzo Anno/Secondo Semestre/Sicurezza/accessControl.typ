@@ -87,14 +87,14 @@ Ci sono anche diversi contro però:
 === Access Control Matrix
 È una tabella dove sulle righe abbiamo gli utenti mentre sulle colonne le risorse a cui devono accedere, all'interno delle celle abbiamo i poteri corrispondenti, ad esempio:
 
-#align(center, image("/assets/image-47.png", width: 80%))
+#align(center, image("/assets/image-47.png", width: 50%))
 
 Questa implementazione viene usata raramente dato che cercare i permessi all'interno di questa struttura è spesso inefficiente.
 
 === Access Control List
 Questa rappresentazione corrisponde alle colonne della Control Matrix, c'è una lista per ogni oggetto e questa mostra per tutti gli utenti quali permessi hanno su quel file:
 
-#align(center, image("/assets/image-49.png", width: 80%))
+#align(center, image("/assets/image-49.png", width: 50%))
 
 Anche se sembra simile, in realtà è molto diverso dalla directory list, qui infatti abbiamo una access control list per oggetto che porta molti vantaggi.
 Ad esempio possiamo implementare dei permessi di default all'interno della access control list del file senza senza andare a creare una entry per ogni utente (ad esempio per file pubblici.) 
@@ -110,7 +110,7 @@ Abbiamo visto soltanto implementazioni che lasciano tutto il lavoro e la respons
 Definiamo come *capability* un token non falsificabile che fornisce al suo possessore dei permessi su un oggetto.
 La rappresntiamo come una tripla di soggetto, oggetto e permessi
 
-#align(center, image("/assets/image-50.png", width: 80%))
+#align(center, image("/assets/image-50.png", width: 50%))
 
 Come rendiamo il token non falsificabile?
 1) Fornirlo direttamente al SO o al meccanismo di AC e non all'utente:
@@ -131,7 +131,7 @@ Quando un utente toglie una capability non devono essere permessi ulteriori acce
 - La collezione di capabilities degli oggetti nel dominio definiscono il dominio.
 I processi però vengono eseguiti per gli utenti e il dominio per un utente include programmi, files, dati e dispositivi di I/O.
 
-#align(center, image("/assets/image-51.png", width: 80%))
+#align(center, image("/assets/image-51.png", width: 50%))
 
 Il dominio di una sottoprocedura non è per forza lo stesso di chi l'ha chiamata:
 - La chiamante potrebbe passare soltanto alcuni oggetti al dominio della sottoprocedura
@@ -152,23 +152,23 @@ Ognuna di queste procedure avrà i suoi controlli per verificare che la chiamata
 == Role-Based Access Control
 Invece di basarsi su chi è l'utente, si basa più sul ruolo che copre questo utente, i permessi infatti vengono dati in base al ruolo e non agli utenti specifici.
 
-#align(center, image("/assets/image-52.png", width: 80%))
+#align(center, image("/assets/image-52.png", width: 50%))
 
 Ogni ruolo dovrebbe contenere il minimo numero di permessi richiesti da quel ruolo (least privilege).
 
 Per implementare questo meccanismo abbiamo quindi bisogno di una tabella che ci dice per ogni utente a che ruolo o ruoli appartiene e poi una ACM che per ogni ruolo indica quali poteri ha:
 
-#align(center, image("/assets/image-53.png", width: 80%))
+#align(center, image("/assets/image-53.png", width: 50%))
 
 Esistono diversi modelli di Role-Based Access Control, ad esempio quello basato sull'ereditarietà:
 
-#align(center, image("/assets/image-54.png", width: 80%))
+#align(center, image("/assets/image-54.png", width: 50%))
 
 Questo permette ad un ruolo di ereditare permessi da un altro ruolo.
 
 Oppure ruoli basati sulla sessione, ad utente vengono forniti dei permessi in base a quello che deve fare in quel momento:
 
-#align(center, image("/assets/image-55.png", width: 80%))
+#align(center, image("/assets/image-55.png", width: 50%))
 
 == Attribute-Based Access Control
 Definisce condizioni sia sugli oggetti che sugli utenti, ad esempio prendiamo una configurazione dove ogni risorsa ha un attributo che identifica il soggetto che l'ha creata, in questo modo una singola regola può indicare il permesso di possesso per tutte le risorse rispetto a tutti i possessori.
@@ -191,4 +191,4 @@ ABAC verifica il l'accesso agli oggetti considerando le regole su tutti gli attr
 Quando un utente prova ad accedere ad una risorsa la richiesta viene analizzata da un meccanismo di acccess control.
 Questo meccanismo è guidato da delle regole definite dalle policy e basandosi su queste regole il meccanismo definisce gli attributi del soggetto, della risorsa e dell'ambiente per determinare l'autorizzazzione.
 
-#align(center, image("/assets/image-56.png", width: 80%))
+#align(center, image("/assets/image-56.png", width: 50%))
