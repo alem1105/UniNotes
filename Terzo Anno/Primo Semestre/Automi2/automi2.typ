@@ -624,7 +624,7 @@ I linguaggi regolari sono *chiusi* rispetto alle loro operazione? Ovvero, se app
   ]
 )
 
-Possiamo svolgere la dimostrazione in due modi:
+*Dimostrazione* - Possiamo svolgere la dimostrazione in due modi:
 
 1. Senza NFA
 
@@ -682,8 +682,7 @@ Possiamo svolgere la dimostrazione in due modi:
     // ==========================
 
     // Nuovo stato iniziale N
-    node((2.5, 1), $N$, stroke: none),
-    edge((2.8, 1), (3.5, 1), "-|>"),
+    edge((2.5, 1), (3.5, 1), "-|>", `N`, label-pos: 0, label-side: left),
     node((3.5, 1), shape: circle, radius: 12pt, name: <n_start>, $q_0$),
 
     // Copia Automa N1 (in alto a destra)
