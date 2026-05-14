@@ -722,3 +722,586 @@ Costruiamo $N=(Q,Sigma,delta,q_0,F)$ dove:
   {q_1, q_2} &space space q=q_0\, a = epsilon,
   emptyset &space space q=q_0\, a eq.not epsilon
 ) $
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    REG è chiuso per complemento. Ovvero $forall L in "REG", overline(L) in "REG"$
+  ]
+)
+
+*Dimostrazione* - Costruisco un automa $overline(L)$ che accetta tutto tranne le stringhe accettate da $L$. Per farlo ci basta avere come stati finali il complemento dell'insieme degli stati finali.
+
+Dato $L=(Q,Sigma,delta,q_0,F)$ t.c. $L(L)=A$ costruisco $overline(L)=(Q,Sigma,delta,q_0,Q-F)$
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    REG è chiuso per intersezione. Ovvero $forall L_1,L_2 in "REG", L_1 inter L_2 in "REG"$
+  ]
+)
+
+*Dimostrazione* - Dati $D_1=(Q,Sigma,delta_1,q_1,F_1)$ t.c. $cal(L)(D_1)=L_1$ e $D_2=(Q_2,Sigma,delta_2,q_2,F_2)$ t.c. $cal(L)(D_2)=L_2$ costruisco $M=(Q,Sigma,delta,q_0,F)$ t.c.:
+
+- $Q=Q_1 times Q_2$
+
+- $F = F_1 times F_2$
+
+- $q_0 = (q_1, q_2)$
+
+- $delta((r_1, r_2), a) = (delta_1 (r_1, a), delta_2 (r_2,a))$
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    REG è chiuso per concatenazione. $forall L_1, L_2 in "REG", L_1 op(circle.small) L_2 in "REG"$
+  ]
+)
+
+Dati $D_1=(Q_1,Sigma,delta_1,q_1,F_1)$ t.c. $cal(L)(D_1)=L_1$ e $D_2=(Q_2,Sigma,delta_2,q_2,F_2)$ t.c. $cal(L)(D_2)=L_2$ costruisco $N=(Q,Sigma,delta,q_0,F)$ t.c.:
+
+- $Q=Q_1 union Q_2$
+
+- $q_0 = q_1$
+
+- $F=F_2$
+
+- $forall q in Q, a in Sigma$ si ha che $ delta(q,a)=cases(
+  delta_1 (q,a) &space space space q in Q_1 - F_1,
+  delta_1 (q,a) &space space space q in F_1 and a eq.not epsilon,
+  delta_1 (q,a) union {q_2} &space space space q in F_1 and a = epsilon,
+  delta_2 (q,a) &space space space q in Q_2
+) $
+
+Graficamente ci basta prendere il primo automa $L_1$ e collegare i suoi stati finali allo stato iniziale di $L_2$ tramite $epsilon$-archi:
+
+#align(center, diagram(
+  node-stroke: 1pt,
+  edge-stroke: 1pt,
+  spacing: 2em, // Controlla la distanza generale tra le coordinate
+
+  // ==========================
+  // LATO SINISTRO
+  // ==========================
+
+  // Automa N1 (in alto)
+  node((-1, 0), $L_1$, stroke: none),
+  edge((-0.5, 0), (0, 0), "-|>"), // Freccia di ingresso
+  node((0, 0), shape: circle, radius: 5pt, name: <n1_start>),
+  node((0.5, 0.5), shape: circle, radius: 4pt, name: <n1_mid>),
+  // extrude: (0, 3) crea il doppio cerchio
+  node((1, -0.2), shape: circle, radius: 5pt, extrude: (0, 3), name: <n1_end>),
+  // Il riquadro che racchiude N1
+  node(enclose: (<n1_start>, <n1_mid>, <n1_end>), shape: rect, inset: 15pt, name: <box_n1>),
+
+  // Automa N2 (in basso)
+  node((-1, 2), $L_2$, stroke: none),
+  edge((-0.5, 2), (0, 2), "-|>"),
+  node((0, 2), shape: circle, radius: 5pt, name: <n2_start>),
+  node((0.5, 1.6), shape: circle, radius: 4pt, name: <n2_m1>),
+  node((1, 1.8), shape: circle, radius: 4pt, name: <n2_m2>),
+  node((0.2, 2.5), shape: circle, radius: 5pt, extrude: (0, 3), name: <n2_e1>),
+  node((0.8, 2.5), shape: circle, radius: 5pt, extrude: (0, 3), name: <n2_e2>),
+  node(enclose: (<n2_start>, <n2_m1>, <n2_m2>, <n2_e1>, <n2_e2>), shape: rect, inset: 15pt, name: <box_n2>),
+
+  // ==========================
+  // LATO DESTRO (Unione)
+  // ==========================
+
+  // Nuovo stato iniziale N
+  edge((2.5, 1), (3.5, 1), "-|>", `N`, label-pos: 0, label-side: left),
+
+  // Copia Automa N1 (in alto a destra)
+  node((3.5, 1), shape: circle, radius: 15pt, name: <rn1_start>, $q_1$),
+  node((4.0, 1.5), shape: circle, radius: 4pt, name: <rn1_mid>),
+  node((4.5, 0.5), shape: circle, radius: 5pt, extrude: (0, 3), name: <rn1_end>),
+
+  // Copia Automa N2 (in basso a destra)
+  node((6.5, 1), shape: circle, radius: 10pt, name: <rn2_start>, $q_2$),
+  node((7.0, 0.6), shape: circle, radius: 4pt, name: <rn2_m1>),
+  node((7.5, 0.8), shape: circle, radius: 4pt, name: <rn2_m2>),
+  node((6.7, 1.5), shape: circle, radius: 5pt, extrude: (0, 3), name: <rn2_e1>),
+  node((7.3, 1.5), shape: circle, radius: 5pt, extrude: (0, 3), name: <rn2_e2>),
+  node(enclose: (<rn1_start>, <rn1_mid>, <rn1_end>, <rn2_start>, <rn2_m1>, <rn2_m2>, <rn2_e1>, <rn2_e2>), shape: rect, inset: 30pt, name: <rbox_n2>),
+
+  edge(<rn1_end>, <rn2_start>, "-|>", $epsilon$, label-pos: 0.5, label-side: left, bend: 20deg),
+))
+
+Da questa dimostrazione possiamo anche dire che REG è chiuso per potenza, dato che la potenza si esprime in funzione della concatenazione. _Es_ $L^2 = L op(circle.small) L $
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Corollario*],
+  [
+    REG è chiuso per l'operatore potenza. $forall L in "REG", n in NN, L^n in "REG"$.
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    REG è chiuso per l'operatore $*$. $forall L in "REG", L^* in "REG"$.
+  ]
+)
+
+*Dimostrazione* - Dato $L in "REG"$, sia $N_1=(Q_1, Sigma, delta_1, q_1, F)$ l'NFA t.c. $L(N_1)=L$ costruisco $N=(Q,Sigma,delta,q_0,F)$ NFA t.c.:
+- $q_0 eq.not q_1$ è un nuovo stato iniziale
+
+- $Q = Q_1 union {q_0}$
+
+- $F = F_1 union {q_0}$. Dobbiamo aggiungere anche il nuovo stato iniziale dato che l'operatore $*$ comprende anche la stringa vuota $epsilon$.
+
+- $forall q in Q, a in Sigma$ si ha che $ delta (q,a) = cases(
+  delta_1 (q,a) &space space space q in Q - F,
+  delta_1 (q,a) &space space space q in F and a eq.not epsilon,
+  delta_1 (q,a) union {q_1} &space space space q in F and a = epsilon,
+  {q_1} &space space space q = q_0 and a = epsilon,
+  emptyset &space space space q = q_0 and a eq.not epsilon
+) $
+
+Questo nuovo automa accetta tutto quello che accetta $N_1$ ma ogni volta che accetta torna indietro con un $epsilon$-arco per provare ad accettare un'altra stringa accettata sempre da $N_1$. Proviamo a rappresentare questo automa:
+
+#align(center, diagram(
+  node-stroke: 1pt,
+  edge-stroke: 1pt,
+  spacing: 2em, // Controlla la distanza generale tra le coordinate
+
+  // ==========================
+  // LATO SINISTRO
+  // ==========================
+
+  // Automa N1 (in alto)
+  node((-1.5, 0), $N_1$, stroke: none, name:<name1>),
+  edge((-0.8, 0), (0, 0), "-|>", `start`, label-pos: 0.3, label-side: left), // Freccia di ingresso
+  node((0, 0), shape: circle, radius: 15pt, name: <n1_start>, $q_1$),
+  node((0.5, 0.5), shape: circle, radius: 9pt, name: <n1_mid1>),
+  node((0.25, 0.85), shape: circle, radius: 9pt, name: <n1_mid2>),
+  node((0.75, 0.85), shape: circle, radius: 9pt, name: <n1_mid3>),
+  // extrude: (0, 3) crea il doppio cerchio
+  node((1, -0.2), shape: circle, radius: 10pt, extrude: (0, 3), name: <n1_end>),
+  // Il riquadro che racchiude N1
+  node(enclose: (<n1_start>, <n1_mid1>,<n1_mid2>,<n1_mid3>, <n1_end>, <name1>), shape: rect, inset: 15pt, name: <box_n1>),
+
+  // ==========================
+  // LATO DESTRO
+  // ==========================
+
+  // Nuovo stato iniziale N
+  node((3, 0), $N$, stroke: none, name:<name>),
+  edge((3, 0), (4, 0), "-|>", `start`, label-pos: 0.3, label-side: left), // Freccia di ingresso
+  node((4, 0), shape: circle, radius: 15pt, name: <n_start>, $q_0$, extrude: (-2.5,0)),
+  node((6, 0), shape: circle, radius: 15pt, name: <n_mid>, $q_1$),
+  edge(<n_start>, <n_mid>, "-|>", $epsilon$, label-pos: 0.3, label-side: left),
+  node((7.5, 0.5), shape: circle, radius: 9pt, name: <n_mid1>),
+  node((7.15, 0.95), shape: circle, radius: 9pt, name: <n_mid2>),
+  node((7.85, 0.95), shape: circle, radius: 9pt, name: <n_mid3>),
+  node((7.5, -1), shape: circle, radius: 10pt, extrude: (-2.5, 0), name: <n_end>),
+  edge(<n_end>, <n_mid>, "-|>", $epsilon$, label-pos: 0.5, label-side: right, bend: -20deg),
+
+  node(enclose: (<n_start>, <n_mid1>,<n_mid2>,<n_mid3>, <n_end>, <name>), shape: rect, inset: 15pt, name: <box_n>),
+))
+
+Come prima, grazie a questa dimostrazione possiamo anche dire che REG è chiuso per +. L'operatore + é come l'operatore $*$ ma esclude la potenza 0, posiamo definirlo quindi come $L^+ = L^1 union L^2 union ...$
+
+#showybox(
+  frame: (
+    border-color: silver.lighten(60%),
+    title-color: silver.lighten(60%),
+    body-color: silver.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Notazione*],
+  [
+    $L^+$ equivale quindi a scrivere $L L^*$, ovvero almeno una concatenazione di $L$.
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Corollario*],
+  [
+    REG è chiuso per $+$. La dimostrazione è uguale a $*$ ma ci basta escludere $q_0$ da $F$.
+  ]
+)
+
+#pagebreak()
+== Espressioni Regolari
+\
+Le espressioni regolari sono come le espressioni matematiche ma invece di rappresentare numeri, rappresentano linguaggi. Diamo una definizione formale.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Espressione Regolare],
+  [
+    Sia $Sigma$ un alfabeto. Un'espressione regolare su $Sigma$ che indichiamo con $op(r e)(Sigma)$ è definita ricorsivamente come segue:
+    $ "caso base:" cases(
+      emptyset &space space space in r e(Sigma),
+      epsilon &space space space in r e(Sigma),
+      a &space space space in r e(Sigma)\, forall a in Sigma,
+    ) $
+    $
+    "caso induttivo:" cases(
+      R_1 union R_2 &space space space R_1\, R_2 in r e(Sigma),
+      R_1 op(circle.small) R_2 &space space space R_1\, R_2 in r e(Sigma),
+      (R_1)^* &space space space R_1 in r e(Sigma),
+    ) $
+    Dove $R_i$ sono espressioni regolari.
+  ]
+)
+
+Stiamo quindi dicendo che, preso un alfabeto, i suoi singoli caratteri, la stringa vuota e l'insieme vuoto appartengono all'espressione regolare che descrive questo alfabeto. L'unione, l'intersezione o la $*$ di espressioni regolari su questo alfabeto sono comunque espressioni regolari dell'alfabeto.
+
+*Osservazione* - Ogni espressione regolare $R in r e (Sigma)$ ha associato un linguaggio $L(R)$:
+$ "caso base:" cases(
+  L(R) = emptyset &space space space "se" R=emptyset,
+  L(R) = {epsilon} &space space space "se" R=epsilon,
+  L(R) = {a} &space space space "se" R=a
+) $ 
+
+$ "caso induttivo:" cases(
+  L(R) = L(R_1) union L(R_2) &space space space "se" R = R_1 union R_2,
+  L(R) = L(R_1) op(circle.small) L(R_2) &space space space "se" R = R_1 op(circle.small) R_2,
+  L(R) = (L(R_1))^* &space space space "se" R = (R_1)^*
+) $
+
+Vediamo qualche esempio di espressione regolare.
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempi*],
+  [
+    - $0^* 10^* = {w | w "contiene un solo" 1}$
+
+    - $(0 union 1) = {0} union {1} = {0,1}$
+
+    - $(Sigma Sigma)^* = {w | w "ha lunghezza pari"}$. Prima concatena 2 simboli qualsiasi dell'alfabeto e poi li eleva, quindi avremo semrpe $2*n$ simboli
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Un linguaggio è regolare *se e solo se* esiste un'espressione regolare che lo descrive, ovvero: $ "REG" equiv cal(L)(r e) $
+  ]
+)
+
+*Dimostrazione* - Dimostriamo il teorema tramite due lemmi.
+
+1. *Lemma* $cal(L)(r e) subset.eq "REG"$
+  
+  Data un'espressione regolare $R$, costruisco un NFA/DFA $N_R$ t.c. $L(N_R)=L(R)$. Per convertire $R$ in un NFA consideriamo i casi della definizione ricorsiva di $R$. Prima vediamo i 3 casi base e poi i 3 induttivi.
+
+  1. $R=emptyset$. È un NFA che non accetta niente.
+    - $N_R = {{q_1}, Sigma, delta, q_1, emptyset}$
+
+    - $delta(q_1, b) = emptyset, forall b in Sigma$
+
+    #align(center, diagram(
+      node-stroke: .1em,
+      spacing: 3em,
+      // q0
+      node((0,0), $q_1$, radius: 1.5em),
+
+      edge((-1,0), (0,0), `start`, "-|>", label-pos: 0.5, label-side: left),
+    ))
+
+  2. $R=epsilon$. È un NFA che accetta soltanto la stringa vuota.
+    - $N_R={{q_1},Sigma,delta,q_1, {q_1}}$
+
+    - $delta(q_1, b)=emptyset, forall b in Sigma$
+
+    #align(center, diagram(
+      node-stroke: .1em,
+      spacing: 3em,
+      // q0
+      node((0,0), $q_1$, radius: 1.5em, extrude: (-2.5,0)),
+
+      edge((-1,0), (0,0), `start`, "-|>", label-pos: 0.5, label-side: left),
+    ))
+
+  3. $R=a, a in Sigma$. È un NFA che accetta soltanto il carattere $a$.
+    - $N_R = ({q_1,q_2}, Sigma,delta,q_1, {q_2})$
+    
+    - $delta(q_1,a)=q_2$
+
+    - $delta(q,b)=emptyset, b eq.not a$
+
+    #align(center, diagram(
+      node-stroke: .1em,
+      spacing: 3em,
+      // q0
+      node((0,0), $q_1$, radius: 1.5em),
+      node((1,0), $q_2$, radius: 1.5em, extrude: (-2.5,0)),
+
+      edge((-1,0), (0,0), `start`, "-|>", label-pos: 0.5, label-side: left),
+      edge((0,0), (1,0), `a`, "-|>", label-pos: 0.5, label-side: left),
+    ))
+  
+  Passiamo adesso ai 3 casi ricorsivi.
+
+  4.5.6. $R=R_1 union R_2; R=R_1 op(circle.small) R_2; R= (R_1)^*$. Per costruire i casi induttivi ci basta utilizzare le chiusure dei linguaggi regolari. Ad esempio se dobbiamo costruire $R=R_1 union R_2$ ci basta prima costruire i due automi per $R_1,R_2$ e poi utilizzare la chiusura come visto nelle dimostrazioni precedenti.
+
+  #showybox(
+    frame: (
+      border-color: blue.lighten(60%),
+      title-color: blue.lighten(60%),
+      body-color: blue.lighten(95%)
+    ),
+    title-style: (
+      color: black,
+      weight: "regular",
+      align: center,
+      boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Esempio*],
+    [
+      Convertiamo l'espressione regolare $(a b union a)^*$ in un NFA:
+      Per prima cosa costruiamo gli automi per riconoscere i caratter $a$ e $b$:
+      #align(center, diagram(
+        node-stroke: .1em,
+        spacing: 3em,
+        // a
+        node((0,0), radius: 1.5em),
+        node((1,0), radius: 1.5em, extrude: (-2.5,0)),
+
+        edge((-1,0), (0,0), `start`, "-|>", label-pos: 0.5, label-side: left),
+        edge((0,0), (1,0), `a`, "-|>", label-pos: 0.5, label-side: left),
+
+        // b
+        node((4,0), radius: 1.5em),
+        node((5,0), radius: 1.5em, extrude: (-2.5,0)),
+
+        edge((3,0), (4,0), `start`, "-|>", label-pos: 0.5, label-side: left),
+        edge((4,0), (5,0), `b`, "-|>", label-pos: 0.5, label-side: left),
+      ))
+      Poi costruiamo quello per riconoscere $a b$ usando appunto la concatenazione:
+      #align(center, diagram(
+        node-stroke: .1em,
+        spacing: 3em,
+        // a
+        node((0,0), radius: 1.5em),
+        node((1,0), radius: 1.5em),
+
+        edge((-1,0), (0,0), `start`, "-|>", label-pos: 0.5, label-side: left),
+        edge((0,0), (1,0), `a`, "-|>", label-pos: 0.5, label-side: left),
+
+        // b
+        node((4,0), radius: 1.5em),
+        node((5,0), radius: 1.5em, extrude: (-2.5,0)),
+
+        edge((4,0), (5,0), `b`, "-|>", label-pos: 0.5, label-side: left),
+        edge((1,0), (4,0), $epsilon$, "-|>", label-pos: 0.5, label-side: left),
+      ))
+      Adesso usiamo l'unione per costruire l'NFA che riconosce $a b union a$:
+      #align(center, diagram(
+        node-stroke: .1em,
+        spacing: 3em,
+        // Start
+        node((0,0), radius: 1.5em),
+        edge((-1,0), (0,0), `start`, "-|>", label-pos: 0.5, label-side: left),
+        edge((0,0), (1,-0.5), $epsilon$, "-|>", label-pos: 0.5, label-side: left, bend:20deg),
+        edge((0,0), (1,0.5), $epsilon$, "-|>", label-pos: 0.5, label-side: left, bend:-20deg),
+
+        // ab
+        node((1,-0.5), radius: 1.5em),
+
+        node((2,-0.5), radius: 1.5em),
+        node((3,-0.5), radius: 1.5em),
+        node((4,-0.5), radius: 1.5em, extrude: (-2.5,0)),
+
+        edge((1,-0.5), (2,-0.5), `a`, "-|>", label-pos: 0.5, label-side: left),
+        edge((2,-0.5), (3,-0.5), $epsilon$, "-|>", label-pos: 0.5, label-side: left),
+        edge((3,-0.5), (4,-0.5), `b`, "-|>", label-pos: 0.5, label-side: left),
+
+        // a
+        node((1,0.5), radius: 1.5em),
+        node((2,0.5), radius: 1.5em, extrude: (-2.5,0)),
+        edge((1,0.5), (2,0.5), `a`, "-|>", label-pos: 0.5, label-side: left),
+      ))
+      Possiamo finalmente usare la chiusura per $*$ e costruire l'NFA:
+      #align(center, diagram(
+        node-stroke: .1em,
+        spacing: 3em,
+        // Start
+        node((-1,0), radius: 1.5em, extrude: (-2.5,0)),
+        node((0,0), radius: 1.5em),
+        edge((-1,0), (0,0), $epsilon$, "-|>", label-pos: 0.5, label-side: left),
+        edge((-2,0), (-1,0), `start`, "-|>", label-pos: 0.5, label-side: left),
+        edge((0,0), (1,-0.5), $epsilon$, "-|>", label-pos: 0.5, label-side: left, bend:20deg),
+        edge((0,0), (1,0.5), $epsilon$, "-|>", label-pos: 0.5, label-side: left, bend:-20deg),
+
+        // ab
+        node((1,-0.5), radius: 1.5em),
+
+        node((2,-0.5), radius: 1.5em),
+        node((3,-0.5), radius: 1.5em),
+        node((4,-0.5), radius: 1.5em, extrude: (-2.5,0)),
+
+        edge((1,-0.5), (2,-0.5), `a`, "-|>", label-pos: 0.5, label-side: left),
+        edge((2,-0.5), (3,-0.5), $epsilon$, "-|>", label-pos: 0.5, label-side: left),
+        edge((3,-0.5), (4,-0.5), `b`, "-|>", label-pos: 0.5, label-side: left),
+
+        // a
+        node((1,0.5), radius: 1.5em),
+        node((2,0.5), radius: 1.5em, extrude: (-2.5,0)),
+        edge((1,0.5), (2,0.5), `a`, "-|>", label-pos: 0.5, label-side: left),
+
+        //
+        edge((2,0.5), (2,0), (0, 0), $epsilon$, "-|>", label-pos: 0.5, label-side: right),
+        edge((4,-0.5), (4,-1), (0, -1), (0,0), $epsilon$, "-|>", label-pos: 0.5, label-side: right),
+      ))
+    ]
+  )
+
+2. *Lemma* $"REG" subset.eq cal(L)(r e)$. Adesso dobbiamo mostrare come passare da un linguaggio regolare ad un'espressione regolare. Per farlo dobbiamo imparare a convertire gli NFA in espressioni regolari.
+
+  Per fare questo ci serve il concetto di *NFA Generalizzato (GNFA)*:
+  - Le etichette degli archi sono espressioni regolari
+
+  - Lo stato iniziale ha solo archi uscenti verso ogni altro stato
+
+  - C'è un solo stato finale, che ha solo archi entranti da altri stati ed è diverso dallo stato iniziale
+
+  - Eccetto gli stati iniziale e finale, presi due stati qualsiasi (anche lo stesso) esiste un arco tra di essi.
+
+  Per prima cosa convertiamo l'NFA in un GNFA tramite il seguente algoritmo:
+  - Se lo stato iniziale ha archi entranti, aggiungere un nuovo stato iniziale con un $epsilon$-arco al vecchio stato iniziale.
+
+  - Se c'è più di uno stato accettante o esiste uno stato accettante con archi uscenti, aggiungere un nuovo stato finale con $epsilon$-archi provenienti da ogni $q in F$.
+
+  - Se qualche arco ha più di un input, usare come input per quell'arco l'unione tra gli input precedenti.
+
+  - Aggiungere archi con input $emptyset$ tra le coppie di stati non unite da archi.
+
+  Possiamo anche fornire una definizione formale di *GNFA*.
+
+  #showybox(
+    frame: (
+      border-color: green.lighten(60%),
+      title-color: green.lighten(60%),
+      body-color: green.lighten(95%)
+    ),
+    title-style: (
+      color: black,
+      weight: "regular",
+      align: center,
+      boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Definizione* - GNFA],
+    [
+      Un GNFA è una tupla $(Q,Sigma,delta,q_"start", q_"accept")$ dove gli elementi sono definiti come negli NFA ad eccezione della funzione di transizione, infatti:
+      $ delta:(Q\\{q_"accept"}) times (Q \\ {q_"start"}) arrow.r cal(R) = r e (Sigma) $
+    ]
+  )
+
+  *Conversione da GNFA a Espressione Regolare* - Adesso possiamo convertire il GNFA in espressione regolare. Definiamo la funzione `CONVERT(G)` che prende in input un GNFA e restituisce un'espressione regolare:
+
+  1. Sia $k=\#"stati di" G$
+
+  2. Se $k=2$ allora $G$ ha solo i due stati $q_"start"$ e $q_"accept"$ e un singolo arco con etichetta $R in cal(R)$, l'output sarà quindi $R$.
+
+  3. Se $k>2$ scegliamo un $q_"rip" in Q$ diverso da $q_"start"$ e $q_"accept"$. Definiamo $G'=(Q',Sigma,delta',q_"start",q_"accept")$ dove:
+    - $Q'=Q \\ {q_"rip"}$
+    
+    - $delta':Q' \\ {q_"acc"} times Q'\\{q_"start"} arrow.r cal(R)$
+    Quindi prendiamo uno stato $q_"rip"$ a caso e lo rimuoviamo. Come si rimuove? Vediamo un esempio:

@@ -17,5 +17,6 @@
 
 #set page(numbering: "1")
 #set par(first-line-indent: 1.5em)
+#set heading(numbering: "1.")
 
 #include "automi2.typ"
