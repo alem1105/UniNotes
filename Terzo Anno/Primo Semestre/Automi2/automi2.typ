@@ -1304,4 +1304,292 @@ Vediamo qualche esempio di espressione regolare.
     - $Q'=Q \\ {q_"rip"}$
     
     - $delta':Q' \\ {q_"acc"} times Q'\\{q_"start"} arrow.r cal(R)$
-    Quindi prendiamo uno stato $q_"rip"$ a caso e lo rimuoviamo. Come si rimuove? Vediamo un esempio:
+    Quindi prendiamo uno stato $q_"rip"$ a caso e lo rimuoviamo. Come si rimuove? Vediamo un esempio con il seguente automa:
+
+  #align(center, diagram(
+    node-stroke: .1em,
+    spacing: 3em,
+    node((0,0), $q_i$, radius: 2em, name: <qi>),
+    node((1,0), $q_j$, radius: 2em, name: <qj>),
+    node((0.5,1), $q_"rip"$, radius: 2em, name: <qrip>),
+
+    edge(<qi>, <qj>, "-|>", $R_4$, label-pos: 0.5, label-side: left, bend: 40deg),
+    edge(<qi>, <qrip>, "-|>", $R_1$, label-pos: 0.5, label-side: right, bend: -40deg),
+    edge(<qrip>, <qrip>, "-|>", $R_2$, label-pos: 0.5, label-side: right, bend: -130deg),
+    edge(<qrip>, <qj>, "-|>", $R_3$, label-pos: 0.5, label-side: right, bend: -40deg),
+  ))
+
+  Dobbiamo vedere quali sono tutti i modi che abbiamo per andare da $q_i$ a $q_j$, ovvero:
+  - Direttamente fra i due nodi: espressione $R_4$
+  - Considerando anche il passaggio per $q_"rip"$: prima si attraversa $R_1$ poi $R_2$ quante volte vogliamo e infine $R_3$
+
+  Scriviamo quindi la nuova espressione che andrà sull'arco da $q_i$ a $q_j$:
+  - $delta'(q_i, q_j)=(R_1)(R_2)^* (R_3) union R_4$
+  E possiamo infine ridisegnare il nuovo automa:
+
+  #align(center, diagram(
+    node-stroke: .1em,
+    spacing: 3em,
+    node((0,0), $q_i$, radius: 2em, name: <qi>),
+    node((3.5,0), $q_j$, radius: 2em, name: <qj>),
+
+    edge(<qi>, <qj>, "-|>", $(R_1)(R_2)^* (R_3) union R_4$, label-pos: 0.5, label-side: left),
+  ))
+
+  4. Si lancia ricorsivamente `CONVERT(G')` fino ad arrivare ad un automa con 2 stati.
+
+Adesso però dobbiamo dimostrare che il risultato di `CONVERT(G)` è equivalente a $G$.
+
+*Dimostrazione* - Si dimostra per induzione su $k$ numero di stati di $G$
+- *Caso Base*: $k=2$ è vero perché banalmente ci sono solo due stati e un solo arco che li collega quindi otteniamo lo stesso identico automa applicando la funzione.
+- *Passo Induttivo*: Supponendo quindi per $k-1$ stati valga $G equiv$ `CONVERT(G)`, se $G$ accetta $w in Sigma^*$ esiste un ramo di computazione t.c. $G$ percorre $q_"start",q_1,...,q_"acc"$ e in questo percorso facciamo due distinzioni:
+  - Se la sequenza non contiene $q_"rip"$ allora banalmente i linguaggi degli automi sono uguali $L(G)=L(G')$ dato che non abbiamo rimosso nulla dal percorso.
+  - Se la sequenza contiene $q_"rip"$, gli stati adiacenti ad esso che chiamiamo $q_1$ e $q_2$, in $G'$ avranno un nuovo arco che tiene conto di tutti i modi per passare da $q_1$ a $q_2$ anche senza $q_"rip"$ e quindi anche in questo caso manteniamo il linguaggio uguale.
+- Quindi $G equiv$ `CONVERT(G)` oppure $L(G)=L(G')$
+
+Facciamo un esempio completo per chiarire il procedimento.
+
+#showybox(
+    frame: (
+      border-color: blue.lighten(60%),
+      title-color: blue.lighten(60%),
+      body-color: blue.lighten(95%)
+    ),
+    title-style: (
+      color: black,
+      weight: "regular",
+      align: center,
+      boxed-style: (anchor: (y: horizon, x: left))
+    ),
+    title: [*Esempio* - Conversione da NFA a Esp. Regolare],
+    [
+      Dobbiamo trovare l'espressione regolare associata all'automa:
+      #align(center, diagram(
+        node-stroke: .1em,
+        spacing: 5em,
+        node((0,0), $b$, radius: 2em, name: <b>),
+        node((1,0), $c$, radius: 2em, name: <c>, extrude: (-2.5,0)),
+
+        edge(<b>, <c>, "-|>", `2`, label-pos: 0.5, label-side: left, bend: 40deg),
+        edge(<b>, <b>, "-|>", `0,1`, label-pos: 0.5, label-side: left, bend: 130deg),
+        edge(<c>, <c>, "-|>", `0,1`, label-pos: 0.5, label-side: left, bend: 130deg),
+      ))
+      Per prima cosa generalizziamo l'automa:
+      #align(center, diagram(
+        node-stroke: .1em,
+        spacing: 5em,
+        node((-1,0), $a$, radius: 2em, name: <a>),
+        node((0,0), $b$, radius: 2em, name: <b>),
+        node((1,0), $c$, radius: 2em, name: <c>),
+        node((2,0), $d$, radius: 2em, name: <d>, extrude: (-2.5,0)),
+
+        edge(<a>, <b>, "-|>", $epsilon$, label-pos: 0.5, label-side: left),
+        edge(<a>, <c>, "-|>", $emptyset$, label-pos: 0.5, label-side: left, bend: -40deg),
+        edge(<a>, <d>, "-|>", $emptyset$, label-pos: 0.5, label-side: left, bend: -40deg),
+        edge(<b>, <c>, "-|>", `2`, label-pos: 0.5, label-side: left, shift: 4pt),
+        edge(<b>, <d>, "-|>", $emptyset$, label-pos: 0.5, label-side: left, bend: 60deg),
+        edge(<b>, <b>, "-|>", `0|1`, label-pos: 0.5, label-side: left, bend: 120deg, loop-angle: 130deg),
+        edge(<c>, <c>, "-|>", `0|1`, label-pos: 0.5, label-side: left, bend: 120deg),
+        edge(<c>, <d>, "-|>", $epsilon$, label-pos: 0.5, label-side: left),
+        edge(<c>, <b>, "-|>", $emptyset$, label-pos: 0.5, label-side: left, shift: 4pt),
+      ))
+      Abbiamo quindi:
+      - Rimosso archi entranti dallo stato iniziale
+      - Rimosso archi uscenti dallo stato finale
+      - Collegato ogni stato con ogni altro stato
+
+      Adesso iniziamo la rimozione degli stati, iniziamo rimuovendo $b$:
+      #align(center, diagram(
+        node-stroke: .1em,
+        spacing: 5em,
+        node((0,0), $a$, radius: 2em, name: <a>),
+        node((1,0), $c$, radius: 2em, name: <c>),
+        node((2,0), $d$, radius: 2em, name: <d>, extrude: (-2.5,0)),
+
+        edge(<a>, <c>, "-|>", $(0|1)^* 2$, label-pos: 0.5, label-side: left),
+        edge(<a>, <d>, "-|>", $emptyset$, label-pos: 0.5, label-side: left, bend: -40deg),
+        edge(<c>, <c>, "-|>", `0|1`, label-pos: 0.5, label-side: left, bend: 120deg),
+        edge(<c>, <d>, "-|>", $epsilon$, label-pos: 0.5, label-side: left),
+      ))
+      Rimuoviamo $c$:
+      #align(center, diagram(
+        node-stroke: .1em,
+        spacing: 5em,
+        node((0,0), $a$, radius: 2em, name: <a>),
+        node((2,0), $d$, radius: 2em, name: <d>, extrude: (-2.5,0)),
+
+        edge(<a>, <d>, "-|>", $(0|1)^* 2(0|1)^*$, label-pos: 0.5, label-side: left),
+      ))
+      Otteniamo quindi l'espressione regolare $(0|1)^* 2(0|1)^*$
+    ]
+  )
+
+== Pumping Lemma
+\
+Il _pumping lemma_ ci serve per rispondere alla domanda "tutti i linguaggi sono regolari?". L'idea dietro il lemma è che tutte le stringhe di un linguaggio regolare hanno una sezione che può essere ripetuta infinite volte e tutte le stringhe risultanti da questa ripetizione apparterranno ancora al linguaggio.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema* - Pumping Lemma],
+  [
+    Se $L$ è regolare allora $exists p$ (_pumping length_) t.c. presa $w in L$ con $|w| gt.eq p$ allora $w$ può essere scomposta in $w=x y z$ in modo che:
+    1. $forall i gt.eq 0, x y^i z in L$
+    2. $|y| gt 0$. _Altrimenti sarebbe banale infatti $y^0 = epsilon$_.
+    3. $|x y| lt.eq p$
+  ]
+)
+
+Prendiamo come pumping length $p$ il numero degli stati e mostriamo che qualsiasi stringa $s$ di lunghezza maggiore o uguale a $p$ può essere spezzata in $x y z$. Ovviamente se nessuna stringa è lunga almeno $p$ allora il teorema risulta vero.
+Se $|s|=n$ allora possiamo dire che gli stati attraversati dall'automa saranno $n+1$ e dato che $n gt.eq p$ allora $n+1 gt p$, quindi c'è almeno uno stato che si ripete.
+
+Dividiamo $s$ in $x y z$ in questo modo:
+- Individuiamo il primo stato che si ripete e lo chiamiamo $q_r$
+- $x$ è la parte di $s$ che viene prima della *prima apparizione* di $q_r$.
+- $y$ è la parte prima della *prima ripetizione* di $q_r$.
+- $z$ è la parte rimanente della stringa.
+
+Con questa divisione rispettiamo le 3 condizioni:
+1. Visto che $y$ ci riporta alla fine di $x$ possiamo ripetere $y$ quante volte vogliamo e quindi se l'automa accetta $x y z$ accetterà anche $x y^i z$ con $i gt.eq 0$.
+2. $|y| gt 0$ per costruzione
+3. Sappiamo che $|x y| lt.eq p$ perché $y$ finisce prima della prima ripetizione.
+
+Adesso che abbiamo visto come funziona il lemma "a parole", dimostriamolo in modo formale.
+
+*Dimostrazione*:
+- Sia $M=(Q,Sigma,delta,q_1,F)$ t.c. $L(M)=A$ e $p=|Q|$
+
+- Sia $w=w_1 w_2 ... w_n in A$ t.c. $n gt.eq p$
+
+- Siano $r_1,...,r_(n+1)$ gli stati attraversati da $M$ durante il processamento di $w$ (quindi la funzione fa i passaggi in modo che $delta(r_i,w_i)=r_(i+1)$).
+
+La stringa ha lunghezza $n gt.eq p$ quindi la sequenza di stati è lunga $n+1 gt.eq p+1$ e quindi uno stato appare almeno due volte, chiamiamo le occorrenze di questo stato $r_p$ (la prima) e $r_s$ (la seconda).
+Visto che $r_s$ appare tra i primi $p+1$ (infatti ho $p$ stati ma ne attraverso $gt.eq p+1$) stati si ha $s lt.eq p+1$.
+
+Adesso siano:
+- $x=w_1,...,w_(p-1)$
+- $y=w_p,...,w_(s-1)$
+- $z=w_s,...,w_n$
+Otteniamo che:
+1. Visto che $x$ porta $M$ da $r_1$ a $r_p$ e $y$ porta $M$ da $r_p$ a $r_p$, $M$ accetterà $x y^i z$.
+2. Sappiamo che $p eq.not s$ quindi $|y| gt 0$.
+3. Sappiamo che $s lt.eq p+1$ qundi $|x y| lt p$.
+
+*Esercizio* - Dimostriamo utilizzando il pumping lemma che $L={0^n 1^n}$ non è regolare. Scegliamo $w=0^p 1^p$ con $p=$pumping length. Abbiamo $|w| gt.eq p$. Dato che abbiamo $w=0^p 1^p$ allora per qualsiasi scomposizione scegliamo $w=x y a$ con $|x y| lt.eq p$ avremo sempre che $y$ è composta da solo "0": $ w = underbracket(0 0.., x)...underbracket(.\.0 0, y) 01...1 $
+
+Per $i gt.eq 2, hat(w)=x y^i z$ è $0^q 1^p$ t.c. $q > p$ che non è in $L$. Quindi il pumping lemma è contraddetto $arrow.double.r L$ non è regolare. Infatti per qualsiasi numero di volte aumenti il numero di 0 non avrò mai lo stesso numero di 1.
+
+*Esercizio* - Dimostriamo che il linguaggio $L={w in {0,1}^* : \#_0 w=\#_1 w}$ non è regolare. Prendiamo la stringa $w=0^p 1^p in L$ e analizziamo due casi:
+1. $underbracket(0...0, x) space underbracket(0...0,y) space underbracket(1...1,z)$
+
+2. $underbracket(0...0, x) space underbracket(0...0,y) space underbracket(001...1,z)$
+
+Analizziamoli:
+1. Nel primo caso abbiamo che:
+  - $|y| = k > 0$ con $k lt.eq p$
+  - $|x| = p-k$
+  - $|z| = p$
+  In questo modo però otteniamo che $|x y^2 z|=(p-k)+2k+p=2p+k$ ma allora $\#_0=(p-k)+2k=p+k > p$ e quindi $hat(w) in.not L$.
+
+2. Nel secondo invece:
+  - $|y|=k>0$
+  - $|z|=p+l$. Dove $p$ sono il numero di 1 e $l$ il numero di 0.
+  - $|x|=p-k-l$. Ovvero tutti gli 0 rimasti.
+  Adesso però otteniamo che $|x y^2 z|=p-k-l+2k+p+l=2p+k$ ma sappiamo che $\#_0=2k+p-k-l+l=k+p>p$ e quindi $hat(w) in.not L$.
+
+#showybox(
+  frame: (
+    border-color: silver.lighten(60%),
+    title-color: silver.lighten(60%),
+    body-color: silver.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [Scelta della stringa],
+  [
+    È importante scegliere la stringa "giusta" per effettuare la dimostrazione, infatti se ad esempio avessimo scelto $w=(0 1)^p in L$ allora non saremmo riusciti a trovare una scomposizione che invalidasse il lemma.
+  ]
+)
+
+== Linguaggi Acontestuali
+\
+I linguaggi acontestuali sono "più potenti" dei linguaggi regolari, quest'ultimi infatti non sono in grado di avere una memoria per, ad esempio, ricordarsi quante occorrenze di un carattere sono state incontrate, questi nuovi linguaggi invece ci permettono di descrivere anche alcune strutture ricorsive.
+
+Introduciamo il concetto di *Grammatica Acontestuale (CFG)*, queste sono formate da regole di sostituzione dette "produzioni" composte da *variabili* (di cui una speciale ovvero quella iniziale) e *terminali*. Vediamo un esempio:
+1. $A arrow.r 0 A 1$
+2. $A arrow.r B$
+3. $B arrow.r \#$
+In questo caso le variabili sono $A,B$ mentre i terminali $0,1,\#$. Spesso i terminali li indichiamo anche con lettere minuscole.
+
+Per generare stringhe con una grammatica acontestuale si usa il seguente procedimento:
+1. Si scrive la variabile iniziale
+2. Si usano le regole della grammatica per sostituire (a piacimento) le variabili con le espressioni che producono.
+3. Si ripete lo step 2 fino a quando non ci sono più variabili.
+*Esempio* - Con la grammatica di prima possiamo generare: $ A arrow.r 0 A 1 arrow.r 0 0 A 1 1 arrow.r 0 0 0 A 1 1 1 arrow.r 0 0 0 B 1 1 1 arrow.r 0 0 0 \# 1 1 1 $
+Per le stringhe generata da una grammatica possiamo disegnare l'*albero di derivazione*:
+
+#align(
+  center, diagram(
+  spacing: 2em,
+  node((0,0), `A`, name: <a1>),
+  node((0,1), `A`, name: <a2>),
+  node((0,2), `A`, name: <a3>),
+  node((0,3), `B`, name: <b>),
+  node((0,4), `#`, name: <h>),
+
+  node((-3,4), `0`, name: <01>),
+  node((-2,4), `0`, name: <02>),
+  node((-1,4), `0`, name: <03>),
+  node((1,4), `1`, name: <11>),
+  node((2,4), `1`, name: <12>),
+  node((3,4), `1`, name: <13>),
+
+  edge(<a1>, <a2>, "-"),
+  edge(<a2>, <a3>, "-"),
+  edge(<a3>, <b>, "-"),
+  edge(<b>, <h>, "-"),
+
+  edge(<a1>, <01>, "-"),
+  edge(<a1>, <13>, "-"),
+
+  edge(<a2>, <02>, "-"),
+  edge(<a2>, <12>, "-"),
+
+  edge(<a3>, <03>, "-"),
+  edge(<a3>, <11>, "-"),
+))
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Grammatiche Acontestuali],
+  [
+    Una CFG è una tupla $(V,Sigma,R,S)$ dove:
+    - $V$ è un insieme finito di variabili.
+    - $Sigma$ è un insieme finito di terminali ($V inter Sigma = emptyset$)
+    - $R$ è un insieme finito di regole.
+    - $S$ è la variabile iniziale.
+  ]
+)

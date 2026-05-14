@@ -1,6 +1,6 @@
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/fontawesome:0.6.0": *
-#import "@preview/ilm:2.0.0": ilm
+#import "@preview/ilm:1.4.0": ilm
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
 #ilm(
