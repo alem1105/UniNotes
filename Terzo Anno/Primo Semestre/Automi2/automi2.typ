@@ -1593,3 +1593,165 @@ Per le stringhe generata da una grammatica possiamo disegnare l'*albero di deriv
     - $S$ è la variabile iniziale.
   ]
 )
+
+#showybox(
+  frame: (
+    border-color: silver.lighten(60%),
+    title-color: silver.lighten(60%),
+    body-color: silver.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Notazione*],
+  [
+    Due o più regole del tipo $A arrow.r x, A arrow.r y$, quindi con la stessa variabile che porta a più cose si possono unire per compattezza e scrivere quindi $A arrow.r x | y$.
+  ]
+)
+
+La terminologia che utilizzeremo invece è la seguente:
+- Se $u,v,w in Sigma union V$ e $(A arrow.r w) in R$ diciamo che $u A v$ *produce* $u w v$ e lo scriviamo come $u A v arrow.double.r u w v$.
+- Diciamo che $u$ *deriva* w, scritto come $u op(arrow.double.r)^* w$ se:
+  - $u = w$, _oppure_
+  - $u_1 arrow.double.r u_2 arrow.double.r ... arrow.double.r u_k arrow.double.r v$
+
+Il *linguaggio di una grammatica* è quindi definito da: $ {w in Sigma | S op(arrow.double.r)^* w} $
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempio*],
+  [
+    Prendiamo la grammatica $G=({S}, {a, b}, R, S)$ dove:
+    - $R = {S arrow.r a S b | S S | epsilon}$
+    Allora, ad esempio, $a a b b in L(G)$ infatti: $ S arrow.double.r a S b arrow.double.r a a S b b arrow.double.r a a b b $
+  ]
+)
+
+Esistono diversi modi per costruire una CFG, noi vedremo: *unione*, *trasformazione da DFA in CFG* e *ricorsione*.
+
+=== Unione tra CFG
+Supponiamo di avere una CFG $G_i = (V_i, Sigma_i, R_i, S_i), forall i in [k]$ e vogliamo creare una CFG $G=(V, Sigma, R, S)$ t.c. $L(G)=union.big_i L(G_i)$. Allora definiamo:
+- $V=union.sq.big_i V_i union {S}$. Assumendo quindi (wlog) che $V_i inter V_j = emptyset, forall i eq.not j$.
+- $S$ nuova variabile iniziale
+- $Sigma = union.big_i Sigma_i$
+- $R = union.big_i R_i union {S arrow.r S_1 | S_2 | ... | S_k}$
+
+*Dimostrazione* - Dimostriamo che $union_i L(G_i) = L(G)$.
+  - La prima implicazione è $union_i L(G_i) subset.eq L(G)$. Sia $w in union_i L(G_i)$ allora $exists j in [k]$ t.c. $w in L(G_j)$ ovvero $S_j op(arrow.double.r)^*_G_j w$, allora per costruzione di $G$ abbiamo che $S arrow.double.r S_j op(arrow.double.r)^*_G_j w$ ovvero $w in L(G)$.
+
+  - La seconda implicazione è $L(G) subset.eq union_i L(G_i)$. Sia $w in L(G)$ ovvero $S op(arrow.double.r)^*_G w$ allora per costruzione $exists j in [k]$ t.c. $S arrow.double.r S_j op(arrow.double.r)^*_G_j w$. Siccome $V_j$ è disgiunto da tutti gli altri $V_i$ possiamo dire che: $ S arrow.double.r underbracket(S_j op(arrow.double.r)^*_G_j w, w in L(G_j) subset.eq union_i L(G_i)) $
+
+=== Trasformare un DFA in un CFG
+Dato un DFA $D=(Q,Sigma,delta,q_0,F)$ voglio definire $G=(V,Sigma,R,S)$ t.c. $L(G)=L(D)$, costruiamola nel seguente modo:
+- $V={V_q | q in Q}$
+- $S = V_q_0$
+- $forall q in F$ aggiungo la regola $V_q arrow.r epsilon$
+- $forall p,q in Q$ t.c. $delta(q,a)=p$ aggiungo la regola $V_q arrow.r a V_p$
+
+*Dimostrazione* - Dobbiamo dimostrare che $L(D) = L(G)$ quindi vediamo le due implicazioni.
+1. $L(D) subset.eq L(G)$. Sia $w=w_1 w_2 ... w_k in L(D)$ allora esiste una sequenza di stati $ underbracket(q_0\, q_1\, ...\, q_k\, q_(k+1), S) "con" q_(k+1) in F $
+  tali che $delta(q_i, w_i)=q_(i+1), forall i < k$. Per costruzione possiamo dire che:
+  - $forall q_1, q_2 in S$ t.c. $delta(q_1,a)=q_2, exists V_q_1 arrow.r a V_q_2 in R$.
+  
+  - $q_(k+1) in F$, quindi $(V_q_(k+1) arrow.r epsilon) in R$
+
+  La stringa viene quindi generata dalla CFG $G$.
+
+2. $L(G) subset.eq L(D)$. Sia $w in L(G)$ allora esiste una derivazione $S op(arrow.double.r)^* w$ ma le produzioni in $G$ sono tutte del tipo $(A arrow.r a B "o" A arrow.r epsilon)$ quindi la derivazione avrà forma $ V_q_0 arrow.double.r w_1 V_q_1 arrow.double.r ... arrow.double.r w_1 ... w_k V_q_k arrow.double.r w_1 ... w_k $
+  Ogni passo della derivazione è possibile per la regola $(V_q_i arrow.r w_(i+1) V_(q_(i+1))) in R$ e per costruzione abbiamo che:
+  - $delta(q_i, w_(i+1))=q_(i+1) in delta$
+  - $(V_q_k arrow.r epsilon) in R arrow.double.r.l q_k in F$ù
+
+  La stringa viene quindi riconosciuta correttamente dall'automa.
+
+Facciamo un esempio.
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempio*],
+  [
+    #align(
+      center, diagram(
+      node-stroke: .1em,
+      spacing: 5em,
+      node((0,0), $q_0$, radius: 2em, name: <q0>),
+      node((1,0), $q_1$, radius: 2em, name: <q1>),
+      node((2,0), $q_2$, radius: 2em, name: <q2>, extrude: (-2.5,0)),
+
+      edge(<q0>, <q1>, "-|>", $a$, label-pos: 0.5, label-side: left, bend: 40deg),
+      edge(<q1>, <q2>, "-|>", $b$, label-pos: 0.5, label-side: left, bend: 40deg),
+    ))
+    Costruiamo la grammatica $G$ con:
+    - $V = {V_q_0, V_q_1, V_q_2}$
+    - $Sigma = {a,b}$
+    - $R = {V_q_0 arrow.r a V_q_1, V_q_1 arrow.r b V_q_2, V_q_2 arrow.r epsilon}$
+    - $S = V_q_0$
+    Prendiamo la stringa $w=a b in L(D)$ e vediamo che possiamo infatti generarla con la grammatica: $ S arrow.double.r a V_q_1 arrow.double.r a b V_q_2 arrow.double.r a b $
+  ]
+)
+
+=== Forma Normale di Chomsky
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Forma Normale di Chomsky],
+  [
+    Una CFG è in forma normale se ogni regola è del tipo:
+    - $A arrow.r B C$
+    - $A arrow.r a$
+    - $S arrow.r epsilon$
+    Con $A,B,C in V, a in Sigma, B,C eq.not S$
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Ogni CFG ammette una CFG equivalente in forma normale.
+  ]
+)
+
+*Dimostrazione* - 
