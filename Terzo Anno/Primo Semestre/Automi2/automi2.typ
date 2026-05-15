@@ -1754,4 +1754,240 @@ Facciamo un esempio.
   ]
 )
 
-*Dimostrazione* - 
+*Dimostrazione* - Facciamo una "dimostrazione" tramite un esempio (?), prendiamo la grammatica con le seguenti regole: $ R={S arrow.r A S A | a B; A arrow.r B | S; B arrow.r b | epsilon} $
+
+1. Si aggiunge $S_0$ variabile iniziale insieme alla regola $S_0 arrow.r S$: $ R=cases(S &arrow.r A S A | a B, A &arrow.r B | S, B &arrow.r b | epsilon, #text(fill: blue, $S_0 &arrow.r S$)) $
+
+2. Si eliminano le $epsilon$-regole del tipo $A arrow.r epsilon$, quindi per ogni occorrenza di $A$ a destra di una regola si aggiunge una nuova regola in cui $A=epsilon$:
+$ "Elimino" B arrow.r epsilon=cases(
+S &arrow.r A S A | a B | #text(fill: blue, $a$),
+A &arrow.r B | S | #text(fill:blue, $epsilon$),
+B &arrow.r b cancel(| epsilon),
+S_0 &arrow.r S)
+"Elimino" A arrow.r epsilon=cases(
+S &arrow.r A S A | a B | a | #text(fill:blue, $S A | A S | S$),
+A &arrow.r B | S cancel(| epsilon),
+B &arrow.r b,
+S_0 &arrow.r S 
+) $
+
+3. Si eliminano le regole unitarie $A arrow.r B$ e ogni regola $B arrow.r x$ con $x in (V union Sigma)$ viene sostituita da $A arrow.r x$
+$ "Elimino" S_0 arrow.r S "e" S arrow.r S=cases(
+  S arrow.r A S A | a B | a | S A | A S cancel(| S),
+  A arrow.r B | S,
+  B arrow.r b,
+  #text(fill: blue, $S_0 arrow.r A S A | a B | a | S A | A S$),
+  cancel(S_0 arrow.r S),
+) $
+
+$ "Elimino" A arrow.r B = cases(
+  S arrow.r A S A | a B | a | S A | A S,
+  A arrow.r cancel(B) | S | #text(fill:blue, $b$),
+  B arrow.r b,
+  S_0 arrow.r A S A | a B | a | S A | A S,
+)
+$
+
+$ "Elimino" A arrow.r S = cases(
+  S arrow.r A S A | a B | a | S A | A S,
+  A arrow.r cancel(S) | b | #text(fill:blue, $A S A | a B | a | S A | A S$),
+  B arrow.r b,
+  S_0 arrow.r A S A | a B | a | S A | A S,
+)
+$
+
+4. Per ogni regola $A arrow.r x_1 ... x_k$ con $k gt.eq 3$ e $x_i in (V union Sigma)$ si elimina la regola iniziale e si aggiungono le regole: $ cases(A &arrow.r x_1 A_1, A_1 &arrow.r x_2 A_2, dots.v, A_(k-2) &arrow.r x_(k-1) x_k) $
+
+$ "Otteniamo quindi"=cases(
+  S arrow.r cancel(A S A) | a B | a | S A | A S | #text(fill:blue, $A A_1$),
+  A arrow.r b | cancel(A S A) | a B | a | S A | A S | #text(fill:blue, $A A_1$),
+  B arrow.r b,
+  S_0 arrow.r cancel(A S A) | a B | a | S A | A S | #text(fill:blue, $A A_1$),
+  #text(fill:blue, $A_1 arrow.r S A$)
+) $
+
+5. Per ogni regola della forma $A arrow.r x_1 x_2$, se $x_1 in Sigma$ si aggiunge una variabile $X_1$ ed una regola $X_1 arrow.r x_1$. Si sostituisce $A arrow.r x_1 x_2$ con $A arrow.r X_1 x_2$. Facciamo lo stesso anche se $x_2 in Sigma$:
+
+$ cases(
+  S arrow.r cancel(a B) | a | S A | A S | A A_1 | #text(fill:blue, $X B$),
+  A arrow.r b | cancel(a B) | a | S A | A S | A A_1 | #text(fill:blue, $X B$),
+  B arrow.r b,
+  S_0 arrow.r cancel(a B) | a | S A | A S | A A_1 | #text(fill:blue, $X B$),
+  A_1 arrow.r S A,
+  #text(fill:blue, $X arrow.r a$)
+) $
+
+Abbiamo quindi ottenuto una grammatica equivalente in forma normale di Chomsky:
+$ cases(
+  S arrow.r a | S A | A S | A A_1 | X B,
+  A arrow.r b | a | S A | A S | A A_1 | X B,
+  B arrow.r b,
+  S_0 arrow.r | a | S A | A S | A A_1 | X B,
+  A_1 arrow.r S A,
+  X arrow.r a
+) $
+
+== Pushdown Automata - PDA
+I PDA sono degli automi in grado di riconoscere i linguaggi delle CFG, questi sono simili agli NFA ma hanno una pila (stack) LIFO. Ad ogni passo di computazione il PDA può svolgere 3 operazioni sulla cima della pila:
+- PUSH (inserimento)
+- POP (rimozione)
+- Sostituzione (POP e poi PUSH in un unico passaggio)
+Vediamo un esempio grafico per definire la notazione:
+
+#align(center, diagram(
+  node-stroke: .1em,
+  spacing: 5em,
+  node((0,0), $q_1$, radius: 2em, name: <q1>),
+  node((2,0), $q_2$, radius: 2em, name: <q2>),
+
+  edge(<q1>, <q2>, "-|>", $a | b arrow.r c$, label-pos: 0.5, label-side: left, bend: 20deg),
+))
+
+Questo significa che se ci troviamo nello stato $q_1$ possiamo percorrere l'arco e andare in $q_2$ soltanto se:
+- Leggiamo $a$
+- In cima alla pila abbiamo $b$
+- Inoltre, Per effettuare l'operazione dobbiamo sostituire $b$ con $c$.
+
+Per PUSH e POP invece scriviamo:
+- $epsilon arrow.r x$: PUSH di $x$ sulla cima
+- $x arrow.r epsilon$: POP di $x$ dalla cima
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - PDA],
+  [
+    Un PDA è una tupla $(Q, Sigma, Gamma, delta, q_0, F)$ dove:
+    - $Q, Sigma, q_0, F$ sono come gli NFA
+    - $Gamma$ è l'alfabeto della pila
+    - $delta:Q times Sigma_epsilon times Gamma_epsilon arrow.r cal(P)(Q_epsilon times Gamma_epsilon)$
+    I PDA non deterministici e deterministici sono *equivalenti*!
+  ]
+)
+
+Vediamo come funzionano le transizioni, dato: $ (q,c) in delta(p,a,b) \ "con" p,q in Q; a in Sigma_epsilon; b,c in Gamma_epsilon $
+
+Abbiamo appunto che $p,q$ indicano gli stati, rispettivamente il precedente e il successivo. $a$ è il carattere letto in input mentre $b,c$ sono i caratteri in cima alla pila, rispettivamente il precedente e il successivo. Abbiamo quindi che:
+- Se $a,b,c eq.not epsilon$ l'automa legge $a$ ed effettua la sostituzione $b arrow.r c$.
+- Se $b = epsilon$ l'automa legge $a$ ed effettua il PUSH $epsilon arrow.r c$.
+- Se $b eq.not epsilon "e" c = epsilon$ l'automa legge $a$ ed effettua il POP $b arrow.r epsilon$
+- Se $b=c=epsilon$ l'automa legge $a$ senza modificare la pila.
+
+Quand'è che un PDA *accetta*? Un PDA accetta una stringa $w=w_1, ..., w_n$ t.c. $w_i in Sigma$ se $exists r_0,...,r_m in Q$ e $s_1,...,s_m in Gamma^*$ t.c.:
+- $r_0=q_o$ (inizia dallo stato iniziale)
+- $s_0=epsilon$ (stack vuoto all'inizio)
+- $r_m in F$ (termina in uno stato accettante)
+- $forall i in [m]$ si ha che:
+  - $(r_(i+1),b) in delta(r_i, w_(i+1), a)$
+  - $s_i = a t$
+  - $s_(i+1)= b t$
+Con $a,b in Gamma_epsilon; t in Gamma^*$ stringa della pila.
+
+*Accettazione* - Da notare che un PDA accetta indipendentemente dal contenuto della pila ma possiamo assumere che la pila debba essere vuota, ad esempio aggiungendo un $epsilon$-arco che la svuoti.
+
+Per quanto riguarda le relazioni $op(tack.r)_M$ e $op(tack.r)_M^*$ invece, funzionano come per gli NFA: $ L(M) = {w in Sigma^* | (q_o, w, epsilon) op(tack.r)_M^* (q, epsilon, y), q in F, y in Gamma^*} $
+
+Come esempio vediamo il precedente linguaggio che abbiamo dimostrato non essere regolare, vediamo quindi come invece un PDA è in grado di riconoscerlo.
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempi*],
+  [
+    Costruiamo un PDA per il lingaggio $L={0^n 1^n | n gt.eq 0}$. L'idea è quella di fare PUSH di 0 quando leggiamo 0 e POP di 0 quando leggiamo 1, se la pila è vuota a fine computazione allora accetta. Inseriamo inoltre un "segnalibro" \$ per indicare l'inizio della stringa e riconoscere quindi che è vuota. Abbiamo quindi:
+    - $Q={q_1, q_2, q_3, q_4}$
+    - $Sigma={0,1}$
+    - $Gamma ={0,\$}$
+    - $F=q_4$
+    - $q_0 = q_1$
+    #align(center, diagram(
+      node-stroke: .1em,
+      spacing: 3em,
+      node((0,0), $q_1$, radius: 2em, name: <q1>),
+      node((2,0), $q_2$, radius: 2em, name: <q2>),
+      node((2,2), $q_3$, radius: 2em, name: <q3>),
+      node((0,2), $q_4$, radius: 2em, name: <q4>, extrude: (-2.5,0)),
+
+      edge(<q1>, <q2>, "-|>", $epsilon | epsilon arrow.r \$$, label-pos: 0.5, label-side: left, bend: 20deg),
+      edge(<q2>, <q2>, "-|>", $0 | epsilon arrow.r 0$, label-pos: 0.5, label-side: left, bend: 130deg),
+      edge(<q2>, <q3>, "-|>", $1 | 0 arrow.r epsilon$, label-pos: 0.5, label-side: left, bend: 20deg),
+      edge(<q3>, <q4>, "-|>", $epsilon | \$ arrow.r epsilon$, label-pos: 0.5, label-side: left, bend: 20deg),
+    ))
+  ],
+  [
+    Costruiamo un PDA per il lingaggio $L={w \# w^R | w in {0,1}^*}$. Dobbiamo quindi riconoscere le stringhe composte da una stringa $w$ seguite dal carattere $\#$ e poi la stringa $w$ al contrario, ad esempio $m e l a \# a l e m$. L'idea è quella di scrivere $w$ nella pila fino $\#$, controlliamo i restanti caratteri con quello che abbiamo nella pila:
+    $ dot Q={q_1, q_2, q_3, q_4} space dot Sigma = {0,1,\#} space dot Gamma={0,1,\$} space dot F={q_4} space dot q_0 = q_1 $
+    #align(center, diagram(
+      node-stroke: .1em,
+      spacing: 5em,
+      node((0,0), $q_1$, radius: 2em, name: <q1>),
+      node((1,0), $q_2$, radius: 2em, name: <q2>),
+      node((2,0), $q_3$, radius: 2em, name: <q3>),
+      node((3,0), $q_4$, radius: 2em, name: <q4>, extrude: (-2.5,0)),
+
+      edge(<q1>, <q2>, "-|>", $epsilon | epsilon arrow.r \$$, label-pos: 0.5, label-side: left, bend: 20deg),
+
+      edge(<q2>, <q2>, "-|>", $0 | epsilon arrow.r 0 \ 1 | epsilon arrow.r 1$, label-pos: 0.5, label-side: left, bend: 130deg),
+
+      edge(<q2>, <q3>, "-|>", $\# | epsilon arrow.r \#$, label-pos: 0.5, label-side: left, bend: 20deg),
+
+      edge(<q3>, <q3>, "-|>", $0 | 0 arrow.r epsilon \ 1 | 1 arrow.r 1$, label-pos: 0.5, label-side: left, bend: 130deg),
+
+      edge(<q3>, <q4>, "-|>", $epsilon | \$ arrow.r epsilon$, label-pos: 0.5, label-side: left, bend: 20deg),
+    ))
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Un linguaggio è acontestuale *se e solo se* esiste un PDA $M$ che lo riconosce.
+  ]
+)
+
+*Dimostrazione* - Per fare questa dimostrazione dividiamo in due *lemmi*.
+
+*Lemma* - Se un linguaggio è acontestuale allora esiste un PDA $M$ che lo riconosce.
+
+*Dimostrazione* - Per farlo pensiamo al fatto che se $A$ è un linguaggio acontestuale (CFL) allora esiste una CFG $G$ che lo genera, possiamo convertire questa CFG in un PDA:
+- Ad ogni step di derivazione, il non determinismo del PDA $P$ seleziona tutte le regole per una variabile in modo parallelo.
+- $P$ inizia scrivendo la variabile iniziale sullo stack e accetta se arriva a una stringa composta solo da terminali e che corrisponde a quella in input.
+- Per ogni stringa intermedia il PDA salva solo dalla prima variabile in poi andando a fare un match carattere per carattere dei terminali.
+
+Quello che fa $P$ è quindi:
+1. Inserire $\$$ e la variabile iniziale in cima allo stack.
+2. Ripete i seguenti passaggi:
+  1. Se la cima dello stack è una variabile $A$ la sostituisce in modo non deterministico percorrendo tutte le regole in modo parallelo.
+  2. Se la cima è un terminale $a$ legge il prossimo simbolo dell'input e lo confronta con $a$, se combaciano va avanti altrimenti rifiuta quel ramo di computazione.
+  3. Se la cima é $\$$ va allo stato di accettazione.
+
+Iniziamo la *dimostrazione formale*
