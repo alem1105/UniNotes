@@ -1990,4 +1990,133 @@ Quello che fa $P$ è quindi:
   2. Se la cima è un terminale $a$ legge il prossimo simbolo dell'input e lo confronta con $a$, se combaciano va avanti altrimenti rifiuta quel ramo di computazione.
   3. Se la cima é $\$$ va allo stato di accettazione.
 
-Iniziamo la *dimostrazione formale*
+Iniziamo la *dimostrazione formale*, per farlo però introduciamo una "scorciatoia" ovvero che in un passo di computazione possiamo scrivere sullo stack un'intera stringa invece che un solo simbolo: $ (r,u) in delta (q, a, s) $ Ovvero $P$ legge $a$ dallo stato $q$, fa pop di $s$ e scrive la stringa $u$. Questo è possibile perché equivale ad aggiungere gli stati $q_1, ..., q_(l-1)$ con $l = |u|$ t.c.:
+- $delta(q,a,s)=(q_1, u_l)$
+- $delta(q_1, epsilon, epsilon)=(q_2,u_(l-1))$
+- $dots.v$
+- $delta(q_l, epsilon, epsilon)=(r, u_1)$
+
+Dato un PDA $P=(Q, Sigma, Gamma, delta, q_"start", F)$ con:
+- $Q={q_"start", q_"loop", q_"accept"} union E$. Dove $E$ sono gli stati aggiunti grazie a al "trucco" di prima
+
+- $delta:$
+  - Creo il setup iniziale $delta(q_"start", epsilon, epsilon)={(q_"loop", S\$)}$
+  Poi definiamo 3 regole in base a cosa abbiamo in cima allo stack:
+  - *Variabile*: $delta(q_"loop", epsilon, A) in.rev (q_"loop", w)$  con $A arrow.r w in R$
+
+  - *Terminale*: $delta(q_"loop", a, a)={(q_"loop", epsilon)}$
+
+  - *\$*: $delta(q_"loop", epsilon, \$)={(q_"accept", epsilon)}$
+
+Quindi, in generale, abbiamo quest situazione:
+
+#align(center, diagram(
+  node-stroke: .1em,
+  spacing: 5em,
+  node((0,0), $q_"start"$, radius: 2em, name: <q1>),
+  node((1,0), $q_"loop"$, radius: 2em, name: <q2>),
+  node((2,0), $q_"accept"$, radius: 2em, name: <q3>, extrude: (-2.5,0)),
+
+  edge(<q1>, <q2>, "-|>", $epsilon, epsilon arrow.r S\$$, label-pos: 0.5, label-side: left),
+
+  edge(<q2>, <q2>, "-|>", $epsilon, A arrow.r w \ a, a arrow.r epsilon$, label-pos: 0.5, label-side: right, bend: -130deg),
+
+  edge(<q2>, <q3>, "-|>", $epsilon, \$ arrow.r epsilon$, label-pos: 0.5, label-side: left),
+))
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempio*],
+  [
+    Prendiamo la grammatica $G$ con le regole ${(S arrow.r a T b | b), (T arrow.r T a | epsilon)}$
+    #align(center, diagram(
+      node-stroke: .1em,
+      spacing: 5em,
+      node((0,0), $q_"start"$, radius: 2em, name: <qstart>),
+      node((0,1), radius: 1em),
+      node((0,2), $q_"loop"$, radius: 2em, name: <qloop>),
+      node((0,3), $q_"accept"$, radius: 2em, name: <accept>, extrude: (-2.5,0)),
+
+      node((2,1.5), radius: 2em),
+      node((3,2), radius: 2em),
+      node((2,3), radius: 2em),
+
+      edge(<qstart>, (0,1), "-|>"),
+      edge((0,1), <qloop>, "-|>"),
+
+      edge(<qloop>, <qloop>, "-|>", $b, b arrow.r epsilon \ a, a arrow.r epsilon \ epsilon, S arrow.r b \ epsilon, T arrow.r epsilon$, label-pos: 0.5, label-side: left, bend: 130deg, loop-angle: 180deg),
+      edge(<qloop>, (2,1.5), "-|>", $epsilon, S arrow.r b$, label-pos: 0.5, label-side: left, bend: 20deg),
+      edge((2,1.5), (3,2), "-|>", $epsilon, epsilon arrow.r T$, label-pos: 0.5, label-side: left, bend: 20deg),
+      edge((3,2), <qloop>, "-|>", $epsilon, epsilon arrow.r a$, label-pos: 0.5, label-side: right),
+
+      edge(<qloop>, (2,3), "-|>", $epsilon, T arrow.r a$, label-pos: 0.8, label-side: left, bend: 20deg),
+      edge((2, 3), <qloop>, "-|>", $epsilon, a arrow.r T$, label-pos: 0.5, label-side: right, bend: 20deg, label-angle: -20deg),
+      edge(<qloop>, <accept>, "-|>"),
+    ))
+  ]
+)
+
+*Lemma* - Se esiste un PDA $P$ che riconosce $L$ allora $L$ è un linguaggio acontestuale.
+
+*Dimostrazione* - Costruiamo una CFG che imita $M$. Assumiamo _wlog_ che l'automa $P$:
+- Ha un solo stato accettante $q_"acc"$
+- Svuoti lo stack prima di accettare
+- Abbia solo transizioni che fanno PUSH o POP non entrambe.
+
+Per ogni coppia di stati $(p,q)$ la CFG ha una variabile $A_(p q)$ che genera tutte le stringhe che portano $M$ da $p$ a $q$ senza cambiare l'altezza dello stack. Le regole della grammatica si basano sul comportamento della pila nel passare da $p$ a $q$ e ce ne sono di 3 tipi:
+- *Stare Fermi*: $forall p, A_(p p) arrow.r epsilon$. Infatti per andare da $p$ a $p$ senza modificare la pia non dobbiamo leggere nulla.
+- Se nell'andare da $p$ a $q$ l'automa passa per un punto $r$ in cui la pila torna vuota allora il passaggio è la somma dei due passaggi. (Ovvero il simbolo pushato all'inizio non è quello che viene pop-ato alla fine).
+
+$ A_(p q) arrow.r A_(p r) A_(r q) space space space
+#diagram(
+  node-stroke: .1em,
+  spacing: 5em,
+  node((0,0), $p$, radius: 0pt),
+  node((1,0), $r$, radius: 0pt),
+  node((2,0), $q$, radius: 0pt),
+
+  edge((0,0), (0,-1), "-|>", label: "stack", label-side: left),
+  edge((0,0), (1,0), "-", bend: 90deg),
+  edge((1,0), (2,0), "-", bend: 90deg),
+  edge((0,0), (2.3,0), "-|>"),
+)
+$
+
+- Se il simbolo pop-ato alla fine, su input $b$, è quello pushato all'inizio su input $a$: $ A_(p q) arrow.r a A_(r s) b $
+
+Formalmente abbiamo che:
+- $forall p,q,r,s in Q, u in Gamma, a,b in Sigma_epsilon$ se $(r,u) in delta(p,a,epsilon)$ e $(q, epsilon) in delta(s,b,u)$ allora mettiamo la regola $A_(p q) arrow.r a A_(r s) b$ in $G$
+
+- $forall p,q,r in Q$ mettiamo la regola $A_(p q) arrow.r A_(p r) A_(r q)$ in $G$.
+
+- $forall p in Q$ mettiamo $A_(p p) arrow.r epsilon$ in $G$.
+
+*Claim* - $A_(p q)$ genera $x$ *se e solo se* $x$ porta $P$ da $p$ con stack vuoto a $q$ con stack vuoto. Dobbiamo dimostrare entrambi i lati dell'implicazione.
+
+*Lato 1 ($arrow.double.r$)* - Dimostriamolo per induzione sui $k$ passi di derivazione di $x$ da $A_(p q)$.
+- *Caso base*: La derivazione ha 1 passo allora l'unica regola possibile è $A_(p p) arrow.r epsilon$ che banalmente porta $P$ da $p$ a $q$ con stack vuoto.
+
+- *Passo Induttivo*: Supponendo che sia vero per derivazioni che hanno fino a $k$ passi. Data $A_(p q) op(arrow.double.r)^* x$ con $k+1$ passi allora il primo passo può essere di 2 tipi:
+  - $A_(p q) arrow.double.r a A_(r s) b$ e allora abbiamo $x=a y b$ con $y$ che è stata generata da $A_(r s)$ in $k$ passi e quindi porta $P$ da $r$ a $s$ con stack vuoto. Per costruzione applichiamo $A_(p q) arrow.double.r a A_(r s) b$ se $(r,u) in delta(p, a , epsilon)$ e $(q, epsilon) in delta(s, b, u)$
+  
+  - $A_(p q) arrow.double.r A_(p r) A_(r q)$ e abbiamo $x= y z$ con $y$ generato da $A_(p r)$ in massimo $k$ passi e $z$ generato da $A_(r q)$ in massimo $k$ passi. Quindi anche qui vale la proprietà di prima.
+
+*Lato 2 ($arrow.double.l$)* - Dimostriamo per induzione sui $k$ passi di computazione di $P$ da $p$ a $q$.
+  - *Caso Base*: Se facciamo 0 step allora la computazione inizia e finisce sullo stesso stato, $P$ non può aver letto nulla per costruzione, allora $G$ ha la regola $A_(p p) arrow.r epsilon$.
+
+  - *Passo Induttivo*: Assumendo che sia vero per computazioni lunghe fino a $k$, ci sono 2 casi:
+    - Lo stack è vuoto solo a inizio e fine computazione, allora il simbolo pushato a inizio computazione è lo stesso simbolo pop-ato a fine computazione. Chiamiamo $u$ il simbolo, $a$ l'input letto al primo passo, $b$ l'input dell'ultimo passo, $r$ lo stato dopo il primo passo e $s$ il penultimo. Allora $(r,u) in delta(p,a,epsilon)$ e $(q,epsilon) in delta(s,b,u)$ e quindi la regola $A_(p q) arrow.r a A_(r s) b in G$.\ \ Possiamo scrivere $x = a y b$ dove $y$ porta $P$ da $r$ a $s$ senza toccare $u$ in $k-1$ passi, quindi $A_(r s) op(arrow.double.r)^* y$ che comporta $arrow.double.r A_(p q) op(arrow.double.r)^* x$
+
+    - Lo stack si svuota durante la computazione. Sia $r$ lo stato in cui lo stack si svuota allora le computazioni che portano $P$ da $p$ a $r$ e da $r$ a $q$ hanno massimo $k$ passi. Quindi scrivendo $x=y z$ abbiamo $A_(p r) op(arrow.double.r)^* y$ e $A_(r s) op(arrow.double.r)^* z$. \ \ Visto che la regola $A_(p q) arrow.r A_(p r) A_(r q)$ è in $G$ allora $A_(p q) op(arrow.double.r)^* x$.
+
+== Pumping Lemma per i CFL
