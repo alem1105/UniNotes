@@ -2120,3 +2120,113 @@ Formalmente abbiamo che:
     - Lo stack si svuota durante la computazione. Sia $r$ lo stato in cui lo stack si svuota allora le computazioni che portano $P$ da $p$ a $r$ e da $r$ a $q$ hanno massimo $k$ passi. Quindi scrivendo $x=y z$ abbiamo $A_(p r) op(arrow.double.r)^* y$ e $A_(r s) op(arrow.double.r)^* z$. \ \ Visto che la regola $A_(p q) arrow.r A_(p r) A_(r q)$ è in $G$ allora $A_(p q) op(arrow.double.r)^* x$.
 
 == Pumping Lemma per i CFL
+Dato un CFL $L$, esiste $p$ t.c. $forall w in L$ con $|w| gt.eq p$ è possibile scomporre $w$ in $w = u v x y z$ in modo che:
+1. $forall i gt.eq 0, u v^i x y^i z in L$
+2. $|v y| gt 0$
+3. $|v x y| lt.eq p$
+
+*Dimostrazione* - _wlog_ Assumiamo che $G$ sia in forma normale di Chomsky, questo ci permette di dire che l'albero di derivazione di $w$ sarà binario, infatti le uniche regole possibili sono ${(A arrow.r B C), (A arrow.r a), (S arrow.r epsilon)}$.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Claim*],
+  [
+    Se il cammino più lungo nell'albero ha lunghezza $i$, la stringa da esso generata ha lunghezza $lt.eq 2^(i-1)$. Come idea ci basti pensare al caso limite ovvero che ad ogni ramo una variabile si sdoppia in altre due ma ovviamente al livello finale dell'albero tutte le variabili diventano terminali ed è per questo che eleviamo con $-1$.
+
+    Dimostriamo per induzione:
+    - *Caso Base*: $i=1$, l'albero è $S arrow.r a$ e infatti $|a|=1=2^(1-1)=2^0=1$
+    - *Passo Induttivo*: Supponendo sia vero fino a $i-1$, se abbiamo un albero di altezza $i gt 1$ la radice $S$ deve avere una regola $S arrow.r A B$, i due sottoalberi radicati in $A$ e $B$ avranno lunghezza $lt.eq i-1$.
+    Quindi per ipotesi induttiva $A$ e $B$ generano stringhe lunghe al massimo $2^(i-1)-1=2^(i-2)$. Questo significa che $S$ genera una stringa di lunghezza $lt.eq 2 dot 2^(i-2)=2^(i-1)$.
+  ]
+)
+
+*Dimostrazione* - Sia $m=\#V$ in $G$ poniamo $p=2^m$. Segue che $w$ t.c. $|w| gt.eq p$ è generata da un cammino lungo $gt.eq m+1$. Il cammino ha quindi almeno $m+2$ nodi compreso il terminale di cui almeno $m+1$ variabili. Visto che $|V|=m$ allora almeno una variabile si deve ripetere.
+
+Partendo dalle foglie dell'albero prendiamo la prima variabile che si ripete e chiamiamo $A_s$ la prima occorrenza e $A_p$ la successiva:
+
+#align(center,diagram(
+  spacing: 2em,
+  node((0,0), $S$),
+  node((0,1), $A_p$),
+  node((0,2), $A_s$),
+
+  node((-2,3), $u$),
+  node((-1,3), $v$),
+  node((0,3), $x$),
+  node((1,3), $y$),
+  node((2,3), $z$),
+
+  edge((0,0), (0,1), "--"),
+  edge((0,1), (0,2), "--"),
+  edge((0,2), (-0.5,2.8), "-"),
+  edge((0,2), (0.5,2.8), "-"),
+
+  edge((0,1), (1.5,2.8), "-"),
+  edge((0,1), (-1.5,2.8), "-"),
+
+  edge((0,0), (2.5,2.8), "-"),
+  edge((0,0), (-2.5,2.8), "-"),
+
+  edge((-2.5,2.8), (2.5,2.8), "-"),
+))
+
+E la computazione si divide in $w= u v x y z$
+- $S op(arrow.double.r)^* u A_p z$
+- $A_p arrow.double.r v A_s y$
+- $A_s arrow.double.r x$
+
+Ma sappiamo che $A_p = A_s$ e quindi è come se fosse $A_p arrow.double.r v A_p y$ e possiamo quindi sostituire il suo sottoalbero e la derivazione rimarrà uguale:
+
+#align(center,diagram(
+  spacing: 2em,
+  node((0,0), $S$),
+  node((0,1), $A_p$),
+  node((0,2), $A_p$),
+  node((0,3), $A_s$),
+
+  node((-2,3), $u$),
+  node((-1.3,3), $v$),
+  node((0,4), $x$),
+  node((-1,4), $v$),
+  node((1,4), $y$),
+  node((1.3,3), $y$),
+  node((2,3), $z$),
+
+  edge((0,0), (0,1), "--"),
+  edge((0,1), (0,2), "--"),
+  edge((0,2), (-1.5,3.8), "-"),
+  edge((0,2), (1.5,3.8), "-"),
+
+  edge((0,1), (1.5,2.8), "-"),
+  edge((0,1), (-1.5,2.8), "-"),
+
+  edge((0,0), (2.5,2.8), "-"),
+  edge((0,0), (-2.5,2.8), "-"),
+
+  edge((0,2), (0,3), "--"),
+
+  edge((0,3), (-0.5,3.8), "-"),
+  edge((0,3), (0.5,3.8), "-"),
+
+  edge((-2.5,2.8), (-0.66,2.8), "-"),
+  edge((0.66,2.8), (2.5,2.8), "-"),
+
+  edge((-1.5,3.8), (1.5,3.8), "-"),
+))
+
+In questo modo otteniamo la stringa $u v^2 x y^2 z$, e otteniamo quindi che:
+1. $u v^i x y^i z in A, forall i gt.eq 0$
+
+2. $|v y| gt 0$ perché non ci sono $epsilon$-produzioni né produzioni unitarie quindi la derivazione $A_p op(arrow.r.double)^* v A_s y$ deve aver usato una regola del tipo $A_p arrow.r B C$ dove $B op(arrow.double.r)^* v A_s$ e $C op(arrow.double.r)^* y$ oppure $B op(arrow.double.r)^* v$ e $C op(arrow.double.r)^* A_s y$.\ Visto che non ci sono $epsilon$-regole, in entrambi i casi si ha che $y eq.not epsilon$ o $v eq.not epsilon$.
+
+3. $|v x y| lt.eq p$ dato che $A_p$ si trova tra le ultime $m+1$ variabili sappiamo che il sottoalbero di $A_p$ ha altezza massimo $m+1$ quindi per il claim genera stringhe da lunghezza massima $2^(m+1)-1=2^m=p$
