@@ -2146,7 +2146,7 @@ Dato un CFL $L$, esiste $p$ t.c. $forall w in L$ con $|w| gt.eq p$ è possibile 
     Dimostriamo per induzione:
     - *Caso Base*: $i=1$, l'albero è $S arrow.r a$ e infatti $|a|=1=2^(1-1)=2^0=1$
     - *Passo Induttivo*: Supponendo sia vero fino a $i-1$, se abbiamo un albero di altezza $i gt 1$ la radice $S$ deve avere una regola $S arrow.r A B$, i due sottoalberi radicati in $A$ e $B$ avranno lunghezza $lt.eq i-1$.
-    Quindi per ipotesi induttiva $A$ e $B$ generano stringhe lunghe al massimo $2^(i-1)-1=2^(i-2)$. Questo significa che $S$ genera una stringa di lunghezza $lt.eq 2 dot 2^(i-2)=2^(i-1)$.
+    Quindi per ipotesi induttiva $A$ e $B$ generano stringhe lunghe al massimo $2^(i-1-1)=2^(i-2)$. Questo significa che $S$ genera una stringa di lunghezza $lt.eq 2 dot 2^(i-2)=2^(i-1)$.
   ]
 )
 
