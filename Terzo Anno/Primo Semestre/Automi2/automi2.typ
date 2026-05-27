@@ -2229,4 +2229,4 @@ In questo modo otteniamo la stringa $u v^2 x y^2 z$, e otteniamo quindi che:
 
 2. $|v y| gt 0$ perché non ci sono $epsilon$-produzioni né produzioni unitarie quindi la derivazione $A_p op(arrow.r.double)^* v A_s y$ deve aver usato una regola del tipo $A_p arrow.r B C$ dove $B op(arrow.double.r)^* v A_s$ e $C op(arrow.double.r)^* y$ oppure $B op(arrow.double.r)^* v$ e $C op(arrow.double.r)^* A_s y$.\ Visto che non ci sono $epsilon$-regole, in entrambi i casi si ha che $y eq.not epsilon$ o $v eq.not epsilon$.
 
-3. $|v x y| lt.eq p$ dato che $A_p$ si trova tra le ultime $m+1$ variabili sappiamo che il sottoalbero di $A_p$ ha altezza massimo $m+1$ quindi per il claim genera stringhe da lunghezza massima $2^(m+1)-1=2^m=p$
+3. $|v x y| lt.eq p$ dato che $A_p$ si trova tra le ultime $m+1$ variabili sappiamo che il sottoalbero di $A_p$ ha altezza massimo $m+1$ quindi per il claim genera stringhe da lunghezza massima $2^(m+1-1)=2^m=p$
