@@ -353,4 +353,38 @@ I suoi obiettivi principali sono l'essere veloce, accurato, semplice e operare i
 - *False Negative*: L'IDS non lancia l'allarme e un vero attacco passa inosservato. L'amministratore deve configurare attentamente la sensibilità dell'IDS per bilanciare questi due problemi.
 
 Ci sono due principali metodologie di rilevamento.
-- *Signature Based*: L'IDS esegue un pattern-matching cercando corrispondenze con "firme" (sequenze specifiche di dati) di attacchi noti.
+- *Signature Based*: L'IDS esegue un pattern-matching cercando corrispondenze con "firme" (sequenze specifiche di dati) di attacchi noti. Ad esempio può accorgersi di un Port Scan se nota tanti pacchetti TCP SYN diretti a porte diverse dello stesso IP in brevissimo tempo. Un problema di questi IDS è che se la firma non esiste nel database, l'IDS è cieco e inoltre l'attaccante può ingannare l'IDS inserendo pacchetti spazzatura per sfasare la firma.
+Questo IDS non è adatto a intercettare attacchi di frammentazione IP come il teardrop perchè l'IDS dovrebbe riassemblare e tenere in memoria quasi tutto il traffico di rete prima di capire che i frammenti sono malevoli. Neanche il SYN-flood è facile da rilevare poichè l'handshake SYN-ACK fa parte del traffico TCP normale.
+L'unico modo che ha di superare questi limiti è tracciando lo stato delle connessioni ma mantenere lo stato di migliaia di connessioni simultanee diventa molto costoso e complesso.
+
+#align(center, image("/assets/image-89.png", width: 50%))
+
+- *Heuristic / Anomaly-Based*: In questo caso invece di cercare firme note, l'IDS costruisce un modello del "comportamento normale" e fa scattare gli allarmi ogni volta che avviene un'eccezione a questo modello. Per farlo impara nel tempo tramite tecniche di Machine Learning e Intelligenza Artificiale. Come funziona?
+  - Inference Engine: L'euristica lavora col concetto di "sporcizia", il sistema analizza l'andamento da uno stato _Clean_ a _Dirty_, ad esempio l'host A che scansiona l'host B è leggermente sospetto ma accettabile ma se poi l'host A richiede i file pubblici e tenta di scaricarli tutti allora diventa sospetto. La somma di più azioni fa superare la soglia e scattare l'allarme
+  - Approcci: L'inferenze può essere _State-based_ (osserva il cambiamento di stato del sistema) o _Model-based_ (classifica tutto il traffico o i log in buono, sospetto o sconosciuto in base ai modelli)
+  - Pro e Contro: Il grande vantaggio è che l'IDS impara e si adatta col tempo, lo svantaggio è che le sue decisioni sono buone solo quanto la quantità e la qualità delle informazioni normali su cui si è allenato in precedenza.
+
+Alcuni esempi di rilevamento:
+- Land Attack: Un attaccante invia dei pacchetti SYN dove l'indirizzo del mittente è lo stesso del destinatario. Per rilevarlo controlla la variabile _Land_, se vale 1 significa che l'indirizzo IP mittente e destinatario sono identici e svela quindi il pacchetto malevolo.
+- Teardrop: Guarda la feature _Wrong Fragment_ che conta la somma dei pacchetti con checksum errati.
+- Smurf: Rileva tantissimi pacchetti di "ICMP echo reply" in entrata verso la vittima senza che questa abbia mai generato i relativi pacchetti di richiesta.
+- Ipsweep: È un attacco che serve a determinare quali hosts sono in ascolto sulla rete mandando molti pacchetti di ping. Per rilevarlo controlla la frequenza dei pacchetti ICMP in base alla durata temporale, aggregando le risposte tramite la destinazione.
+
+Da notare che gli IDS lavorano a livelli di rete diversi, un IDS configurato per analizzare gli header IP (livello 3) difficilmente riuscirà ad analizzare i payload a livello applicativo (7) a meno che non esegua un costosto riassemblaggio dei dati.
+
+=== Posizionamento e Tipologie di Implementazione
+Un IDS può essere implementato in modi e posizioni diverse per coprire diverse vulnerabilità.
+- Front-end IDS: Si posiziona prima o assieme al firewall esterno, vede tutto il traffico globale in entrata ma proprio per questo è visibile e diventa un bersaglio primario.
+- Internal IDS: Controlla la rete dall'interno, fondamentale per rilevare attacchi causati da minacce interne o macchine già compromesse.
+Per quanto riguarda l'implementazione invece:
+- HIDS (Host-based IDS): È installato su un singolo computer, raccoglie i log di quel sistema operativo, controlla le richieste di accesso e gli orari. Essendo un processo software che gira sulla macchina, se la macchina viene bucata l'HIDS può essere individuato e spento dall'attaccante
+- NIDS (Network-based IDS): Intercetta i dati dell'intera rete, il suo enorme vantaggio è che può funzionare in *stealth mode*. La scheda di rete usata dall'IDS per ascoltare il traffico non ha un indirizzo IP configurato, non può quindi ricevere pacchetti dirette né essere contattata. Per lanciare gli allarmi il NIDS usa un seconda scheda di rete collegata a una rete di controllo gestionale completamente isolata.
+
+#align(center, image("/assets/image-90.png", width: 50%))
+
+== Intrusion Prevention Systems (IPS) e Tipi di Risposta
+Se un IDS ha la capacità di agire e bloccare attivamente i danni di cui si accorge, prende il nome di IPS, questo può rispondere in 4 modi:
+- Monitor: Non interviene attivamente ma aumenta l'acquisizione dei dati per studiare l'attaccante senza farsi notare.
+- Signal: Manda allerte ad altri componenti protettivi della rete.
+- Call a Human: Richiede l'intervento di un amministratore.
+- Protect: Modifica in tempo reale la rete per fermare la minaccia. L'IPS può tagliare l'accesso ad un file, scartare il traffico da un certo IP, redirigere il traffico verso una sandbox o honeypot, bilanciare il traffico o, in casi estremi, disconnettere intere porzioni di rete. Queste azioni potrebbero far capire all'attaccante di essere stato scoperto portandolo a fermare l'attacco o cambiare strategia.
