@@ -125,7 +125,7 @@ Vediamo alcune delle principali funzioni di Hash:
 	- Fase 4: La concatenazione di tutti questi registri compone il nostro risultato da 512 bit.
 
 **Cifratura a chiave Asimmetrica**
-La cifratura a chiave asimmetrica è molto importante per lo scambio di chiavi e anche l'autenticazione, l'algoritmo principale è l'RSA.
+La cifratura a chiave asimmetrica è molto importante per lo scambio di chiavi e anche l'autenticazione, l'algoritmo principale è l'1.
 Questo algoritmo si basa sui numeri primi, dato un messaggio numerico compreso tra 0 e un valore $n-1$ indichiamo con C il messaggio cifrato e con M il messaggio in chiaro: $$ C = M^e \text{ mod }n$$ $$ M = C^d \text{ mod } n$$
 
 Per funzionare, mittente e destinatario devono conoscere $n,e$ mentre soltanto il destinatario deve conoscere $d$. Infatti la chiave pubblica sarà composta da $\{e,n\}$ mentre la chiave privata da $\{d, n\}$.
@@ -545,8 +545,37 @@ Possiamo installarli:
 - Host-Based
 - Network-Based: Vantaggio possono andare in Stealth mode con una scheda di rete senza indirizzo
 
+Per quanto riguarda il posizionamento in rete invece:
+- Dietro il firewall esterno
+	- Monitora attacchi che superano il firewall
+	- Trova problemi nel firewall
+	- Rileva traffico in uscita anomalo
+- Tra firewall esterno e internet per monitorare il traffico non filtrato
+- A difesa di reti interne
+- Prima di specifiche sottoreti
+
 Se un IDS può agire allora diventa un IPS (Prevention) e può rispondere in 4 modi:
 - Monitor: Studia l'attaccante
 - Call a Human
 - Protect: Cambia la struttura della rete
 - Signal: Manda allarme
+
+**Defensive Programming**
+Bisogna assumere che tutto andrà storto, nello specifico:
+- Gli utenti commetteranno errori e/o inseriranno input assurdi
+- Gli attaccanti cercheranno di inviare input malevoli
+- Il software di terze parti potrebbe fallire o rispondere in modo inatteso
+Dobbiamo assicurarci che il software funzioni sempre in modo sicuro o che fallisca in modo controllato.
+Le regole d'oro degli sviluppatori sono:
+- Mai fidarsi dell'input
+- Gestione sicura delle eccezioni
+- Least privilege per il programma
+- Gestione corretta della memoria
+Se si esagera ci sono dei contro:
+- Overhead di prestazioni
+- Iper-complessità del codice
+- Nascondimento di bug gravi
+Si possono effettuare i seguenti test:
+- Test dei valori limite
+- Test negativi (file errati) per assicurarsi che il sistema vada in crash controllato
+- Fuzzing: Input casuali conosciuti per verificare condizioni di sistema
