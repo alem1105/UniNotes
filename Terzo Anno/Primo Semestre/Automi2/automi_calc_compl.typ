@@ -19,3 +19,4 @@
 #set heading(numbering: "1.")
 
 #include "automi2.typ"
+#include "calcolabilita2.typ"
