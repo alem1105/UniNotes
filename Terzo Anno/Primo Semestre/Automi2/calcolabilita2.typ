@@ -159,7 +159,7 @@ Se la macchina è nello stato $q_i$ e le $k$ testine leggono i simboli $a_1,...,
 - Scrive sequenzialmente i contenuti dei $k$ nastri con $"\#"$ come delimitatore
 - Per tenere traccia di dove si trovano le testine, introduce un simbolo $°$ sopra al carattere corrispondente, le chiamiamo "testine virtuali".
 
-*METTERE DISEGNO FATTO BENE*
+#align(center, image("/assets/image-91.png"))
 
 Quindi $S$ su input $w = w_1, ..., w_n$ si comporta così:
 1. Pone il nastro nella configurazione "iniziale" $\# w_1^° w_2 ... w_n \# union.sq^° \# ... \#$
@@ -185,3 +185,164 @@ Quindi $S$ su input $w = w_1, ..., w_n$ si comporta così:
 )
 
 *Dimostrazione* - Dato che la singolo-nastro è una caso speciale di multinastro e che ogni multinastro ha una singolo-nastro equivalente la dimostrazione è completa.
+
+== TM non Deterministica
+Formalmente abbiamo che: $ delta: Q times Gamma arrow.r cal(P)(Q times Gamma times {L,R}) $
+Il concetto di non determinismo è uguale a quelllo che troviamo negli NFA. Semplicemente in questo caso quando la TM deve fare una mossa potrebbe avere più azioni possibili da svolgere e come per gli NFA, creiamo più percorsi indipendenti.
+
+Simuliamo una NTM $N$ con una TM $D$, per farlo consideriamo l'albero di computazione di $N$ che esploriamo con una BFS. Non effettuiamo la ricerca con una DFS perché dato che vogliamo simulare il parallelismo se eseguissimo una DFS questa potrebbe continuare all'infinito su un ramo.
+
+L'albero ha questa struttura:
+- La radice è $epsilon$
+- Ogni altro nodo ha un indirizzo $in Gamma_b={1,...,b}$ con $b$ il massimo numero di scelte tra tutti gli stati di $N$, nello specifico l'indirizzo è formato da $x y$ con $x$ indirizzo del padre e $y in Gamma_b$ "numero" del figlio, quindi ad esempio $231$ indica il secondo figlio della radice -> il suo terzo figlio -> il suo primo figlio.
+
+La TM $D$ che simula $N$ è una multi-nastro con 3 nastri:
+1. Il nastro 1 contiene l'input $w$ e non viene mai alterato. Ci serve come riferimento per quando cambiamo ramificazione.
+2. Il nastro 2 simula un ramo della computazione di $N$, quando ha più scelte effettua quella presente in 3.
+3. Il nastro 3 contiene l'indirizzo del nodo fino a cui simulare, quindi conterrà ad esempio "1", "2", "3" poi passa ai figli del primo nodo quindi "11", "12", "13" e poi a quelli del primo nodo ancora "111", "112"...
+
+La TM D si comporta quindi in questo modo:
+1. Inizialmente il nastro 1 contiene $w$ e gli altri 2 sono vuoti.
+2. Copia il nastro 1 sul nastro 2
+3. Usa il nastro 2 per simulare $N$ con input $w$. Ad ogni step $N$ consula il prossimo simbolo sul nastro 3
+  - Se il nastro 3 è vuoto va allo step 4
+  - Se la simulazione rifiuta va allo step 4
+  - Se la simulazione accetta, accetta
+4. Sostituisce la stringa sul nastro 3 con la successiva in ordine lessicografico. Va al passo 2.
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempio*],
+  [
+    Una TM non deterministica può essere una TM che su input binario:
+    - input 0:
+      - Si muove a dx
+      - Si muove a sx
+    - input 1: accetta
+    Quindi quando legge uno 0 crea due rami, se simuliamo questa TM non deterministica con una deterministica avremo che eseguirà entrambe le scelte prima o poi.
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Tesi di Church-Turing*],
+  [
+    Qualunque problema calcolabile da un algoritmo può essere risolto da una macchina di Turing.
+  ]
+)
+
+== Linguaggi Decidibili
+Sono quei linguaggi per i quali esiste una TM che per ogni stringa termina sempre in un tempo finito e stabilisce se questa appartiene o no al linguaggio.
+
+*Problema dell'accettazione per i DFA* - Definiamo $ A_"DFA"={<B,w> | B "è un DFA che accetta" w} $
+E presentiamo una TM che accetta $A_"DFA"$:
+
+M = "Su input $<B,w>$, con $B$ DFA e $w$ stringa:
+- Simula $B$ su input $w$
+- Se la simulazione finisce con uno stato di accettazione, accetta; altrimenti rifiuta."
+
+*Problema dell'accettazione per gli NFA* - Definiamo $ A_"NFA"={<B,w> | B "è un NFA che accetta" w} $
+E presentiamo una TM che accetta $A_"NFA"$:
+
+N = "Su input $<B,w>$, con $B$ NFA e $w$ stringa:
+- Converti $B$ in un DFA $C$
+- Esegui la TM 'M' (per $A_"DFA"$) su C
+-Se M accetta, accetta; altrimenti rifiuta."
+
+*Determinare se una regex genera una stringa* - Definiamo $ A_"REX" = {<R,w> | R "regex che genera" w} $
+
+E costruiamo una TM che accetta $A_"REX"$:
+
+P = "Su input $<R,w>$ con $R$ regex e $w$ stringa:
+- Converti $R$ in NFA $A$
+- Esegui la TM $N$ (per $A_"NFA"$ su A)
+- Se $N$ accetta, accetta; altrimenti rifiuta"
+
+*Emptiness-testing per i DFA* - Definiamo $ E_"DFA" = {<A> | A "DFA e " L(A) = emptyset} $
+
+E costruiamo una TM che accetta $E_"DFA"$:
+
+T = "Su input $<A>$ con $A$ DFA:
+- Marca lo stato iniziale
+- Finchè non vengono marcati nuovi stati, marca ogni stato che ha una transizione entrante da uno stato già marcato.
+- Se almeno uno stato accettante è stato marcato, rifiuta; altrimenti accetta."
+
+*Determinare se due DFA accettano lo stesso linguaggio* - Definiamo $ E Q_"DFA" = {<A,B> | A "e" B "DFA e" L(A) = L(B)} $
+
+Utilizziamo la differenza simmetrica: $ L(C)=L(A) triangle.stroked L(B) $, se è vuota abbiamo che $L(A) = L(B)$.
+Si ha $ L(C) = (L(A) inter overline(L(B))) union (overline(L(A)) inter L(B)) $ Dobbiamo verificare se $<C> in E_"DFA"$, costruiamo
+
+F = "Dato un input:
+- Costruisci il DFA $C$ come descritto
+- Simula la TM T (per $E_"DFA"$)
+- Se T accetta, accetta; altrimenti rifiuta"
+
+*Determinare se una CFG genera una stringa* - Definiamo $ A_"CFG" = {<G,w> | G "CFG genera" w} $
+Costruiamo la TM
+
+M = "Su input $<G,w>$ con G CFG e w stringa:
+- Converti G in CNF (Chomsky)
+- Enumera le derivazioni con $2n-1$ passi dove $n=|w|$, se $n=0$ enumera solo quelle con 1 passo. Da questa possiamo ricavare il successivo _claim_
+- Se una delle derivazioni genera $w$, accetta; altrimenti rifiuta."
+
+*Claim* - Sia $G=(V,Sigma,R,S)$ una CFG in CNF. Data $w in G$ con $|w|=n$, la sua derivazione è di $2n-1$ passi.
+
+*Dimostrazione* - Dimostriamolo per induzione su $n$.
+- Caso Base: $n=1$ allora $|w|=1$ significa che $w in Sigma$. Quindi $w$ è derivata con la regola $S arrow.r w$ in $1=2 dot 1 -1$ passi.
+- Passo Induttivo: Assumiamo sia vero per stringhe di lunghezza $lt.eq n-1$. Sia $w in G$ t.c. $|w|=n$.\ Visto che G è in CNF, $S arrow.double.r^* w$ implica che $S arrow.r A B arrow.double.r^* w$. Quindi possiamo scrivere $w = x y$ con $A arrow.double.r^* x$ e $B arrow.double.r^* y$. Visto che non ci sono $epsilon$-regole in CNF abbiamo che $x,y eq.not epsilon$. Quindi siano $|x|=k$ e $|y|=n-k$, per ipotesi induttiva $x,y$ sono derivabili in $2k-1$ e $2(n-k)-1=2n-2k-1$ produzioni. Quindi $A B arrow.double.r^* w$ ha $2k-1+2n-2k-1=2n-2$ produzioni, aggiungendo $S arrow.r A B$ otteniamo che $S arrow.double.r^* w$ in $2n-1$ produzioni.
+
+*Emptiness-testing per CFG* - Definiamo $ E_"CFG"={<G> | G "CFG e" L(G) = emptyset} $
+
+Costruiamo la TM
+
+M = "Su input G, dove G è una CFG:
+- Marca tutti i terminali in $Sigma$
+- Finchè non vengono marcate nuove variabili:
+  - Marca ogni $A in V$ per cui $exists A arrow.r U_1 U_2 ... U_l in R$ dove ogni $U_i$ è già stato marcato
+- Se S è marcata, rifiuta; altrimenti accetta".
+
+Otteniamo quindi questa situazione per i linguaggi:
+#align(center, image("/assets/image-92.png", width: 50%))
+
+Esistono però linguaggi non TURING-DEC / RIC, introduciamo quindi il problema $A_"TM"$ che determina se una TM accetta un determinato input. $ A_"TM" = {<M,w> | M "TM e" w in L(M)} $
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Turing Machine Universale],
+  [
+    Una TM universale è una TM in grado di simulare ogni altra TM. Si dice infatti che un modello di calcolo è Turing-complete se è equivalente ad una TM universale.
+
+    Una qualsiasi TM M può essere completamente descritta da un insieme finito di transizioni, e quindi può essere codificata come una stringa finita di simboli. Una TM universale prende in input la descrizione codificata della TM da simulare $<M>$ e l'input $w$ su cui dovrebbe lavorare e simula $M$.
+  ]
+)
+
