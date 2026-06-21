@@ -346,3 +346,201 @@ Esistono però linguaggi non TURING-DEC / RIC, introduciamo quindi il problema $
   ]
 )
 
+Notiamo che $A_"TM"$ è _T-REC_, infatti abbiamo la TM U che lo riconosce:
+
+U = "Su input $<M,w>$ con M TM e w stringa:
+- Simula M su w
+- Se M raggiunge uno stato accettante, accetta; altrimenti rifiuta"
+
+Con questa costruzione se M va in loop ci andrà anche U.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $A_"TM"$ non è decidibile.
+  ]
+)
+
+Ma per dimostrarlo abbiamo prima bisogno di un altro teorema.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Esistono linguaggi non Turing-riconoscibili.
+  ]
+)
+
+*Dimostrazione* - Notiamo che l'insieme di tutte le TM $cal(M)$ non è numerabile in quanto l'insieme di tutte le stringhe $Sigma^*$ su un alfabeto $Sigma$ è numerabile, queste rappresentano gli encoding di ogni TM in stringe $<M>$.
+
+Notiamo anche che l'insieme delle stringhe binarie infinite $cal(B)$ non è numerabile. Adesso consideriamo $cal(L)=cal(P)(Sigma^*)$ l'insieme di tutti i linguaggi definiti su $Sigma$. Mostriamolo fornendo una corrispondenza biunivoca con $cal(B)$, quindi ogni linguaggio $A in cal(L)$ corrisponde ad una sequenza univoca in $cal(B)$.
+
+Definiamo il concetto *Sequenza Caratteristica* di $A$, ovvero una sequenza binaria definita come segue: $ cal(X)_A = b_1 b_2 ... "t.c." b_i = cases(1 space s_i in A, 0 space s_i in.not A) $
+
+#showybox(
+  frame: (
+    border-color: blue.lighten(60%),
+    title-color: blue.lighten(60%),
+    body-color: blue.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Esempio*],
+  [
+    Prendiamo il linguaggio A = "Stringhe binarie che iniziano con 0":
+    - $Sigma^* = {epsilon,0,1,00,01,10,11,...}$
+    - $A = {space, 0, space, 00, 01, space, space, ...}$
+    - $cal(X)_A = 0101100...$
+  ]
+)
+
+Notiamo che $f:cal(L)arrow.r cal(B):A arrow.r cal(X)_A$ è biunivoca, perciò visto che $cal(B)$ non è numerabile non lo è neanche $cal(L)$. Ovvero $exists A in cal(L) "t.c." exists.not M "TM t.c." L(M)=A$.
+
+Quindi la funzione $h:cal(M) arrow.r cal(L):M arrow.r L(M)$ non è biiettiva, quindi $exists L in cal(L) "t.c." exists.not M "per cui" L(M)=L$.
+
+Adesso possiamo tornare a dimostrare che $A_"TM"$ non è decidibile.
+
+*Dimostrazione* - Supponiamo per assurdo che $A_"TM" in "DEC"$ e sia $H$ un decisore per $A_"TM"$: $ H(<M,w>)=cases("accept" space "se" M "accetta" w, "reject" space "se" M "non accetta" w) $
+
+Adesso costruiamo una TM
+
+$D$ = "Su input $<M>$ con M TM:
+1. Esegui H con input $<M, <M>>$
+2. Dai in output l'opposto dell'output di H"
+
+$ D(<M>) = cases("accetta" space "se M non accetta <M>", "rifiuta" space "se M accetta <M>") $
+
+Ma adesso cosa succede se eseguiamo $D$ con la sua stessa descrizione $<D>$ in input?
+
+$ D(<D>) = cases("accetta" space "se D non accetta <D>", "rifiuta" space "se D accetta <D>") $ Ma abbiamo ottenuto una contraddizione, se $D$ accetta $<D>$ allora $D$ deve rifiutare $<D>$ e viceversa.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Coturing-Riconoscibile],
+  [
+    Un linguaggio si dicec _Co-Turing-Riconoscibile_ se è il complemento di un linguaggio _Turing-Riconoscibile_
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Un linguaggio $L$ è decidibile $arrow.double.r.l$ $L in "REC"$ e $L in "CO-REC"$
+  ]
+)
+
+*Dimostrazione*
+- $arrow.double.r$ se $L$ è decidibile, $overline(L)$ è decidibile quindi $L$ e $overline(L)$ sono _Turing-Riconoscibili_.
+- $arrow.double.l$ sia $M_1$ un riconoscitore per $A$ e $M_2$ un riconoscitore per $overline(A)$
+
+Costruiamo M = "Su input $w$:
+1. Esegui $M_1$ e $M_2$ in parallelo su $w$
+2. Se $M_1$ accetta, accetta; se $M_2$ accetta, rifiuta"
+
+Ogni stringa $w$ è in $A$ oppure in $overline(A)$, quindi uno tra $M_1$ e $M_2$ deve accettare. Visto che $M$ si ferma se $M_1$ o $M_2$ accettano, termina sempre e quindi è un decisore.
+Inoltre, accetta le stringhe in $A$ e rifiuta quelle in $overline(A)$ quindi è un decisore per $A$.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Corollario 1*],
+  [
+    Se $L$ non è decidibile allora almeno uno tra $L$ e $overline(L)$ non è _Turing-Riconoscibile_.
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Corollario 2*],
+  [
+    $overline(A_"TM")$ non è _Turing-Riconoscibile_.
+  ]
+)
+
+== Riducibilità
+Vediamo una tecnica per dimostrare che alcuni problemi non sono decidibili o riconoscibili. Una *riduzione* è un modo di convertire un problema in un altro problema in modo che una soluzione per il secondo problema possa essere usata per il primo. _(Ci serve aumentare il modello delle TM aggiungendo un nastro di output WLOG)_
+
+Diremo che una TM calcola una funzione su un dato input se inizia con $w$ sul nastro di input e termina con $f(w)$ sul nastro di output.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Calcolabilità],
+  [
+    Una funzione $f:Sigma^* arrow.r Sigma^*$ è calcolabile se $exists$TM M che calcola $f$ $forall w in Sigma^*$
+  ]
+)
