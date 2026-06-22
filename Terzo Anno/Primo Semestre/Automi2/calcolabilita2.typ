@@ -4,7 +4,7 @@
 #show raw: set block(fill: none)
 #show raw.where(block: false): set box(fill: none)
 
-= Calcolabilità
+= Calcolabilità (DEVO ANCORA STUDIARLA BENE QUINDI LI SISTEMERÓ)
 Iniziamo introducendo il concetto di *Macchina di Turing*, queste corrispondono al modello astratto di computer, tuttio ciò che è calcolabile per un computer lo è anche per una TM.
 
 Una Turing Machine possiede un nastro infinito e una testina con la quale può leggere e scrivere sul nastro. Inizializziamo il nastro scrivendoci sopra la stringa di input, i restanti slot sono riempiti con il carattere _blank_ $union.sq$. I movimenti possibili per la testina sono _dx, sx, lettura, scrittura_ e continua a computare fino al raggiungimento lo stato di accettazione o rifiuto, se non raggiunge nessuno dei due allora va in loop.
@@ -544,3 +544,335 @@ Diremo che una TM calcola una funzione su un dato input se inizia con $w$ sul na
     Una funzione $f:Sigma^* arrow.r Sigma^*$ è calcolabile se $exists$TM M che calcola $f$ $forall w in Sigma^*$
   ]
 )
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Mapping Reductions],
+  [
+    $A$ é riducibile tramite funzione a $B$, lo indichiamo con $A op(lt.eq)_m B$, se $exists f: Sigma^* arrow.r Sigma^*$ calcolabile t.c. $forall w in Sigma^*$ si ha che $w in A arrow.r.l.double f(w) in B$
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Se $A op(lt.eq)_m$ e $B$ decidibile allora $A$ decidibile.
+  ] 
+)
+
+*Dimostrazione* - Sia $M in "TM"$ che decide $B$ e sia $F in "TM"$ che calcola la mapping reduction da $A$ a $B$. Costruiamo un decisore $M'$ per $A$ in questo modo:
+- Su input $w$ calcola $f(w)$ usando $F$
+- Lanca $M$ su $f(w)$ e accetta _se e solo se_ $M$ accetta.
+
+$M'$ é un decisore perché $M$ lo é. Inoltre, $M'(w)="acc" arrow.double.r.l M(f(w))="acc" arrow.double.r.l f(w) in B arrow.double.r.l w in A$
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Corollario*],
+  [
+    Se $A op(lt.eq)_m$ é indecidibile allora $B$ é indecidibile
+  ] 
+)
+
+*Dimostrazione* - Se $B$ fosse decidibile allora $A$ sarebbe decidibile per il teorema.
+
+== Halting Problem
+Serve a determinare se una TM termina.
+
+$ "HALT"_"TM" = {<M,w> | M "TM e" M "termina su input" w} $
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $"HALT"_"TM"$ é indecidibile.
+  ] 
+)
+
+*Dimostrazione* - Assumiamo che esista una TM $R$ che decide $"HALT"_"TM"$. Usiamo $R$ per costruire $S$ decisore per $A_"TM"$.
+
+Supponiamo quindi che $exists "TM" R$ che decide $"HALT"_"TM"$. Costruiamo $S$ decisore per $A_"TM"$:
+
+S = Su input $<M,w>$ con $M$ encoding di una TM e $w$ stringa:
+1. Esegui $R$ su $<M,w>$
+2. Se $R$ rifiuta, rifiuta
+3. Se $R$ accetta, simula $M$ su $w$ fino alla sua terminazione
+  - Se $M$ accetta, accetta; altrimenti rifiuta.
+
+== Altri linguaggi non decidibili
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ E_"TM" = {<M> | M in "TM" and L(M) = emptyset} in.not "DEC" $
+  ] 
+)
+
+*Dimostrazione* - Supponiamo per assurdo che sia decidibile. Sia quindi $R$ un decisore, costruiamo un decisore $S$ che usi $R$ come subroutine.
+
+Dobbiamo fare in modo che $S$ costruisca una nuova TM $M'$ t.c.:
+1. $L(M')$ é vuoto $arrow.double.r.l M$ non accetta $w$.
+2. $L(M')$ é non vuoto $arrow.double.r.l M$ accetta $w$.
+
+Abbiamo quindi $M'$: Su input $x$:
+1. Se $x eq.not w$ rifiuta
+2. Se $x = w$, esegui $M$ su input $x$ e se $M$ accetta, accetta; altrimenti rifiuta.
+
+Quinsi $S$ decisore di $A_"TM"$ = "data $<M,w>$ in input:
+1. Costruisci $M'$
+2. Esegui $R$ con input $M'$
+3. Se $R$ accetta, rifiuta; altrimenti accetta"
+
+Se $R$ fosse un decisore di $E_"TM"$, $S$ sarebbe un decisore di $A_"TM"$ (assurdo).
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $"REG"_"TM" = {<M> | M "TM" and L(M) in "REG"} in.not "DEC"$
+  ]
+)
+
+*Dimostrazione* - Facciamo una reduction $A_"TM" op(lt.eq)_m "REG"_"TM"$. La funzione $f(<M,w>)$ restituisce $M'$ t.c. su input $x$:
+1. Se $x in {0^n 1^n | n in NN}$ accetta
+2. Se $x in.not {0^n 1^n | n in NN}$ simula $M$ su $w$ e accetta $arrow.double.r.l$ $M(w)="ACC"$
+
+#showybox(
+  frame: (
+    border-color: gray.lighten(60%),
+    title-color: gray.lighten(60%),
+    body-color: gray.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Nota*],
+  [
+    $L(M')$ è:
+    - $Sigma^* ("REG")$ se M accetta $w$ (Se $M$ accetta $w$ allora $M'$ accetta indipendentemente da $x$
+    - {0^n 1^n} se $M$ non accetta $w$ (Se $M$ non accetta $w$, $M'$ accetta solo se $x in {0^n 1^n}$) quindi $<M,w> in A_"TM" arrow.double.r.l <M'> in "REG"$
+  ]
+)
+
+Adesso abbiamo che
+$ <M,w> in A_"TM" arrow.double.r.l f(<M,w>) in "REG"_"TM" $
+
+Dimostriamolo:
+- $arrow.double.r$ Sia $<M,w> in A_"TM"$ allora $M(w)="ACC"$ quindi $<M'> in "REG"_"TM"$
+- $arrow.double.l$ Se $<M,w> in.not A_"TM"$ allora $M(w)="REJ"$ o LOOP. Allora $L(M')={0^n 1^n | n gt.eq 0}$ pertanto $<M'> in.not "REG"_"TM"$
+
+== I Teoremi di Gödel
+Introduciamo il concetto di *sistema di prova*
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Sistema di Prova],
+  [
+    Un sistema di prova $Pi$ è tale che:
+    - Per ogni affermazione vera o falsa esiste una sua rappresentazione come stringa $<x>$ finita.
+    - Per ogni dimostrazione esiste una rappresentazione come stringa $<Pi>$ finita
+    - Esiste TM $V$ decisore tale che $forall(<x,w>) in Sigma^*$ si ha $<x,w> in L(V) arrow.double.r.l w "è una dimostrazione per" x$ in $Pi$
+  ]
+)
+
+Un'affermazione $<x>$ è detta *dimostrabile* se $exists <w> in Sigma^*$ tale che $<w,x> in L(V)$.
+
+Si dice invece, *indipendente* se né $x$ né $not x$ sono dimostrabili in $Pi$.
+
+$Pi$ deve essere *computabile* ovvero $forall A "assioma"$ in $Pi$, $A in "DEC"$
+
+Infine un sistema di prova $Pi$ è detto:
+- *Consistente*: Se per ogni affermazione $<x>$ al piú uno tra $x$ e $not x$ è dimostrabile.
+- *Valido*: Se ogni affermazione dimostrabile è vera.
+- *Completo*: Se $forall <x>$ almeno uno tra $x$ e $not x$ è dimostrabile
+- *Incompleto*: Se esiste un'affermazione indipendente.
+
+#showybox(
+  frame: (
+    border-color: gray.lighten(60%),
+    title-color: gray.lighten(60%),
+    body-color: gray.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Osservazioni*],
+  [
+    - Valido $arrow.double.r$ consistente
+    - $Pi$ consistente e completo $arrow.double.r$ Per ogni $x$ solo uno tra $x$ e $not x$ è dimostrabile
+    - $Pi$ valido e completo $arrow.double.r$ Per ogni $x$ solo uno tra $x$ e $not x$ è dimostrabile e quindi vero
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmetica allora $Pi$ non puó essere sia valido che completo.
+  ]
+)
+
+*Dimostrazione* - Sia $L={<x> | x "è dimostrabile in" Pi}$ definiamo la TM $R_Pi$ che prova a decidere $L$:
+
+$R_Pi$ = Data la stringa $<x>$ in input:
+- $forall k = 1,2,3,...$:
+  - $forall w in Sigma^*$ con $|w|=k$:
+    - Se $V(<x,w>)="ACC"$ allora $R_Pi$ accetta
+    - Se $V(<not x, w>)="ACC"$ allora $R_Pi$ rifiuta
+
+Ora supponiamo per assurdo $Pi$ valido e completo. Allora una tra $x$ e $not x$ deve essere vera, allora abbiamo che:
+- $x$ è vera $arrow.double.r.l exists "dim" w "t.c." V_Pi (<x,w>)="ACC"$ quindi $<x> in L(R_Pi)$
+- $not x$ è vera $arrow.double.r.l exists "dim" w "t.c." V_Pi (<not x, w>)="ACC"$
+
+Quindi $R_Pi$ è un decisore e $L(R_Pi)={<x> | x "vera"}$
+
+Data una TM $M$ e un input $y in Sigma^*$ consideriamo la seguente affermazione: $ phi_(M,y)=M(y) "termina" $
+
+Definiamo la TM $D(<M,y>)=R_Pi(<phi_M>)$
+
+Visto che $P_Pi$ è un decisore anche $D$ lo è. Tuttavia $L(D) = "HALT"_"TM"$ che sappiamo essere non decidibile. Otteniamo una contraddizione infatti $Pi$ non può essere sia valido che completo. 
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Lemma*],
+  [
+    Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmetica. Sia $M$ una TM e $x in Sigma^*$ un input.
+
+    Se $M(x)$ ha una traccia di esecuzione il cui comportamento è noto allora esiste una dimostrazione in $Pi$ che la descrive.
+  ]
+)
+
+=== Primo Teorema di Incompletezza
+Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmetica. Se $Pi$ è consistente allora $Pi$ non è completo.
+
+*Dimostrazione* - L'idea è che se $Pi$ è abbastanza potente da comprendere l'aritmetica allora può descrivere il funzionamento di una TM.
+
+Consideriamo l'affermazione $phi_M=M(<M>)"termina"$
+
+Definiamo la TM $R_Pi$ che data la stringa $<x>$ in input:
+- $forall k = 1,2,3,...$
+  - $forall w in Sigma^*$ t.c. $|w|=k$
+    - Se $V(<phi_R_Pi,w>)="ACC"$ allora $R_Pi$ va in loop. Significa che $w$ è la dimostrazione di $phi_R_Pi$ quindi "termina" è dimostrabile e la TM va in loop
+    - Se $V(<not phi_R_Pi,w>)="ACC"$ allora $R_Pi$ termina. Significa che "non termina" è dimostrabile e la TM termina.
+
+*Claim* - Se $phi_R_Pi$ o $not phi_R_Pi$ è dimostrabile allora $Pi$ è inconsistente.
+
+*Dimostrazione Claim* - Supponiamo che $not phi_R_Pi$ sia dimostrabile. Allora esiste una dimostrazione $w$ t.c. $V(<not phi_R_Pi, w>)="ACC"$ ovvero $R_Pi(<R_Pi>)$ termina. Poichè l'esecuzione termina il comportamento della traccia è noto quindi esiste una dimostrazione che descrive la traccia di esecuzione di $R_Pi$ che è anche una dimostrazione per $phi_R_Pi$. Ha infatti dimostrato che $R_Pi(<R_Pi>)$ termina ovvero $phi_R_Pi$.
+
+Supponiamo adesso che $phi_R_Pi$ sia dimostrabile. Allora esiste una dimostrazione $w$ t.c. $V_Pi(phi_R_Pi,w)$ accetti, ovvero $R_Pi(<R_Pi>)$ va in loop volontariamente. Poichè va in loop volontariamente il comportamento della traccia è noto e dunque esiste una dimostrazione che descrive la traccia di esecuzione di $R_Pi$, ovvero $R_Pi(<R_Pi>)$ non termina che sarebbe $not phi_R_Pi$, che è anche una dimostrazione per $not phi_R_Pi$.
+
+Quindi, dato che $phi_R_Pi$ dimostrabile implica che lo sia anche $not phi_R_Pi$ e viceversa, $Pi$ è inconsistente.
+
+*Fine dimostrazione teorema* - Adesso tornando al teorema, supponiamo $Pi$ consistente, ma dobbiamo necessariamente avere per il claim né $phi_R_Pi$ né $not phi_R_Pi$ dimostrabili, ovvero $Pi$ incompleto.
+
+=== Secondo Teorema di Incompletezza
+Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmetica. Se $Pi$ è consistente esso non può dimostrare l'affermazione "$Pi$ è consistente".
+
+*Dimostrazione*
+
+- Sia $R_Pi$ la TM definita tramite $phi_Pi$ come per il teorema precedente
+- Valga lo stesso claim del teorema precedente e la sua dimostrazione
+- Assumiamo $Pi$ consistente, quindi né $phi_R_Pi$ né $not phi_R_Pi$ dimostrabili in $Pi$.
+
+Supponiamo per assurod che "$Pi$ è consistente" sia dimostrabile tramite $w in Sigma^*$. Unendo $w$ alla dimostrazione del claim, otteniamo una dimostrazione per l'affermazione "né $phi_R_Pi$ né $not phi_R_Pi$ dimostrabili in $Pi$".
+
+Per costruzione di $R_Pi$ questa corrisponde ad una dimostrazione per $not phi_R_Pi$ in quanto implica che si sappia per certo che la TM va in loop. Questa è una contraddizione.
+
+Quindi, "$Pi$ non è consistente" non è dimostrabile in $Pi$.
