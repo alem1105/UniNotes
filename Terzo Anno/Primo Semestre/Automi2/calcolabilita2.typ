@@ -392,9 +392,9 @@ Ma per dimostrarlo abbiamo prima bisogno di un altro teorema.
   ]
 )
 
-*Dimostrazione* - Notiamo che l'insieme di tutte le TM $cal(M)$ non è numerabile in quanto l'insieme di tutte le stringhe $Sigma^*$ su un alfabeto $Sigma$ è numerabile, queste rappresentano gli encoding di ogni TM in stringe $<M>$.
+*Dimostrazione* - Ogni TM $M$ può essere descritta con un encoding $<M>$ rappresentato da una stringa appartenente ad $Sigma^*$ di un alfabeto $Sigma$. L'insieme delle stringhe di un alfabeto è numerabile, siccome tra TM e stringhe c'è una relazione biunivoca allora anche l'insieme $cal(M)$ delle TM è numerabile.
 
-Notiamo anche che l'insieme delle stringhe binarie infinite $cal(B)$ non è numerabile. Adesso consideriamo $cal(L)=cal(P)(Sigma^*)$ l'insieme di tutti i linguaggi definiti su $Sigma$. Mostriamolo fornendo una corrispondenza biunivoca con $cal(B)$, quindi ogni linguaggio $A in cal(L)$ corrisponde ad una sequenza univoca in $cal(B)$.
+Definiamo adesso $cal(B)$ come l'insieme delle stringhe binarie infinite, questo è non numerabile ed è dimostrabile tramite _Diagonale di Cantor_. Consideriamo anche $cal(L)=cal(P)(Sigma^*)$ l'insieme di tutti i linguaggi definiti su $Sigma$, anche questo non è numerabile e lo mostriamo fornendo una corrispondenza biunivoca tra l'insieme $cal(B)$ e l'insieme $cal(L)$.
 
 Definiamo il concetto *Sequenza Caratteristica* di $A$, ovvero una sequenza binaria definita come segue: $ cal(X)_A = b_1 b_2 ... "t.c." b_i = cases(1 space s_i in A, 0 space s_i in.not A) $
 
@@ -419,9 +419,27 @@ Definiamo il concetto *Sequenza Caratteristica* di $A$, ovvero una sequenza bina
   ]
 )
 
-Notiamo che $f:cal(L)arrow.r cal(B):A arrow.r cal(X)_A$ è biunivoca, perciò visto che $cal(B)$ non è numerabile non lo è neanche $cal(L)$. Ovvero $exists A in cal(L) "t.c." exists.not M "TM t.c." L(M)=A$.
+#showybox(
+  frame: (
+    border-color: gray.lighten(60%),
+    title-color: gray.lighten(60%),
+    body-color: gray.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Notazione*],
+  [
+    La notazione utilizzata per le funzione indica: $ "nome funzione":"dominio"arrow.r"codominio":"input"arrow.r.bar"output" $
+  ]
+)
 
-Quindi la funzione $h:cal(M) arrow.r cal(L):M arrow.r L(M)$ non è biiettiva, quindi $exists L in cal(L) "t.c." exists.not M "per cui" L(M)=L$.
+Notiamo che $f:cal(L)arrow.r cal(B):A arrow.r.bar cal(X)_A$ è biunivoca, perciò visto che $cal(B)$ non è numerabile non lo è neanche $cal(L)$.
+
+Quindi la funzione $h:cal(M) arrow.r cal(L):M arrow.r.bar L(M)$ non è biiettiva (dato che non può essere suriettiva infatti le TM sono numerabili ma i linguaggi no), quindi $exists L in cal(L) "t.c." exists.not M "per cui" L(M)=L$.
 
 Adesso possiamo tornare a dimostrare che $A_"TM"$ non è decidibile.
 
@@ -471,12 +489,12 @@ $ D(<D>) = cases("accetta" space "se D non accetta <D>", "rifiuta" space "se D a
   ),
   title: [*Teorema*],
   [
-    Un linguaggio $L$ è decidibile $arrow.double.r.l$ $L in "REC"$ e $L in "CO-REC"$
+    Un linguaggio $L$ è decidibile $arrow.double.r.l$ $L in "REC"$ e $L in "CO-REC"$ (ovvero $overline(L) in "REC"$)
   ]
 )
 
 *Dimostrazione*
-- $arrow.double.r$ se $L$ è decidibile, $overline(L)$ è decidibile quindi $L$ e $overline(L)$ sono _Turing-Riconoscibili_.
+- $arrow.double.r$ se $L$ è decidibile, $overline(L)$ è decidibile quindi $L$ e $overline(L)$ sono _Turing-Riconoscibili_. Questo perché siccome $L$ è decidibile allora esiste una TM decisore per $L$, se a questa TM decisore invertiamo gli input sarà un decisore per $overline(L)$ e quindi anche $overline(L)$ è decidibile e quindi riconoscibile.
 - $arrow.double.l$ sia $M_1$ un riconoscitore per $A$ e $M_2$ un riconoscitore per $overline(A)$
 
 Costruiamo M = "Su input $w$:
@@ -488,9 +506,9 @@ Inoltre, accetta le stringhe in $A$ e rifiuta quelle in $overline(A)$ quindi è 
 
 #showybox(
   frame: (
-    border-color: green.lighten(60%),
-    title-color: green.lighten(60%),
-    body-color: green.lighten(95%)
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -500,15 +518,15 @@ Inoltre, accetta le stringhe in $A$ e rifiuta quelle in $overline(A)$ quindi è 
   ),
   title: [*Corollario 1*],
   [
-    Se $L$ non è decidibile allora almeno uno tra $L$ e $overline(L)$ non è _Turing-Riconoscibile_.
+    Se $L$ non è decidibile allora almeno uno tra $L$ e $overline(L)$ non è _Turing-Riconoscibile_. Per vederlo basta negare tutto il teorema e ottenere: $ L in.not "DEC" arrow.double.r.l L in.not "REC" or overline(L) in.not "REC" $
   ]
 )
 
 #showybox(
   frame: (
-    border-color: green.lighten(60%),
-    title-color: green.lighten(60%),
-    body-color: green.lighten(95%)
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -518,7 +536,7 @@ Inoltre, accetta le stringhe in $A$ e rifiuta quelle in $overline(A)$ quindi è 
   ),
   title: [*Corollario 2*],
   [
-    $overline(A_"TM")$ non è _Turing-Riconoscibile_.
+    Seguendo quindi il corollario precedente, siccome $A_"TM"$ non è decidibile e $A_"TM"$ è riconoscibile allora $overline(A_"TM")$ non è riconoscibile.
   ]
 )
 
@@ -559,7 +577,9 @@ Diremo che una TM calcola una funzione su un dato input se inizia con $w$ sul na
   ),
   title: [*Definizione* - Mapping Reductions],
   [
-    $A$ é riducibile tramite funzione a $B$, lo indichiamo con $A op(lt.eq)_m B$, se $exists f: Sigma^* arrow.r Sigma^*$ calcolabile t.c. $forall w in Sigma^*$ si ha che $w in A arrow.r.l.double f(w) in B$
+    $A$ é riducibile tramite funzione a $B$, lo indichiamo con $A op(lt.eq)_m B$, se $exists f: Sigma^* arrow.r Sigma^*$ calcolabile t.c. $forall w in Sigma^*$ si ha che $w in A arrow.r.l.double f(w) in B$.
+
+    Possiamo leggere il simbolo come "non è più difficile di", quindi se abbiamo una soluzione per $B$ allora vale anche per $A$.
   ]
 )
 
@@ -581,11 +601,21 @@ Diremo che una TM calcola una funzione su un dato input se inizia con $w$ sul na
   ] 
 )
 
-*Dimostrazione* - Sia $M in "TM"$ che decide $B$ e sia $F in "TM"$ che calcola la mapping reduction da $A$ a $B$. Costruiamo un decisore $M'$ per $A$ in questo modo:
-- Su input $w$ calcola $f(w)$ usando $F$
-- Lanca $M$ su $f(w)$ e accetta _se e solo se_ $M$ accetta.
+*Dimostrazione*
+Per ipotesi abbiamo che:
+- $A op(lt.eq)_m B$ quindi esiste una funzione calcolabile che fa la riduzione, siccome la funzione è calcolabile esiste una TM $F$ che la calcola.
+- $B$ è decidibile quindi esiste un decisore $M$ che lo riconosce.
 
-$M'$ é un decisore perché $M$ lo é. Inoltre, $M'(w)="acc" arrow.double.r.l M(f(w))="acc" arrow.double.r.l f(w) in B arrow.double.r.l w in A$
+Costruiamo una terza TM $M'$ per $A$ che su input $w$:
+1. Usa $F$ con input $w$ per calcolare $f(w)$
+2. Lancia $M$ con input $f(w)$ e accetta se quest'ultima accetta; altrimenti rifiuta.
+
+Notiamo che:
+- Se $w in A$ allora $F$ calcola correttamente $f(w)$ e poi sia $M$ che $M'$ accetteranno la stringa dato che $f(w) in B$.
+- Al contrario se $w in.not A$ allora $F$ calcolerà correttamente $f(w)$ ma $in.not B$ e quindi entrambe le TM rifiuteranno.
+- I due casi sono corretti e inoltre $M'$ utilizza due decisori, questo significa che anche lui impiega un tempo finito e termina sempre, è anch'esso un decisore per $A$.
+
+Abbiamo costruito un decisore per $A$ quindi $A$ è decidibile.
 
 #showybox(
   frame: (
@@ -601,7 +631,7 @@ $M'$ é un decisore perché $M$ lo é. Inoltre, $M'(w)="acc" arrow.double.r.l M(
   ),
   title: [*Corollario*],
   [
-    Se $A op(lt.eq)_m$ é indecidibile allora $B$ é indecidibile
+    Se $A op(lt.eq)_m B$ e $A$ é indecidibile allora $B$ é indecidibile
   ] 
 )
 
@@ -630,7 +660,7 @@ $ "HALT"_"TM" = {<M,w> | M "TM e" M "termina su input" w} $
   ] 
 )
 
-*Dimostrazione* - Assumiamo che esista una TM $R$ che decide $"HALT"_"TM"$. Usiamo $R$ per costruire $S$ decisore per $A_"TM"$.
+*Dimostrazione* - Assumiamo che esista una TM $R$ che decide $"HALT"_"TM"$. Usiamo $R$ per costruire $S$ decisore per $A_"TM"$ che sappiamo essere indecidibile.
 
 Supponiamo quindi che $exists "TM" R$ che decide $"HALT"_"TM"$. Costruiamo $S$ decisore per $A_"TM"$:
 
@@ -639,6 +669,12 @@ S = Su input $<M,w>$ con $M$ encoding di una TM e $w$ stringa:
 2. Se $R$ rifiuta, rifiuta
 3. Se $R$ accetta, simula $M$ su $w$ fino alla sua terminazione
   - Se $M$ accetta, accetta; altrimenti rifiuta.
+
+Tramite il passaggio 2 evitiamo che $S$ vada in loop, abbiamo quindi costruito un decisore per $A_"TM"$ ma è impossibile, contraddizione.
+
+Quello che abbiamo fatto in questo caso è stato fare una riduzione $A_"TM" op(lt.eq)_m "HALT"_"TM" $
+
+In generale la regola è utilizzare nuovi problemi per risolvere problemi che già sappiamo essere non risolvibli, in questo modo creiamo il paradosso e dimostriamo la non decidibilità con la riduzione.
 
 == Altri linguaggi non decidibili
 #showybox(
@@ -659,28 +695,33 @@ S = Su input $<M,w>$ con $M$ encoding di una TM e $w$ stringa:
   ] 
 )
 
-*Dimostrazione* - Supponiamo per assurdo che sia decidibile. Sia quindi $R$ un decisore, costruiamo un decisore $S$ che usi $R$ come subroutine.
+*Dimostrazione* - Supponiamo per assurdo che sia decidibile, esiste quindi un decisore:
 
-Dobbiamo fare in modo che $S$ costruisca una nuova TM $M'$ t.c.:
-1. $L(M')$ é vuoto $arrow.double.r.l M$ non accetta $w$.
-2. $L(M')$ é non vuoto $arrow.double.r.l M$ accetta $w$.
+$ R(<M>) = cases("accetta" space "se" L(M)=emptyset, "rifiuta" space "se" L(M)eq.not emptyset) $
 
-Abbiamo quindi $M'$: Su input $x$:
-1. Se $x eq.not w$ rifiuta
-2. Se $x = w$, esegui $M$ su input $x$ e se $M$ accetta, accetta; altrimenti rifiuta.
+Utilizziamo questo decisore per costruire un decisore $S$ per $A_"TM"$, questo però in input vorrà $<M,w>$ con $M$ TM e $w$ stringa ma $R$ riceve soltanto $<M>$ come input.
 
-Quinsi $S$ decisore di $A_"TM"$ = "data $<M,w>$ in input:
-1. Costruisci $M'$
-2. Esegui $R$ con input $M'$
-3. Se $R$ accetta, rifiuta; altrimenti accetta"
+La TM $S$ dovrà creare sul suo nastro la codifica di una TM $M'$ che:
+- Su input $x$:
+  - Ignora $x$
+  - Simula la TM originale $M$ su $w$
+  - Se $M$ accetta $w$, accetta; altrimenti rifiuta.
 
-Se $R$ fosse un decisore di $E_"TM"$, $S$ sarebbe un decisore di $A_"TM"$ (assurdo).
+Quindi il linguaggio riconosciuto da questa TM $M'$ dipende da cosa fa $M$ con input $w$:
+- Se $M$ accetta, allora $M'$ indipendentemente da $x$ accetterà sempre, il suo linguaggio è quindi infinito.
+- Se $M$ non accetta, allora $M'$ indipendentemente da $x$ rifiuterà sempre e quindi il suo linguaggio è vuoto.
+
+La TM $S$ prende questa codifica $<M'>$ e la passa ad $R$:
+- Se $R$ accetta significa che il linguaggio di $M'$ è vuoto ma questo significa che $M$ non ha accettato $w$ e quindi $S$ deve rispondere rifiuta per essere decisore di $A_"TM"$.
+- Se $R$ non accetta significa che il linguaggio di $M'$ non è vuoto ma questo significa che $M$ ha accettato $w$ e quindi $S$ deve rispondere accetta per essere decisore di $A_"TM"$.
+
+Notiamo quindi che $S$ riconosce $A_"TM"$ e inoltre termina sempre dato che usa $R$ che è un decisore e costruisce $M'$ in un tempo finito. Questo significa che $S$ è un decisore per $A_"TM"$ che sappiamo essere indecidibile. _assurdo._
 
 #showybox(
   frame: (
-    border-color: green.lighten(60%),
-    title-color: green.lighten(60%),
-    body-color: green.lighten(95%)
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
   ),
   title-style: (
     color: black,
@@ -694,36 +735,24 @@ Se $R$ fosse un decisore di $E_"TM"$, $S$ sarebbe un decisore di $A_"TM"$ (assur
   ]
 )
 
-*Dimostrazione* - Facciamo una reduction $A_"TM" op(lt.eq)_m "REG"_"TM"$. La funzione $f(<M,w>)$ restituisce $M'$ t.c. su input $x$:
-1. Se $x in {0^n 1^n | n in NN}$ accetta
-2. Se $x in.not {0^n 1^n | n in NN}$ simula $M$ su $w$ e accetta $arrow.double.r.l$ $M(w)="ACC"$
+*Dimostrazione* - Supponiamo che sia decidibile ed esiste quindi un decisore $R$ che lo decide: $R(<M>) = cases("accetta" space "se" L(M) in "REG", "reject" space "se" L(M) in.not "REG") $
 
-#showybox(
-  frame: (
-    border-color: gray.lighten(60%),
-    title-color: gray.lighten(60%),
-    body-color: gray.lighten(95%)
-  ),
-  title-style: (
-    color: black,
-    weight: "regular",
-    align: center,
-    boxed-style: (anchor: (y: horizon, x: left))
-  ),
-  title: [*Nota*],
-  [
-    $L(M')$ è:
-    - $Sigma^* ("REG")$ se M accetta $w$ (Se $M$ accetta $w$ allora $M'$ accetta indipendentemente da $x$
-    - {0^n 1^n} se $M$ non accetta $w$ (Se $M$ non accetta $w$, $M'$ accetta solo se $x in {0^n 1^n}$) quindi $<M,w> in A_"TM" arrow.double.r.l <M'> in "REG"$
-  ]
-)
+Usiamo questo decisore $R$ per costruire un decisore $S$ per $A_"TM"$, su input $<M,w>$ con $M$ TM e $w$ stringa:
+- Crea sul suo nastro l'encoding di una TM $M'$ con la seguente logica:
+  - Su input $x$
+  - Se $x in {0^n 1^n}$ accetta
+  - Altrimenti simula $M$ originale su $w$
+    - Se $M$ accetta, accetta; altrimenti rifiuta
 
-Adesso abbiamo che
-$ <M,w> in A_"TM" arrow.double.r.l f(<M,w>) in "REG"_"TM" $
+Di che tipo è il linguaggio di $L(M')$?
+- Se $M$ accetta $w$ significa che nel linguaggio finiranno tutte le stringhe, infatti se una stringa $w$ rispetta il punto 1 viene accettata ma se non lo rispetta viene accettata successivamente nel punto dopo. Il linguaggio che otteniamo è quindi $Sigma^*$ che è regolare.
+- Se $M$ non accetta $w$ il linguaggio sarà ${0^n 1^n}$ che sappiamo essere non regolare.
 
-Dimostriamolo:
-- $arrow.double.r$ Sia $<M,w> in A_"TM"$ allora $M(w)="ACC"$ quindi $<M'> in "REG"_"TM"$
-- $arrow.double.l$ Se $<M,w> in.not A_"TM"$ allora $M(w)="REJ"$ o LOOP. Allora $L(M')={0^n 1^n | n gt.eq 0}$ pertanto $<M'> in.not "REG"_"TM"$
+A questo punto $S$ prende la codifica $<M'>$ e la fornisce in input a $R$:
+- Se $R$ accetta, significa che $L(M')$ è regolare ma questo accade soltanto se $M$ accetta $w$ e se questo accade $S$ deve restituire accetta.
+- Se $R$ rifiuta, significa che $L(M')$ non è regolare ma questo accade soltanto se $M$ non accetta $w$ e se questo accade $S$ deve restituire rifiuta.
+
+A questo punto abbiamo costruito un riconoscitore per $A_"TM"$ ma notiamo che questo termina sempre dato che usa $R$ decisore e costruisce una codifica in tempo finito. Siccome abbiamo costruito quindi un decisore per $A_"TM"$ abbiamo raggiunto un _assurdo_.
 
 == I Teoremi di Gödel
 Introduciamo il concetto di *sistema di prova*
