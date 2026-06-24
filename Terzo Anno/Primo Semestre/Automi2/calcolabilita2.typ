@@ -880,10 +880,28 @@ Consideriamo l'affermazione $phi_M=M(<M>)"termina"$
 Definiamo la TM $R_Pi$ che data la stringa $<x>$ in input:
 - $forall k = 1,2,3,...$
   - $forall w in Sigma^*$ t.c. $|w|=k$
-    - Se $V(<phi_R_Pi,w>)="ACC"$ allora $R_Pi$ va in loop. Significa che $w$ è la dimostrazione di $phi_R_Pi$ quindi "termina" è dimostrabile e la TM va in loop
-    - Se $V(<not phi_R_Pi,w>)="ACC"$ allora $R_Pi$ termina. Significa che "non termina" è dimostrabile e la TM termina.
+    - Se $V(<phi_R_Pi,w>)="ACC"$ allora $R_Pi$ va in loop *volontariamente*.
+    - Se $V(<not phi_R_Pi,w>)="ACC"$ allora $R_Pi$ termina.
 
 *Claim* - Se $phi_R_Pi$ o $not phi_R_Pi$ è dimostrabile allora $Pi$ è inconsistente.
+
+#showybox(
+  frame: (
+    border-color: gray.lighten(60%),
+    title-color: gray.lighten(60%),
+    body-color: gray.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Nota*],
+  [
+    La TM è costruita appositamente per fare il contrario dell'affermazione. Notiamo infatti che se troviamo una dimostrazione per "la macchina termina" allora la macchina va in loop volontariamente. Se invece si trova una dimostrazione per "la macchina non termina" la macchina si spegne volontariamente.
+  ]
+)
 
 *Dimostrazione Claim* - Supponiamo che $not phi_R_Pi$ sia dimostrabile. Allora esiste una dimostrazione $w$ t.c. $V(<not phi_R_Pi, w>)="ACC"$ ovvero $R_Pi(<R_Pi>)$ termina. Poichè l'esecuzione termina il comportamento della traccia è noto quindi esiste una dimostrazione che descrive la traccia di esecuzione di $R_Pi$ che è anche una dimostrazione per $phi_R_Pi$. Ha infatti dimostrato che $R_Pi(<R_Pi>)$ termina ovvero $phi_R_Pi$.
 
