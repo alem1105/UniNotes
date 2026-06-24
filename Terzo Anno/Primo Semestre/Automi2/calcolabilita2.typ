@@ -4,7 +4,7 @@
 #show raw: set block(fill: none)
 #show raw.where(block: false): set box(fill: none)
 
-= Calcolabilità (DEVO ANCORA STUDIARLA BENE QUINDI LI SISTEMERÓ)
+= Calcolabilità
 Iniziamo introducendo il concetto di *Macchina di Turing*, queste corrispondono al modello astratto di computer, tuttio ciò che è calcolabile per un computer lo è anche per una TM.
 
 Una Turing Machine possiede un nastro infinito e una testina con la quale può leggere e scrivere sul nastro. Inizializziamo il nastro scrivendoci sopra la stringa di input, i restanti slot sono riempiti con il carattere _blank_ $union.sq$. I movimenti possibili per la testina sono _dx, sx, lettura, scrittura_ e continua a computare fino al raggiungimento lo stato di accettazione o rifiuto, se non raggiunge nessuno dei due allora va in loop.
@@ -773,7 +773,7 @@ Introduciamo il concetto di *sistema di prova*
   [
     Un sistema di prova $Pi$ è tale che:
     - Per ogni affermazione vera o falsa esiste una sua rappresentazione come stringa $<x>$ finita.
-    - Per ogni dimostrazione esiste una rappresentazione come stringa $<Pi>$ finita
+    - Per ogni dimostrazione esiste una rappresentazione come stringa $<w>$ finita
     - Esiste TM $V$ decisore tale che $forall(<x,w>) in Sigma^*$ si ha $<x,w> in L(V) arrow.double.r.l w "è una dimostrazione per" x$ in $Pi$
   ]
 )
@@ -828,7 +828,7 @@ Infine un sistema di prova $Pi$ è detto:
   ]
 )
 
-*Dimostrazione* - Sia $L={<x> | x "è dimostrabile in" Pi}$ definiamo la TM $R_Pi$ che prova a decidere $L$:
+*Dimostrazione* - Sia $L={chevron.l x chevron.r | x "è dimostrabile in" Pi}$ definiamo la TM $R_Pi$ che prova a decidere $L$:
 
 $R_Pi$ = Data la stringa $<x>$ in input:
 - $forall k = 1,2,3,...$:
@@ -840,13 +840,15 @@ Ora supponiamo per assurdo $Pi$ valido e completo. Allora una tra $x$ e $not x$ 
 - $x$ è vera $arrow.double.r.l exists "dim" w "t.c." V_Pi (<x,w>)="ACC"$ quindi $<x> in L(R_Pi)$
 - $not x$ è vera $arrow.double.r.l exists "dim" w "t.c." V_Pi (<not x, w>)="ACC"$
 
-Quindi $R_Pi$ è un decisore e $L(R_Pi)={<x> | x "vera"}$
+Quindi $R_Pi$ è un decisore e $L(R_Pi)={<x> | x "vera"}$, grazie alle ipotesi.
 
 Data una TM $M$ e un input $y in Sigma^*$ consideriamo la seguente affermazione: $ phi_(M,y)=M(y) "termina" $
 
-Definiamo la TM $D(<M,y>)=R_Pi(<phi_M>)$
+Definiamo la TM $D(<M,y>)$ che passa l'equazione $phi_(M,y)$ a $R_Pi$ e:
+- Se $M$ termina allora $R_Pi$ trova la dimostrazione e accetta, anche $D$ accetta.
+- Se $M$ non termina allora $R_Pi$ trova la dimostrazione per $not phi_(M,y)$ e rifiuta, $D$ rifiuta.
 
-Visto che $P_Pi$ è un decisore anche $D$ lo è. Tuttavia $L(D) = "HALT"_"TM"$ che sappiamo essere non decidibile. Otteniamo una contraddizione infatti $Pi$ non può essere sia valido che completo. 
+A questo punto abbiamo costruito la TM $D$ che riesce a risolvere il problema dell'arresto $"HALT"_"TM"$, riesce a dire se la macchina $M$ in input si ferma su l'input $y$. Siccome sappiamo che $"HALT_"_"TM"$ non è decidibile abbiamo raggiunto un _assurdo_.
 
 #showybox(
   frame: (
@@ -900,8 +902,13 @@ Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmet
 - Valga lo stesso claim del teorema precedente e la sua dimostrazione
 - Assumiamo $Pi$ consistente, quindi né $phi_R_Pi$ né $not phi_R_Pi$ dimostrabili in $Pi$.
 
-Supponiamo per assurod che "$Pi$ è consistente" sia dimostrabile tramite $w in Sigma^*$. Unendo $w$ alla dimostrazione del claim, otteniamo una dimostrazione per l'affermazione "né $phi_R_Pi$ né $not phi_R_Pi$ dimostrabili in $Pi$".
+Sappiamo dal primo teorema che $Pi "Inconsistente" arrow.double.r not phi_R_Pi$ infatti la macchina $R_Pi$ non termina perché non trova nessuna dimostrazione. 
+Essendo $Pi$ sufficientemente potente da comprendere l'aritmetica, questa stessa implicazione è un teorema dimostrabile: $ Pi tack.r "Cons"(Pi) arrow.double.r not phi_R_Pi $
 
-Per costruzione di $R_Pi$ questa corrisponde ad una dimostrazione per $not phi_R_Pi$ in quanto implica che si sappia per certo che la TM va in loop. Questa è una contraddizione.
+Letto: _Il sistema $Pi$ è in grado di dimostrare il teorema: Se $Pi$ consistente allora la macchina $R_Pi$ non si fermerà mai ($not phi_R_Pi$)_
 
-Quindi, "$Pi$ non è consistente" non è dimostrabile in $Pi$.
+Ipotizziamo per assurdo che $Pi$ sia in grado di dimostrare la sua consistenza e quindi: $ Pi tack.r "Cons"(Pi) $
+
+Unendo le due regole otteniamo che $Pi$ dimostra $not phi_R_Pi$, ma per il primo teorema abbiamo dimostrato che se un sistema la dimostra è inconsistente, questa contraddizione fa crollare l'ipotesi e quindi $Pi$ non può dimostrare $"Cons"(Pi)$.
+
+In generale è importante ricordare che per dimostrare la consistenza di un sistema matematico è necessario utilizzare un sistema ancora più potente, si crea quindi una successione dove non raggiungeremo mai la massima sicurezza.
