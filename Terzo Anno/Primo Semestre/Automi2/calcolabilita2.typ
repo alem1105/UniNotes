@@ -785,9 +785,9 @@ Si dice invece, *indipendente* se né $x$ né $not x$ sono dimostrabili in $Pi$.
 $Pi$ deve essere *computabile* ovvero $forall A "assioma"$ in $Pi$, $A in "DEC"$
 
 Infine un sistema di prova $Pi$ è detto:
-- *Consistente*: Se per ogni affermazione $<x>$ al piú uno tra $x$ e $not x$ è dimostrabile.
-- *Valido*: Se ogni affermazione dimostrabile è vera.
-- *Completo*: Se $forall <x>$ almeno uno tra $x$ e $not x$ è dimostrabile
+- *Consistente*: Non esiste nessuna $<x>$ per cui il sistema sia in grado di dimostrare sia $x$ che $not x$. (_Non si contraddice mai_)
+- *Valido*: Se ogni affermazione dimostrabile è vera. (_Non dice bugie_)
+- *Completo*: Se $forall <x>$ almeno uno tra $x$ e $not x$ è dimostrabile.
 - *Incompleto*: Se esiste un'affermazione indipendente.
 
 #showybox(
