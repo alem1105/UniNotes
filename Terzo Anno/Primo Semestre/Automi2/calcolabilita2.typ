@@ -920,8 +920,7 @@ Sia $Pi$ un sistema di dimostrazione abbastanza potente da comprendere l'aritmet
 - Valga lo stesso claim del teorema precedente e la sua dimostrazione
 - Assumiamo $Pi$ consistente, quindi né $phi_R_Pi$ né $not phi_R_Pi$ dimostrabili in $Pi$.
 
-Sappiamo dal primo teorema che $Pi "Inconsistente" arrow.double.r not phi_R_Pi$ infatti la macchina $R_Pi$ non termina perché non trova nessuna dimostrazione. 
-Essendo $Pi$ sufficientemente potente da comprendere l'aritmetica, questa stessa implicazione è un teorema dimostrabile: $ Pi tack.r "Cons"(Pi) arrow.double.r not phi_R_Pi $
+Sappiamo dal primo teorema che se $Pi$ é consistente allora la macchina $R_Pi$ non troverá mai una soluzione per nessuna delle due affermazioni $phi_R_Pi$ e $not phi_R_Pi$, ma se non trova una soluzione significa che va in loop, quindi $not phi_R_Pi$ é vera. Essendo $Pi$ sufficientemente potente da comprendere l'aritmetica, questa stessa implicazione è un teorema dimostrabile: $ Pi tack.r "Cons"(Pi) arrow.double.r not phi_R_Pi $
 
 Letto: _Il sistema $Pi$ è in grado di dimostrare il teorema: Se $Pi$ consistente allora la macchina $R_Pi$ non si fermerà mai ($not phi_R_Pi$)_
 
