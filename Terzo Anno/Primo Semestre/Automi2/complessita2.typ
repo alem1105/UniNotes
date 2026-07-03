@@ -846,3 +846,386 @@ Adesso ci chiediamo se esiste un linguaggio $L in N P$ e $L in.not P$ ma non NP-
 )
 
 Questi teoremi ci dicono essenzialmente che la classe P e coP sono la stessa cosa, infatti se un linguaggio appartiene ad una delle due ed essite quindi una TM deterministica in tempo polinomiale, ci basta invertire gli output di questa.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ "coNP" subset.eq "EXP" $
+  ]
+)
+
+*Dimostrazione* - Sia $L in "coNP"$, allora abbiamo che $overline(L) in "NP" subset.eq "EXP"$ ovvero $L in "EXP"$ e quindi $L in "coEXP"$.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ P subset.eq "coNP" $
+  ]
+)
+
+*Dimostrazione* - Prendiamo un problema $L in P$ e visto che $P$ é chiuso per complemento abbiamo $overline(L) in P$. Sappiamo che $P subset.eq "NP"$ e quindi $overline(L) in N P$ ma allora $L in "coNP"$.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ P=N P arrow.double.r P = "coNP" $
+  ]
+)
+
+*Dimostrazione* - Se $L in "coNP"$ allora $overline(L) in N P$ ma dato che $P = N P$ il suo inverso sta anche in $P$. Ma se invertiamo le risposte abbiamo quindi che anche $L in P$. Quindi se NP collassasse dentro $P$ allora si porterebbe con se anche $"coNP"$.
+
+*Corollario* - Basandoci sul teorema precedente allora possiamo anche dire che $"NP"eq.not"coNP" arrow.double.r P eq.not "NP"$.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ "NP"="coNP" arrow.double.r.l "UNSAT" in "NP" $
+  ]
+)
+
+*Dimostrazione* - Prima dimostriamo ($arrow.double.r$), quindi sia $"NP" = "coNP"$ allora $"UNSAT" in "coNP"$ che é uguale a $"NP"$.
+
+$(arrow.double.l)$ - Sia $"UNSAT" in "NP"$. Prendiamo $L in "coNP"$ quindi $overline(L) in "NP"$. Per NP-Completezza, abbiamo $overline(L) lt.eq_m^p "SAT"$ e quindi $overline(L) lt.eq_m^p "SAT" arrow.double.r.l L lt.eq_m^p "UNSAT"$. Ma UNSAT $in N P$ quindi $L in "NP"$.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - NP-Completezza],
+  [
+    Un linguaggio $L$ è NP-Completo se:
+    - $L in "coNP"$
+    - $forall A in "coNP", A lt.eq_m^p L$
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    "UNSAT" é NP-Completo
+  ]
+)
+
+*Dimostrazione* - Sappiamo che UNSAT $in$ coNP. Inoltre $A lt.eq_m^p "UNSAT" arrow.double.r.l overline(A) lt.eq_m^p "SAT"$. Visto che SAT é NP-Completo allora $overline(A) lt.eq_m^p "SAT"$.
+
+Quindi visto che $overline(A) lt.eq_m^p "SAT"$ si ha anche $A lt.eq_m^p "UNSAT"$.
+
+Quindi abbiamo che:
+- Se $L in N P$ allora esiste un verificatore in tempo polinomiale $V(x,y)$ tale che $forall x, x in L arrow.double.r.l exists y "t.c." V(x,y)="ACC"$
+
+- Se $L in "coNP"$ allora esiste un verificatore in tempo polinomiale $V(x,y)$ tale che $forall x, x in.not L arrow.double.r.l exists y "t.c." V(x,y)="ACC"$
+
+== Space Complexity
+Vogliamo misurare l'efficienza delle TM in termini di spazio.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Complessitá di Spazio],
+  [
+    La complessitá di spazio di un decisore $M$ é una funzione $ S:NN arrow.r NN "t.c." S(n)="max"_(x, |x|=n) {\#"celle del nastro scritte da" M(x)} $
+  ]
+)
+
+Dato che l'input ha dimensione $n$ non vogliamo essere penalizzati dalla sua lettura, cambiamo quindi il modello di TM.
+
+$M$ ha due nastri, uno di input in sola lettura e quello di output che sará quello di lavoro. Consideriamo ad esempio la TM multinastro, per la complessitá di tempo passare da una multinastro ad una singolo genera un overhead da $T(n)$ a $O(t(n)^2z)$. Per lo spazio invece soltanto da $S(n)$ a $O(S(n))$.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione*],
+  [
+    $ "SPACE"(f(n))={L | exists "TM" M "con complessitá di spazio" O(f(n)) "t.c." L(M)=L} $
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione*],
+  [
+    $ "NSPACE"(f(n))={L | exists "NTM" N "con complessitá di spazio" O(f(n)) "t.c." L(M)=L} $
+  ]
+)
+
+*Osservazioni*:
+- Per quanto riguarda il tempo, la complessitá è almeno lineare in $n$ dato che la TM deve leggere l'input.
+- Per lo spazio invece la complessitá é almeno $log n$, possiamo "ignorare" l'input e considerare soltanto la memoria necessaria a far funzionare l'algoritmo con una variabile che ricorda a che punto dell'input siamo, per contenerlo tutto serve quindi almeno $log n$ spazio.
+
+Per la complessitá di spazio le principali classi sono:
+- $L = "SPACE"(log n)$ e $"NL" = "NSPACE"(log n)$. Quindi i problemi risolvibili usando una memoria proporzionale al logaritmo dell'input.
+
+- $"PSPACE"=union_k "SPACE"(n^k)$ e $"NSPACE"=union_k "NSPACE"(n^k)$. Problemi risolvibili con una memoria polinomiale rispetto all'input.
+
+- $"EXPSPACE"=union_k "SPACE"(2^n^k)$ e $"NEXSPACE"=union_k "NSPACE"(2^n^k)$
+
+Mettendo tutto insieme con anche le complessitá di tempo abbiamo: $ P subset.eq "NP" subset.eq "PSPACE" subset.eq "EXP" subset.eq "NEXP" subset.eq "EXPSPACE" $
+
+- $N subset.eq "NP"$: Lo sapevamo da prima
+
+- $"NP" subset.eq "PSPACE"$: Un problema risolvibile in modo non deterministico in tempo polinomiale possiamo risolverlo con memoria polinomiale, infatti basta esplorare un ramo alla volta e tenere in memoria soltanto quel ramo.
+
+- $"PSPACE" subset.eq "EXP"$: Se una TM ha a disposizione uno spazio polinomiale, quante configurazioni diverse puó assumere il nastro prima di ripetersi? Un numero esponenziale, quindi se la macchina lavorasse in tempo esponenziale finirebbe in un loop.
+
+- $"EXP" subset.eq "NEXP"$: Come P ed NP ma in tempo esponenziale.
+
+- $"NEXP" subset.eq "EXPSPACE"$: Stesso funzionamento del punto 2 ma usiamo ordini di grandezza esponenziali.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ "TIME"(f(n)) subset.eq "SPACE"(f(n)) $
+  ]
+)
+
+*Dimostrazione* - Una TM con tempo $O(f(n))$ puó scrivere al piú $O(f(n))$ celle.
+
+*Corollario* - $P subset.eq "PSPACE", "NP" subset.eq "NPSPACE"$
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ "NP" subset.eq "PSPACE" $
+  ]
+)
+
+*Dimostrazione* - Segue dal teorema di Savitch (si vede dopo) ma si puó dimostrare anche direttamente.
+
+Sappiamo che $A in "NP"$ se esiste una TM in tempo polinomiale che $forall x, x in L arrow.double.r.l exists y "t.c." V(x,y)=1$. Siccome $V$ é in tempo polinomiale allora $|y|=p(n)$ per un polinomio $p$.
+
+Per decidere $A$ in spazio polinomiale:
+- Memorizzo il candidato $y$ sul nastro di lavoro 1.
+- Simulo $V(x,y)$ sul nastro 2.
+- Se $V(x,y)$ accetta, accetto; altrimenti passo all'$y$ successivo riutilizzando lo stesso spazio.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema* - Lo spazio limita il tempo],
+  [
+    Per ogni $f(n) gt.eq log n, "SPACE"(f(n)) subset.eq "DTIME"(2^(O(f(n))))$
+  ]
+)
+
+Quello che ci dice il teorema é che se un algoritmo usa una memoria pari a $f(n)$ allora il tempo massimo che impiegherá per arrivare a una soluzione sará proporzionale a un'esponenziale di quello spazio ovvero $2^(O(f(n)))$
+
+*Dimostrazione* - La dimostrazione si basa sul "fotografare" la TM durante l'esecuzione e vedere quante configurazioni possibili ci sono, se la macchina si trova due volte nella stessa configurazione significa che é andata in loop ma stiamo parlando di un decisore quindi non accadere.
+
+Quindi abbiamo che il tempo di esecuzione deve essere minore o uguale al numero totale di configurazioni possibili. Ma quante sono?
+
+- $|Q|$: Stati della TM
+
+- $f(n)$: Posizione della testina, dato che il nastro é lungo al massimo $f(n)$ la testina puó trovarsi in una di queste celle.
+- $n$: Nastro di input, anche qui la testina puó trovarsi in una di queste celle, dato che abbiamo imposto che $f(n) gt.eq log n$, per le regole dei logaritmi possiamo dire che $n lt.eq 2^(f(n))$.
+- $|Gamma|^(f(n))$: È il nastro di lavoro, abbiamo $f(n)$ celle che possiamo riempire con un alfabeto di $|Gamma|$ simboli, quindi le combinazioni totali sono $|Gamma|^(f(n))$.
+
+Moltiplichiamo tutto fra loro, $|Q|$ e $|Gamma|$ sono costanti, $f(n)$ é un valore piccolo per una potenza di 2 ($2^(f(n))$) e per un'altra potenza $|Gamma|^(f(n))$, quindi il risultato asintotico é $2^(O(f(n)))$, il valore é limitato dallo spazio utilizzato.
+
+*Corollario*:
+- $L subset.eq P$. Se la complessitá di spazio é logaritmica cioé in L, applicando la formula del tempo $2^(O(log(n)))$, per le proprietá dei logaritmi, l'esponenziale e il logaritmo si annullano e il risultato diventa un polinomio. Quindi se si usa spazio logaritmico si impiega tempo polinomiale.
+
+- $"PSPACE" subset.eq "EXP"$: Se invece lo spazio é un polinomio e applichiamo la formula per il tempo $2^(O(n^k))$ otteniamo un tempo esponenziale.
+
+Mettendo insieme tutto quello che abbiamo scoperto $ L subset.eq P subset.eq "PSPACE" subset.eq "EXP" $
+Sappiamo che $P eq.not "EXP"$ e quindi o $P eq.not "PSPACE"$ o $"PSPACE" eq.not "EXP"$ o entrambi.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ "PATH" in "SPACE"(log^2 n) $
+  ]
+)
+
+*Dimostrazione* - PATH é il problema che ci dice se esiste un percorso tra un nodo di partenza $s$ e un nodo di arrivo $t$, se il percorso esiste non puó essere piú lungo di $n$ nodi del grafo. Per comoditá arrotondiamo la lunghezza massima alla potenza di 2 piú vicina, quindi se ad esempio i nodi sono 100 cerchiamo i percorsi lunghi fino a $2^7=128$, lunghezza massima che ci interessa é quindi $2^k$ dove $k$ é approssimativamente $log_2 (n)$.
+
+Quindi formalmente la funzione PATH? prende in input $(x,y,k)$ e ritorna "SI" $arrow.double.r.l exists x arrow.r.squiggly y$ con lunghezza $lt.eq 2^k$.
+
+L'idea alla base della funzione é che se esiste questo percorso allora deve esiste un nodo a metá strada $w$ t.c.:
+- Possiamo percorrere da $x$ a $w$ nella prima metá di passi cioé $2^(k-1)$
+- Possiamo arrivare da $w$ a $y$ nella seconda metá cioé $2^(k-1)$
+
+La funzione é definita in modo ricorsivo:
+- Caso Base $(k=0)$: Se il limite é $2^0=1$ passi controlliamo subito se esiste un arco tra $x$ ed $y$, oppure se $x=y$, in caso positivo accetto.
+- Passo Ricorsivo: Come detto prima allora deve esiste un nodo $w$ t.c.:
+  - $x arrow.r.squiggly w$ in $lt.eq 2^(k-1)$ passi
+  - $w arrow.r.squiggly y$ in $lt.eq 2^(k-1)$ passi
+  Ovvero chiede prima $"PATH?"(x,w,k-1)$ e poi in AND $"PATH?"(w,y,k-1)$
+
+In ogni chiamata della funzione devo memorizzare $x,y,k$ e il nodo intermedio $w$. Per memorizzare l'indice di un nodo in un grafo da $n$ nodi ho bisogno di $O(log n)$ spazio.
+
+Ma quante chiamate si "impilano" nello stack? La prima chiamata inizierá da $k=log n$ ovvero misurare la lunghezza massima, poi ogni volta faremo $k-1$ fino ad arrivare a 0, ogni livello ha si due chiamate ma utilizzano sempre la stessa memoria quindi anche qui abbiamo $O(log n)$. (Simile ad una ricerca binaria praticamente).
+
+Mettendo tutto insieme abbiamo complessitá di spazio:$ O(log n) times O(log n) = O(log n)^2 $
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema di Savitch*],
+  [
+    Data una funzione $f(n) gt.eq log n$ si ha $"NSPACE"(f(n)) subset.eq "DSPACE"(f^2 (n))$
+  ]
+)
+
+Il teorema ci dice che qualsiasi cosa noi facciamo in modo non deterministico utilizzando uno spazio $f(n)$ possiamo simularlo in modo deterministico utilizzando spazio $f(n)^2$.
+
+Sia $N$ una NTM t.c. $L(N) in "NSPACE"(f(n))$. Per comoditá facciamo in modo che $N$ prima di accettare cancelli tutto il nastro si metta in uno specifico stato accettante $q_"acc"$. Chiamiamo questa configurazione $c_"acc"$ mentre la configurazione di partenza $q_"start"$.
+
+Adesso immaginiamo la macchina $N$ non come un nastro ma un *grafo orientato*, il grafo $G_(N,w)$:
+- Ad ogni nodo corrisponde una configurazione della macchina
+- Gli archi collegano un nodo A ad un nodo B se le regole di $N$ permettono di passare dalla configurazione $A$ alla configurazione $B$ durante l'esecuzione di $w$
+
+A questo punto il problema non é piú se la macchina N accetta ma se esiste un percorso che ci porta da $c_"start"$ a $c_"acc"$.
+
+Quanti nodi ha questo grafo? Per il teorema "Spazio limita il Tempo" abbiamo dimostrato che se una TM usa spazio $f(n)$ allora puó assumere un numero massimo di configurazioni pari a $2^(O(f(n)))$, quindi il grafo ha un numero esponenziale di nodi, chiamiamo questo numero $m=2^(O(f(n)))$.
+
+Adesso possiamo definire una TM $M$ che utilizza l'algoritmo `PATH?` chiedendo di trovare un percorso da $c_"start"$ a $c_"acc"$ lungo al massimo $m$ passi.
+
+Se $M$ provasse a generare tutto il grafo occuperebbe spazio $m$, dobbiamo risparmiare spazio. L'algoritmo `PATH?` ha bisogno di sapere se esiste un arco tra il nodo A e il nodo B, M controlla le regole di base della macchina originale N e senza costruire il grafo risponde SI/NO.
+
+- Sappiamo che `PATH?` su un grafo di $m$ nodi consuma uno spazio pari a $log^2 m$ e sappiamo che $m=2^(O(f(n)))$
+
+- Sostituendo otteniamo che la TM M occupa $O((log (2^(f(n))))^2)$
+- Logaritmo e l'esponenziale base 2 si annullano quindi $O((O(f(n)))^2)$
+- Otteniamo quindi $O(f^2 (n))$
