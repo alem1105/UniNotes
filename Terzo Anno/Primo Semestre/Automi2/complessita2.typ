@@ -1229,3 +1229,212 @@ Se $M$ provasse a generare tutto il grafo occuperebbe spazio $m$, dobbiamo rispa
 - Sostituendo otteniamo che la TM M occupa $O((log (2^(f(n))))^2)$
 - Logaritmo e l'esponenziale base 2 si annullano quindi $O((O(f(n)))^2)$
 - Otteniamo quindi $O(f^2 (n))$
+
+*Corollari*
+- $"PSPACE" = "NSPACE"$: Se una macchina non-deterministica usa uno spazio polinomiale (es. $n^3$) allora per il Teorema di Savitch possiamo simularla deterministicamente usando il quadrato di quello spazio, quindi $n^6$ ma é sempre un polinomio.
+
+- $"NL" subset.eq "DSPACE"(log^2 n)$
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    $ "NL" subset.eq P $
+  ]
+)
+
+Se $A in "NL"$ allora esiste una NTM che decide $A$ con spazio $O(log n)$, questo significa che il numero di configurazioni é $2^(O(log n))$, per le regole dei logaritmi questo equivale ad un polinomio. Dato che il grafo delle configurazioni ha grandezza polinomiale ci basta usare `PATH` per risolvere in tempo polinomiale e quindi $"NL" subset.eq "P"$.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - Riduzione Logaritmica],
+  [
+    $A lt.eq_m^l B$ se esiste $R: Sigma^* arrow.r Sigma^*$ calcolabile in $O(log n)$ spazio tale che $forall x in Sigma^*, x in A arrow.double.r.l R(x) in B$
+  ]
+)
+
+Questa ci serve appunto per mostrare la NL-Completezza, per mostrare infatti che tutti gli altri problemi sono riducibili ad un problema non possiamo usare una riduzione che impiega tempo polinomiale altrimenti questa potrebbe tranquillamente risolvere il problema senza tradurlo.
+
+Peró la difficoltá sta nel fatto che se una macchina usa spazio $O(log n)$ puó comunque girare per un tempo polinomiale prima di fermarsi, lavorando per questo tempo l'output finale potrebbe risultare troppo lungo per lo spazio, per scrivere l'output si usa quindi un altro nastro WRITE-ONCE che non conta ai fini della complessitá dello spazio.
+
+#showybox(
+  frame: (
+    border-color: green.lighten(60%),
+    title-color: green.lighten(60%),
+    body-color: green.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Definizione* - NL-Completezza],
+  [
+    $B$ é NL-Completo se:
+    - $B in "NL"$
+    - $forall A in "NL", A lt.eq_m^l B$
+  ]
+)
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    Se $P,Q$ calcolabili in log-space anche $R(x)=Q(P(x))$ é calcolabile in log-space
+  ]
+)
+
+*Dimostrazione*
+1. $R$ fa partire $Q$
+2. Quando $Q$ legge l'i-esimo bit del suo input e non lo trova
+3. $R$ mette in pausa $Q$
+4. $R$ fa partire $P$ da 0, $R$ ignora tutti i bit che sputa $P$ ma tiene il conto con un contatore (che occuperá soltanto $log n$)
+5. Quando $P$ restituirá l'i-esimo bit, $R$ lo prende e lo passa a $Q$, spegne $P$ e fa ripartire $Q$ dalla pausa.
+
+*Corollari*
+- $A lt.eq_m^l B$ allora $B in L arrow.double.r A in L$
+
+- $A lt.eq_m^l B$ allora $B in "NL" arrow.double.r A in "NL"$
+
+- $A lt.eq_m^l B$ allora $B lt.eq_m^l C arrow.double.r A lt.eq_m^l C$
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema*],
+  [
+    PATH é NL-COMPLETO
+  ]
+)
+
+*Dimostrazione* - Sappiamo che PATH é NL-HARD perché nel Teorema di Savitch abbiamo visto che una NTM $M$ con spazio $O(log n)$ accetta su $x arrow.double.r.l exists G_(N,x)$ con PATH $c_"start" arrow.r.squiggly c_"acc"$.
+
+Ora dobbiamo mostrare che PATH $in "NL"$ ovvero che puó essere risolto da una macchina non-deterministica usando una memoria minuscola di $O(log n)$.
+
+Costruiamo quindi questa macchina:
+- Su input $G,s,t$
+- Se $s=t$ accetta
+- Calcola in $O(log n)$ spazio $n = |V|$
+- Crea una variabile `currNode` e ci salva $s$
+- Per $i=1,...,n$
+  - Sceglie in modo non-deterministico un nodo $u$
+  - Se $u=t$ accetta
+  - Se $("currNode",u) in E$ imposta currNode = $u$
+  - Se $("currNode",u) in.not E$ rifiuta.
+- Rifiuta
+
+La macchina non ricorda mai l'intero percorso ma soltanto tre cose:
+- Il nodo finale $t$
+- A che numero di passo é arrivata $i$
+- Su quale nodo si trova in questo momenot `currNode`
+
+Quindi $3 dot O(log n)=O(log n)$.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema* - Time Hierarchy Theorem],
+  [
+    Sia $t_1 (n) << t_2 (n)$ allora esiste $L in "DTIME"(t_2 (n))$ e $L in.not "DTIME"(t_1 (n))$.
+  ]
+)
+
+Il teorema ci dice che se abbiamo due classi di tempo con una grande differenza fra loro, allora esiste un problema che é risolvibile in quella piú grande ma non in quella piú piccola.
+
+*Dimostrazione* - Per dimostrare che questo linguaggio esiste costruiamo la macchina $D(x)$:
+1. Usiamo l'input $x$ per costruire una TM $M_x$
+2. Simula $M_x (x)$ per un tempo di $t_(1.5) (n)$ con $t_1 << t_(1.5) << t_2$
+3. Se $M_x (x)$ accetta, rifiuto
+4. Se $M_x (x)$ rifiuta, accetta
+5. Se $M_x (x)$ non termina entro il timer, accetta.
+
+Analisi:
+- $L(D) in "DTIME"(t_2 (n))$ perché la macchina $D$ impiega la maggior parte del tempo con il timer che é di soli $t_(1.5)$ e qualcosa di overhead. Quindi il tempo totale rimane $lt.eq t_2$.
+
+- $L(D) in.not "DTIME" (t_1 (n))$: Supponiamo ci sia un programma $Q lt.eq t_1 (n)$ che é in grado di riconoscere lo stesso linguaggio di $D$, siccome il timer di $D$ é $t_(1.5) (n)$ il timer é piú che sufficiente. $D$ riuscirá a finire la simulazione di $Q$.
+
+Alla fine della simulazione $D$ restituirá il contrario di $Q$. Se $D$ dá sempre la risposta opposta a $Q$ quando ricevo in input $Q$ stesso, significa che $D$ e $Q$ stanno calcolando cose diverse, ma avevamo supposto che calcolassero lo stesso linguaggio. Il linguaggio di $D$ é troppo difficile per stare in $"DTIME"(t_1 (n))$.
+
+*Osservazione* - Per fare in modo che la disuguaglianza asintotica funzioni dobbiamo aggiungere un valore `junk` di padding a $Q$ fino a superare la soglia per cui $t_(1.5) >> t_1$. In questo modo abbiamo $n$ grandissimo e $D$ ha tempo di finire l'esecuzione.
+
+#showybox(
+  frame: (
+    border-color: purple.lighten(60%),
+    title-color: purple.lighten(60%),
+    body-color: purple.lighten(95%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center,
+    boxed-style: (anchor: (y: horizon, x: left))
+  ),
+  title: [*Teorema* - Space Hierarchy Theorem],
+  [
+    Siano $s_1 (n) gt.eq log n$ e $s_2 (n)$ t.c. $s_2 (n) in omega (s_1 (n))$ allora $exists L "t.c." L in "SPACE"(s_2 (n)) "ma" L in.not "SPACE"(s_1 (n))$
+  ]
+)
+
+Anche qui il teorema ci dice che se esistono due classi di spazio con una grande differenza fra loro, esiste un problema che posso risolvere in quella grande ma non in quella piccola.
+
+*Dimostrazione* - Come prima costruiamo una macchina $D$ che prende in input $x$ e costruisce una macchina $M_x$:
+- $D$ segna sul suo nastro un'area di dimensione $s_2 (|x|)$
+- Inizializza un contatore su un altro nastro con un valore massimo $2^(O(s_2 (n)))$, se il contatore supera questo limite significa che la macchina é andata in loop.
+- Simula $M_x$:
+  - Se $M_x$ supera lo spazio allocato, accetta
+  - Se il contatore raggiunge il massimo, accetta
+  - Se $M$ termina e accetta, rifiuta; se termina e rifiuta, accetta.
+
+
+In questo modo otteniamo che:
+- $L(D) in "SPACE"(s_2 (n))$ infatti abbiamo allocato dello spazio che la macchina non puó superare.
+- $L(D) in.not "SPACE"(s_1 (n))$: Supponiamo esista un problema $Q$ che riconosce lo stesso linguaggio di $D$ usando spazio $s_1 (n)$. Simuliamo $Q$ con $D$, lo spazio allocato basterá e non andrá nemmeno in loop e quindi la simulazione arriverá fino alla fine ma la macchina restituirá il contrario, abbiamo una contraddizione.
