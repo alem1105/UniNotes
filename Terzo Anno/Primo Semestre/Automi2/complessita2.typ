@@ -141,8 +141,8 @@ In un grafo orientato, nel peggiore dei casi, abbiamo un grafo completamente con
 
 *Dimostrazione* - Il numero delle possibili colorazione è $O(2^n) in "EXP"$ però per capire se è 2-colorabile possiamo usare il seguente algoritmo:
 - Prendo un vertice e lo coloro di BLU
-- Coloro i suoi vicini di BLU
 - Coloro i suoi vicini di ROSSO
+- Coloro i vicini dei vicini di BLU
 - ...
 - Se trovo contraddizioni, rifiuto; altrimenti ripeto per tutte le componenti connesse di G. Se ho colorato tutto, accetto.
 
