@@ -971,7 +971,7 @@ $(arrow.double.l)$ - Sia $"UNSAT" in "NP"$. Prendiamo $L in "coNP"$ quindi $over
 
 *Dimostrazione* - Sappiamo che UNSAT $in$ coNP. Inoltre $A lt.eq_m^p "UNSAT" arrow.double.r.l overline(A) lt.eq_m^p "SAT"$. Visto che SAT é NP-Completo allora $overline(A) lt.eq_m^p "SAT"$.
 
-Quindi visto che $overline(A) lt.eq_m^p "SAT"$ si ha anche $A lt.eq_m^p "UNSAT"$.
+Quindi visto che $overline(A) lt.eq_m^p "SAT"$ si ha anche $A lt.eq_m^p "UNSAT"$. $square.filled$
 
 Quindi abbiamo che:
 - Se $L in N P$ allora esiste un verificatore in tempo polinomiale $V(x,y)$ tale che $forall x, x in L arrow.double.r.l exists y "t.c." V(x,y)="ACC"$
@@ -1001,7 +1001,7 @@ Vogliamo misurare l'efficienza delle TM in termini di spazio.
 
 Dato che l'input ha dimensione $n$ non vogliamo essere penalizzati dalla sua lettura, cambiamo quindi il modello di TM.
 
-$M$ ha due nastri, uno di input in sola lettura e quello di output che sará quello di lavoro. Consideriamo ad esempio la TM multinastro, per la complessitá di tempo passare da una multinastro ad una singolo genera un overhead da $T(n)$ a $O(t(n)^2z)$. Per lo spazio invece soltanto da $S(n)$ a $O(S(n))$.
+$M$ ha due nastri, uno di input in sola lettura e quello di output che sará quello di lavoro. Consideriamo ad esempio la TM multinastro, per la complessitá di tempo passare da una multinastro ad una singolo genera un overhead da $T(n)$ a $O(t(n)^2)$. Per lo spazio invece soltanto da $S(n)$ a $O(S(n))$.
 
 #showybox(
   frame: (
@@ -1052,7 +1052,7 @@ Per la complessitá di spazio le principali classi sono:
 
 Mettendo tutto insieme con anche le complessitá di tempo abbiamo: $ P subset.eq "NP" subset.eq "PSPACE" subset.eq "EXP" subset.eq "NEXP" subset.eq "EXPSPACE" $
 
-- $N subset.eq "NP"$: Lo sapevamo da prima
+- $P subset.eq "NP"$: Lo sapevamo da prima
 
 - $"NP" subset.eq "PSPACE"$: Un problema risolvibile in modo non deterministico in tempo polinomiale possiamo risolverlo con memoria polinomiale, infatti basta esplorare un ramo alla volta e tenere in memoria soltanto quel ramo.
 
