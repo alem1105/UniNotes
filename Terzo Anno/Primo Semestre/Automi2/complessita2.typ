@@ -965,7 +965,7 @@ $(arrow.double.l)$ - Sia $"UNSAT" in "NP"$. Prendiamo $L in "coNP"$ quindi $over
   ),
   title: [*Teorema*],
   [
-    "UNSAT" é NP-Completo
+    "UNSAT" é coNP-Completo
   ]
 )
 
