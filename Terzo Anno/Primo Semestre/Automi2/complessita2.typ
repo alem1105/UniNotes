@@ -865,7 +865,7 @@ Questi teoremi ci dicono essenzialmente che la classe P e coP sono la stessa cos
   ]
 )
 
-*Dimostrazione* - Sia $L in "coNP"$, allora abbiamo che $overline(L) in "NP" subset.eq "EXP"$ ovvero $L in "EXP"$ e quindi $L in "coEXP"$.
+*Dimostrazione* - Sia $L in "coNP"$, allora abbiamo che $overline(L) in "NP" subset.eq "EXP"$ questo significa che $L in "coEXP"="EXP"$
 
 #showybox(
   frame: (
@@ -943,9 +943,9 @@ $(arrow.double.l)$ - Sia $"UNSAT" in "NP"$. Prendiamo $L in "coNP"$ quindi $over
     align: center,
     boxed-style: (anchor: (y: horizon, x: left))
   ),
-  title: [*Definizione* - NP-Completezza],
+  title: [*Definizione* - coNP-Completezza],
   [
-    Un linguaggio $L$ è NP-Completo se:
+    Un linguaggio $L$ è coNP-Completo se:
     - $L in "coNP"$
     - $forall A in "coNP", A lt.eq_m^p L$
   ]
