@@ -1870,7 +1870,6 @@ Per PUSH e POP invece scriviamo:
     - $Q, Sigma, q_0, F$ sono come gli NFA
     - $Gamma$ è l'alfabeto della pila
     - $delta:Q times Sigma_epsilon times Gamma_epsilon arrow.r cal(P)(Q_epsilon times Gamma_epsilon)$
-    I PDA non deterministici e deterministici sono *equivalenti*!
   ]
 )
 
