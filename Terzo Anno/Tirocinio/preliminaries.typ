@@ -1,5 +1,5 @@
 #import "@preview/zebraw:0.6.3": *
-#show: zebraw.with(numbering: false)
+#show: zebraw.with(numbering: false, lang: false)
 
 = Linear Algebra
 == Scalars
@@ -166,3 +166,86 @@ $ bold(C) = bold(A B) = vec(delim: "[", bold(a)_1^top, bold(a)_2^top, dots.v, bo
 Possiamo pensare ad una moltiplicazione matrix-matrix $bold(A B)$ equivalente ad effettuare $m$ prodotti matrix-vector o $m times n$ dot products per mettere insieme i risultati e ottenere una matrice $n times m$.
 
 == Norms
+Di base la _norm_ di un vettore ci dice "quanto é grande". Ne esistono diverse, ad esempio la $l_2$ misura la lunghezza Euclidea di un vettore.
+
+La norm é una funzione $||dot||$ che mappa un vettore in uno scalare e soddisfa le 3 seguenti proprietá:
+1. Dato un array $bold(x)$, se scaliamo tutti i suoi elementi per uno scalare $a in RR$ anche la norm scala: $ ||a bold(x)|| = |a| ||bold(x)|| $
+
+2. Dati due vettori $bold(x)$ e $bold(y)$, la norm soddisfa la _triangle inequality_: $ ||bold(x) + bold(y)|| lt.eq ||bold(x)|| + ||bold(y)|| $
+
+3. La norm di un vettore é non-negativa e si annulla soltanto se il vettore é zero: $ ||bold(x)|| gt 0 "for all" bold(x) eq.not 0 $
+
+Esistono diverse funzioni valide come norms e diverse norms rappresentano diversi concetti di grandezza. La norm Euclidea corrisponde alla radice quadrata della somma dei quadrati di un vettore, questa é chiamata norm $l_2$ e possiamo esprimerla come: $ ||bold(x)||_2 = sqrt(sum_(i=1)^n bold(x)_i^2) $ 
+
+Nel codice possiamo chiamare semplicemente il metodo `norm`:
+
+```python
+u = torch.tensor([3.0, -4.0])
+torch.norm(u)
+
+# Output
+# tensor(5.)
+```
+
+Un'altra norm comune é la $l_1$ anche chiamata _Manhattan distance_, questa somma i valori assoluti degli elementi del vettore: $ ||bold(x)||_1 = sum_(i=1)^n |x_i| $
+
+Questa, rispetto alla $l_2$, é meno sensibile ai valori anomali, per calcolarla combiniamo i metodi per il valore assoluto e la somma:
+
+```python
+torch.abs(u).sum()
+
+# Output
+# tensor(7.)
+```
+
+Sia la $l_2$ che la $l_1$ sono dei casi speciali della norm generica $l_p$: $ ||bold(x)||_p = ( sum_(i=1)^n |x_i|^p )^(1/p) $
+
+Per quanto riguarda le matrici peró le cose si fanno piú complicate. Possiamo vedere le matrici sia come insiemi di singoli elementi sia come oggetti che agiscono su vettori transformandoli in altri vettori. Possiamo chiederci ad esempio quanto il prodotto matrice-vettore $bold(X v)$ puó essere lungo rispetto al vettore $bold(v)$, questo ci porta alla _spectral norm_.
+Peró vediamo la _Frobenius norm_ che é piú semplice da calcolare ed é definita come la radice quadrata della somma dei quadrati degli elementi della matrice: $ ||bold(X)||_F = sqrt( sum_(i=1)^m sum_(j=1)^n x_(i j)^2 ) $
+
+Questa si comporta come se fosse una norma $l_2$ di un vettore a forma di matrice.
+
+Nel deep learning spesso cerchiamo di risolvere problemi di ottimizzazione, massimizzare la probabilitá assegnata ai dati osservati, massimizzare il guadagno associato ad un modello di raccomandazione, minimizzare la distanza tra la rappresentazioni delle foto della stessa persona. Queste distanze sono spesso espresse come norme.
+
+= Calculus
+== Derivatives and Differentiation
+Molto semplicemente, la derivata é il tasso di variazione di una funzione rispetto alle variazioni dei suoi argomenti. Le derivate ci dicono quanto velocemente una _loss function_ cresce o decresce quando incrementiamo o decrementiamo ciascun parametro. Formalmente per delle funzione $f : RR arrow.r RR$ che mappano scalari in altri scalari, la derivata di $f$ nel punto $x$ é definita come: $ f'(x) = lim_(h arrow.r 0) (f(x+h) - f(x))/h $
+
+Quando $f'(x)$ esiste, $f$ si dice _differenziabile_ in $x$ e quando $f'(x)$ esiste per ogni $x$ in un range di valori, come ad esempio $[a,b]$, diciamo che $f$ é differenziabile su questo set. Non tutte le funzioni sono differenziabili comprese alcune che vorremmo ottimizzare. Tuttavia dato che il calcolo della derivata é fondamentale in quasi tutti gli algoritmi di addestramento, spesso ottimizziamo un surrogato differenziabile.
+
+Possiamo interpretare la derivata $f'(x)$ come il _tasso di variazione istantaneo_ di $f(x)$ rispetto ad $x$. Facciamo degli esempi, definiamo una funzione $u=f(x)=3x^2 - 4x$:
+
+```python
+def f(x):
+    return 3 * x ** 2 - 4 * x
+```
+
+Impostando $x=1$ notiamo che $(f(x+h)-f(x))/h$ si avvicina a $2$ quando $h$ si avvicina a $0$. Non abbiamo una dimostrazione matematica rigorosa ma possiamo facilmente notare che $f'(1)=2$:
+
+```python
+for h in 10.0**np.arange(-1, -6, -1):
+    print(f'h={h:.5f}, numerical limit={(f(1+h)-f(1))/h:.5f}')
+
+# Output
+# h=0.10000, numerical limit=2.30000
+# h=0.01000, numerical limit=2.03000
+# h=0.00100, numerical limit=2.00300
+# h=0.00010, numerical limit=2.00030
+# h=0.00001, numerical limit=2.00003
+```
+
+Esistono tantissime notazioni per indicare la derivata di una funzione. Data $y=f(x)$ tutte le seguenti espressioni sono equivalenti: $ f'(x)=y'= (d y)/(d x) = (d f)/(d x) = d/(d x) f(x) = D f (x)= D_x f(x) $ 
+
+I simboli $d/(d x)$ e $D$ sono _differentiation operators_. Vediamo inoltre alcune derivate di funzioni note:
+$ 
+d/(d x) C &= 0 "per ogni costante" C \
+d/(d x) x^n &= n x^(n-1) "per" n eq.not 0 \
+d/(d x) e^x &= e^x \
+d/(d x) ln x &= x^(-1)
+$ 
+
+Funzioni composte da funzioni differenziabili sono anch'esse differenziabili. La seguente regola é utile quando lavoriamo con composizioni di qualsiasi funzioni differenziabili $f$ e $g$ e una costante $C$.
+
+$
+  
+$
