@@ -247,5 +247,44 @@ $
 Funzioni composte da funzioni differenziabili sono anch'esse differenziabili. La seguente regola é utile quando lavoriamo con composizioni di qualsiasi funzioni differenziabili $f$ e $g$ e una costante $C$.
 
 $
-  
+  d/(d x) [C f(x)] &= C d/(d x) f(x) \
+  d/(d x) [f(x) + g(x)] &= d/(d x) f(x) + d/(d x) g(x) \
+  d/(d x) [f(x)g(x)] &= f(x)d/(d x) g(x) + g(x) d/(d x) f(x) \
+  d/(d x) (f(x))/(g(x)) &= (g(x) d/(d x) f(x) - f(x) d/(d x) g(x))/(g^2 (x))
 $
+
+In questo modo possiamo facilmente calcolare la derivata della funzione precedente $3x^2 -4x$: $ d/(d x) [3x^2 - 4x] = 3 d/(d x) x^2 - 4 d/(d x) x = 6x -4 $
+
+Infatti impostando $x=1$ otteniamo come risultato $2$. Da notare che la derivata di una funzione ci indica la sua _pendenza_ in un punto.
+
+== Partial Derivatives and Gradients
+Per adesso abbiamo calcolato la derivata di funzioni con una sola variabile ma nel deep learning dovremo lavorare con funzioni che hanno diverse variabili. Definiamo $y=f(x_1,x_2,dots,x_n)$ una funzione con $n$ variabili, la _partial derivative_ di $y$ rispetto al suo $i$-esimo parametro $x_i$ é:
+
+$ (partial y)/(partial x_i) = lim_(h arrow.r 0) (f(x_1,dots,x_(i-1),x_i + h, x_(i+1), dots, x_n) - f(x_1, dots, x_i, dots, x_n))/(h) $
+
+Per calcolarlo possiamo trattare tutti gli altri parametri come costanti e calcolare la derivata di $y$ rispetto ad $x_i$. Tutte le seguenti notazioni sono equivalenti:
+
+$ (partial y) / (partial x_i)=(partial f)/(partial x_i)= partial_(x_i) f= partial_i f = f_(x_i) = f_i = D_i f = D_(x_i) f $
+
+Possiamo concatenare derivate parziali di una funzione a piú variabili, ognuna rispetto ad una variabile, e ottenere un vettore che chiamiamo *gradiente* della funzione. Supponiamo di avere come input di una funzione $f: RR^n arrow.r RR$ un vettore $n$-dimensioanle $bold(x)=[x_1,x_2,dots,x_n]^top$ e l'output uno scalare. Il gradiente della funzione $f$ rispetto ad $bold(x)$ é un vettore di $n$ derivate parziali:
+
+$ gradient_(bold(x)) f(bold(x)) = [partial_(x_1) f(bold(x)), partial_(x_2) f(bold(x)), dots, partial_(x_n) f(bold(x))]^top $
+
+Quando il nome delle variabili non crea ambiguitá, possiamo sostituire $gradient_(bold(x)) f(bold(x))$ con $gradient f(bold(x))$. Inoltre ci sono le seguenti proprietá:
+
+- $forall bold(A) in RR^(m times n)$ si ha che $gradient_(bold(x)) bold(A x) = bold(A)^top$ e $gradient_(bold(x)) bold(x)^top bold(A)=bold(A)$. É l'equivalente della derivata di base, infatti se abbiamo la variabile che moltiplica una costante e deriviamo per quella variabile, possiamo rimuoverla.
+
+- Per matrici quadrate $bold(A) in RR^(n times n)$ si ha che $gradient_(bold(x)) bold(x)^top bold(A x) = (bold(A) + bold(A)^top) bold(x)$ e in particolare $gradient_(bold(x)) ||bold(x)||^2 = gradient_(bold(x)) bold(x)^top bold(x) = 2 bold(x)$
+
+In modo analogo, per ogni matrice $bold(X)$ si ha che $gradient_(bold(X)) ||bold(X)||^2_F = 2bold(X)$
+
+== Chain Rule
+Nel deep learning calcolare i gradiente non é semplice dato che spesso si ha a che fare con complesse funzioni innestate. In questi casi si utilizza la _chain rule_. Torniamo per un attimo a funzioni con una sola variabile e supponiamo $y=f(g(x))$ dove $y=f(u)$ e $u=g(x)$ sono entrambe differenziabili. La chain rule ci dice che $ (d y)/(d x) = (d y)/(d u) (d u)/(d x) $
+
+Prendendo quindi una funzione con piú variabili, supponiamo $y = f(bold(u))$ abbia le variabili $u_1, u_2, dots, u_m$ dove ogni $u_i = g_i (bold(x))$ ha variabili $x_1, x_2, dots, x_n$ e quindi $bold(u)=g(bold(x))$. Allora la chain rule ci dice che:
+
+$ (partial y) / (partial x_i) = (partial y) / (partial u_1) (partial u_1) / (partial x_i) + (partial y) / (partial u_2) (partial u_2) / (partial x_1) + dots + (partial y) / (partial u_m) (partial u_m) / (partial x_i) "e quindi" gradient_x y = bold(A) gradient_(bold(u)) y $
+
+Dove $bold(A) in RR^(n times m)$ é una matrice che contiene le derivate del vettore $bold(u)$ rispetto al vettore $bold(x)$. Quindi calcolare il gradiente si puó ridurre a calcolare un prodotto vettore-matrice.
+
+= Automatic Differentiation
