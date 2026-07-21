@@ -288,3 +288,86 @@ $ (partial y) / (partial x_i) = (partial y) / (partial u_1) (partial u_1) / (par
 Dove $bold(A) in RR^(n times m)$ é una matrice che contiene le derivate del vettore $bold(u)$ rispetto al vettore $bold(x)$. Quindi calcolare il gradiente si puó ridurre a calcolare un prodotto vettore-matrice.
 
 = Automatic Differentiation
+Fortunatamente non dobbiamo calcolare noi i gradienti a mano, ormai tutti i più recenti framework di deep learning implementano l'_automatic differentiation_ (o _autograd_), ogni volta che i dati passano fra le funzioni il framework costruisce un _computational graph_ che traccia le dipendenze fra i valori. Per calcolare le derivate, l'automatic differentiation cammina questo grafo al contrario applicando la chain rule, l'algoritmo che la applica è chiamato _backpropagation_.
+
+Prendiamo come esempio la funzione $y=2bold(x)^top bold(x)$ dove appunto $bold(x)$ è un vettore colonna. Iniziamo assegnando ad $x$ un valore iniziale:
+
+```python
+x = torch.arange(4.0)
+x
+
+# Output
+# tensor([0., 1., 2., 3.])
+```
+
+Però prima di poter calcolare il gradiente di $y$ rispetto ad $bold(x)$ ci serve un posto dove memorizzarlo. Vogliamo inoltre evitare di allocare sempre nuova memoria dato che la derivata va calcolata tantissime volte per un singolo valore. Per farlo utilizziamo:
+
+```python
+x.requires_grad_(True)
+x.grad # Come valore default ha None
+```
+
+Adesso possiamo calcolare la nostra funzione e assegnare il risultato ad $y$:
+
+```python
+y = 2 * torch.dot(x, x)
+y
+
+# Output
+# tensor(28., grad_fn=<MulBackward0>)
+```
+
+Adesso possiamo calcolare il gradiente di $y$ rispetto ad $x$ chiamando il metodo _backward_ per poi accedere all'attributo _grad_:
+
+```python
+y.backward()
+x.grad
+
+# Output
+# tensor([ 0.,  4.,  8., 12.])
+```
+
+Adesso calcoliamo un'altra funzione di $x$ e il suo gradiente, da notare che PyTorch non pulisce il buffer del gradiente quando ne deve registrare un altro, quello nuovo viene aggiunto al vecchio valore, questo comportamento è utile quando vogliamo ottimizzare funzioni, per resettare il valore però basta chiamare il metodo `x.grad.zero_()`:
+
+```python 
+x.grad.zero_()
+y = x.sum()
+y.backward()
+x.grad
+
+# Output
+# tensor([1., 1., 1., 1.])
+```
+== Backward for Non-Scalar Variables
+Quando $y$ è un vettore allora la rappresentazione della derivata di $y$ rispetto ad un altro vettore $x$ è una matrice chiama _Jacobian_ che contiene le derivate parziali di ogni componente di $y$ rispetto ad ogni componente di $x$, ovviamente per $y$ e $x$ di ordini superiori avremo un tensor di ordine ancora più grande.
+
+Mentre la Jacobiana è utile in tecniche di machine learning più avanzate, nella maggior parte dei casi non ci serve costruirla tutta ma ci interessa ottenere un vettore di gradienti che abbia la stessa forma e dimensione del vettore $x$. Durante l'addestramento infatti avremo che $x$ rappresenta i pesi della rete e riceviamo in input un batch di dati, la loss function calcolerà su $y$ gli errori per ogni batch, a questo punto non ci interessa calcolare il gradiente per ogni componente rispetto ad ogni altro componente, ovvero come ogni peso si è comportato in ogni foto, o meglio lo calcoliamo ma non ci serve memorizzarlo possiamo sommare tutti i gradiente e capire come quel peso si è comportato in generale in quel batch di dati.
+
+== Detaching Computation
+In alcuni casi vogliamo evitare di tracciare il computationl graph per alcuni calcoli. Supponiamo di avere $z=x * y$ e $y = x * x$ ma vogliamo concentrarci sull'influenza _diretta_ di $x$ su $z$ invece che passare per $y$. Per farlo possiamo creare una nuova variabile $u$ che assume lo stesso valore di $y$ ma di cui cancelliamo la "provenienza".
+
+```python 
+x.grad.zero_()
+y = x * x
+u = y.detach()
+z = u * x
+
+z.sum().backward()
+x.grad == u
+
+# Output
+# tensor([True, True, True, True])
+```
+
+Otteniamo che il gradiente è uguale $u$ appunto perchè non sappiamo da cosa deriva e viene quindi trattato come costante, se avessimo saputo che $u = x * x$ allora la derivata di $x^3$ sarebbe stata $3x^2$.
+
+Possiamo comunque calcolare i gradiente di $y$ dato che è $u$ la variabile scollegata:
+
+```python 
+x.grad.zero_()
+y.sum().backward()
+x.grad == 2 * x
+
+# Output
+# tensor([True, True, True, True])
+```
