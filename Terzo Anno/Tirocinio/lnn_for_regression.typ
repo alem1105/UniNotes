@@ -115,3 +115,81 @@ Il secondo metodo è estremamente più veloce, questo infatti somma uno ad uno g
 Le reti neurali sono abbastanza potenti da comprendere i modelli lineari e rappresentarli come reti dove ogni feature è rappresentata da un neurone di ingresso e sono tutti collegati in modo diretto all'output. Quindi: #align(center, image("/assets/image-94.png", width: 40%))
 
 Gli input sono $x_1, dots, x_d$, ci riferiamo a $d$ come numero di inputs oppure la dimensione delle features nel layer di input, l'output è $o_1$ ed è uno soltanto dato che stiamo provando a prevedere un solo valore. Dato che il neurone calcolato è soltanto uno e gli altri sono tutti dati possiamo pensare alla linear regression come una fully connected linear network.
+
+= Generalization
+Per capire meglio questo concetto immaginiamo due studentesse che devono prepararsi per un esame, Ellie ha una memoria incredibile e riesce a ricordare praticamente ogni domanda di ogni esame passato ma questo significa che potrebbe comunque bloccarsi su una nuova domanda mai vista prima. Irenre invece non riesce a ricordare nulla ma è bravissima a trovare schemi ricorrenti. Se l'esame consistesse veramente in solo domande riciclate allora Ellie supererebbe facilmente Irene, infatti anche se quest'ultima ottenesse un buonissimo 90% andrebbe comunque a perdere contro il 100% di Ellie, se però l'esame consistesse interamente in domande nuove allora Irene manterrebbe comunque il suo punteggio del 90% mentre Ellie fallirebbe completamente.
+
+Il nostro obiettivo è quello di trovare dei pattern, ma come siamo sicuri di averne trovato uno invece di aver memorizzato tutti i dati di addestramento? Non abbiamo bisogno di prevedere i prezzi delle azioni di ieri o riconoscere malattie già diagnosticate, dobbiamo trovare pattern in situazioni mai viste prima. Questo problema della generalizzazione è il problema fondamentale del machine learning e di tutta la statistica.
+
+Il fenomeno in cui l'adattamento risulta più vicino al training set che alla distribuzione sottostante è chiamato _overfitting_ e le tecniche per contrastarlo sono chiamate _regularization methods_.
+
+== Training Error and Generalization Error
+In un ambiente standard assumiamo che training set e test set siano presi in modo indipendente dalla stessa distribuzione, questa di solito viene chiamata _IID Assumption_. Da notare che senza questa assunzione non andremmo da nessuna parte, infatti per quale motivo dei dati presi da una distribuzione $P(X,Y)$ dovrebbero dirci come fare previsioni su dati generati da una diversa distribuzione $Q(X,Y)$? Per fare questi passaggi è necessario formulare ipotesi solide su come le due distribuzioni siano collegate. Prima però basiamoci sula caso in cui sono uguali ovvero nella IID.
+
+Iniziamo distinguendo il _training error_ $R_"emp"$ che è calcolato sul training set e il _generalization error_ $R$ che invece è quello che ci aspettiamo dalla distribuzione. Possiamo vedere il generalization error come quello che vedremmo se applichiamo il nostro modello ad una sequenza infinta di dati presi dalla stessa distribuzione. Formalmente il training error è espresso come una somma: $ R_"emp" [bold(X \, y),f] = 1/n sum_(i=1)^n l(bold(x)^((i)), y^((i)), f(bold(x)^((i)))) $
+
+Mentre il generalization error è espresso come un integrale: $ R[p,f]=E_((bold(x),y)tilde.op P) [l(bold(x),y,f(bold(x)))] = integral integral l(bold(x),y,f(bold(x))) p(bold(x),y) d bold(x) d y $
+
+Non possiamo mai calcolare esattamente il generalization error $R$, nessuno infatti ci dirà mai la forma precisa della funzoine di densità $p(bold(x),y)$. Inoltre, non possiamo esaminare una sequenza infinita di dati. Nella pratica quindi dobbiamo fare una stima del generalization error applicando il nostro modello su un test set indipendente su una collezione di esempi $bold(X')$ e di labels $bold(y)'$ che non sono presenti nel dataset.
+
+== Model Complexity
+Di solito quando lavoriamo con tanti dati, il training e il generalization error tendono ad essere simili, quando però lavoriamo con modelli più complessi o con pochi examples ci aspettiamo che il training error scenda ma il generalization error sia abbastanza distante o che salga e questo non ci deve sorprendere. Immaginiamo un modello che, per ogni dataset di $n$ esempi, riesce a trovare un set di parametri che si adattano perfettamente alle labels anche se assegnate in modo randomico, in questo caso anche se il modello si comporta benissimo nel training come possiamo capire qualcosa sul generalization error? Per quel che sappiamo il generalization error potrebbe anche essere peggiore di sparare a caso.
+
+In generale, in assenza di restrizioni sul modello, basandoci soltanto su come il modello si è adattato al training set non possiamo concludere che abbia trovato un pattern generalizzabile.
+
+Quando un modello è in grado di riconoscere delle labels, un basso training error non implica obbligatoriamente anche un basso generalization error ma nemmeno un alto generalization error. Le reti neurali profonde non ci permettono di trarre conclusioni basandoci esclusivamente sull'errore di addestramento, in questi casi dobbiamo fare maggiore affidamento sull'errore di validazioni ovvero quello calcolato su altri examples rispetto al training.
+
+== Underfitting or Overfitting
+Quando compariamo training e validation error dobbiamo stare attenti a due situazioni particolari. Per prima cosa vogliamo vedere se i due errori sono abbastanza grandi ma c'è una leggera differenza fra i due. Se il nostro modello non riesce a ridurre il training error allora il modello è troppo semplice per riuscire a individuare un pattern, inoltre, dato che il gap tra training e generalization error è piccolo significa che possiamo usare un modello più complesso per ottenere risultati migliori. Questo fenomeno prende il nome di *underfitting*.
+
+Per seconda cosa vogliamo controllare se il training error è decisamente inferiore del validation error, questo indica *overfitting*. Da notare che l'overfitting non è sempre una brutta cosa. Soprattutto nel deep learning, i migliori modelli ottengono spesso risultati superiori nel training rispetto alla validazione. Il nostro obiettivo finale è solamente che l'errore di generalizzazione sia basso, se poi c'è un gap con l'errore di addestramento non ci interessa, a meno che questo gap non sia talmento alto da non permettere una discesa dell'errore di validazione. Da notare che se l'errore di addestramento è zero allora il gap di generalizzazione è esattamente uguale all'errore di generalizzazione e quindi l'unico modo per ridurlo è ridurre il gap attraverso tecniche specifiche.
+
+== Model Selection
+Di solito scegliamo il nostro modello finale soltanto dopo aver valutato diversi modelli, questo passo è chiamato appunto _model selection_.
+
+Non dovremmo toccare il nostro set di test finché non abbiamo scelto gli hyperparameters, infatti se dovessimo usare il test set durante la scelta del modello rischiamo di andare in overfitting. Infatti andare in overfitting nel training non è un problema dato che abbiamo poi la valutazione che ci garantisce affidabilità, ma se overfittiamo i dati di test non ce ne accorgeremmo.
+
+Non dobbiamo quindi mai basarci sui dati di test per la scelta del modello, ma non possiamo nemmeno affidarci soltanto a quelli di training perché non siamo in grado di stimare l'errore di generalizzazione su questi. Nelle applicazioni pratiche la questione è ancora più confuso, infatti dovremmo utilizzare i dati di test una sola volta per valutare il modello migliore o per confrontare un numero limitato di modelli ma nella realtà i dati di test raramente vengono scartati dopo un solo utilizzo.
+
+La prassi è quella di dividere il dataset in tre parti, includendo un set di validazione oltre al set di addestramento e di test. Il risultato è che la differenza tra set test e validation è molto ambigua, per questo spesso si utilizza soltanto training e validation.
+
+== Cross-Validation
+Quando i dati per l'addestramento sono pochi non siamo in grado di separare abbastanza dati per creare un buon validation set. Una soluzione comune è il $K-"fold cross-validation"$ dove il training set viene diviso in $K$ sottoinsiemi con nessun elemento in comune, poi l'addestramento e la valutazione vengono effettuati $K$ volte, ogni volta addestrando su $K-1$ sottoinsiemi di training e valutando su l'ultimo sottoinsieme che viene preso come validation. Infine, l'errore di training e validation sono stimati facendo la media dei $K$ risultati.
+
+= Weight Decay
+Dato che abbiamo introdotto il problema dell'overfitting, possiamo introdurre la prima _regularization technique_. Ricordiamo però che possiamo sempre ridurre l'overfitting aggiungendo più dati di addestramento ma ovviamente potrebbe richiedere tanto tempo o spesa oppure potrebbe essere impossibile in determinati casi. Assumiamo quindi di avere già abbastanza dati e di qualità.
+
+Una prima tecnica è quella di limitare il numero di feature, tuttavia limitarsi a scartare feature è un metodo troppo grossolano.
+
+== Norms and Weight Decay
+Invece di manipolare il numero di parametri, il weight decay si basa sul restringere i valori che i parametri possono prendere. Viene anche chiamata $l_2$ regularization fuori dal mondo del deep learning. La tecnica si basa sul fatto che fra tutte le funzioni $f$, la funzione $f=0$ è la più semplice, possiamo quindi misurare la complessità di una funzione in base alla distanza dei suoi parametri da zero. Ma quanto precisi dobbiamo essere mentre misuriamo questa distanza? Non c'è una risposta giusta.
+
+Una semplice interpretazione potrebbe essere quella di misurare la complessità di una funzione lineare $f(bold(x))=bold(w)^top bold(x)$ con qualche norma dei suoi pesi, ad esempio $||bold(w)||^2$. Il metodo più comune per garantire che il vettore dei pesi sia di piccole dimensioni consiste nell'aggiungere la sua norma come termine di penalizzazione al problema di minimizzazione della loss. Il nostro obiettivo quindi non è più quello di minimizzare la prediction loss sulle training labels ma minimizzare la somma della prediction loss e il penalty term. A questo punto se il vettore dei pesi cresce troppo, l'algoritmo di apprendimento potrebbe concentrarsi sul minimizzare la norma dei pesi piuttosto che minimizzare l'errore di training e questo è esattamente quello che vogliamo. Significa infatti che l'algoritmo si trova costretto a fare un compromesso:
+- Se tenta di abbassare troppo l'errore nel training ingrandendo i pesi allora la norma diventa alta.
+- L'algoritmo allora preferirà accettare un errore di training leggermente più alto pur di mantenere i pesi piccoli e contenuti. La loss originariamente l'avevamo espressa come: $ L(bold(w),b) = 1/n sum_(i=1)^n 1/2 (bold(w)^top bold(x)^((i)) + b - y^((i)))^2 $
+
+Dove ricordiamo che: $bold(x)^((i))$ sono le features, $y^((i))$ sono le label di ogni example $i$ e $(bold(w),b)$ sono i pesi e il bias. Per penalizzare il vettore dei pesi dobbiamo aggiungere $||bold(w)||^2$ alla loss, ma come fa il modello a bilanciare la loss standard con questa nuova penalità? Lo facciamo tramite la _regularization constant_ $lambda$, un hyperparameter non negativo il cui valore ottimale viene scelto valutando le prestazioni sul set di validazione. La nuova funzione diventa quindi: $ L(bold(w),b)+ lambda / 2 ||bold(w)||^2 $
+
+In questo modo otteniamo:
+- Se $lambda = 0$ la penale si azzera e si torna alla funzione di loss originale.
+- Se $lambda gt 0$ stiamo imponendo un vincolo che forza la magnitudo di $||bold(w)||$ a rimanere contenuta, più grande è $lambda$ e più severa sarà la penalità per pesi grandi. Si eleva al quadrato sempre per semplicità algebrica per il calcolo delle derivate.
+
+Perché si sceglie la norma $l_2$, e non ad esempio la $l_1$? Differenze comportamentali:
+- La norma $l_2$ eleva al quadrato ogni singolo peso $w_j$, di conseguenza assegna una penalità sproporzionalmente alta ai pesi di grande valore. In questo modo spinge l'algoritmo ad evitare singoli pesi giganti e a distribuire il carico in modo uniforme. Inoltre rende il modello più robusto, se una singola variabile in input contiene rumore o un errore di misurazione, il suo impatto sul risultato sarà limitato perché il peso associato a questa è piccolo.
+- La norma $l_1$ penalizza i pesi in modo proporzionale al loro valore assoluto senza accentuare i valori grandi. Questo porta i pesi ad azzerarsi completamente e il modello concentra tutta la sua capacità solo su un piccolo sottoinsieme di feature. Il vantaggio è che funziona come un meccaniscmo automatico di selezione delle variabili, se un peso diventa zero allora quella specifica feature non serve più per fare la predizione e questo permette di risparmiare memoria, calcolo e risorse nella fase di raccolta, archiviazione o trasmissione dei dati futuri.
+
+La formula con minibatch stochastic gradient descent con regolarizzazione $l_2$ diventa quindi: $ bold(w) arrow.l (1-eta lambda) bold(w) - eta / |cal(B)| sum_(i in cal(B)) bold(x)^((i)) (bold(w)^top bold(x)^((i)) + b - y^((i))) $
+
+Notiamo che i termini dell'equazione sono:
+- $(1 - eta lambda) bold(w)$: sia $eta$ che $lambda$ sono numeri piccoli e positivi e quindi questo termine è un numero leggermente inferiore a $1$, ad ogni passo di addestramento il peso viene prima "ristretto" ovvero moltiplicato per questo numero.
+- Il resto è la classica correzione basata sull'errore commesso dal modello.
+
+Si chiama weight decay perché se azzeriamo l'errore del modello sui dati allora l'aggiornamento dei pesi sarebbe soltanto $ bold(w) arrow.l (1 - eta lambda) bold(w) $
+
+E questo significa che i pesi decadrebbero esponenzialmente verso lo zero ad ogni iterazione.
+
+Notiamo che per il bias $b$ non viene fatta nessuna penalizzazione, questo perché sono i pesi che controllano la pendenza e la reattività delle singole variabili di input e causare quindi overfitting se troppo grandi, il bias invece sposta semplicemente la funzione in alto o in basso e non aggiunge oscillazioni al modello.
+
+Infine notiamo che la $l_2$ regularization e il weight decay potrebbero non essere perfettamente eqeuivalenti per altri algoritmi di ottimizzazione.
+- Nella SGD aggiungere $||bold(w)||^2$ alla loss o moltiplicare i pesi per $(1-eta lambda)$ produce la stessa identica operazione matematica.
+- Con ottimizzatori più complessi però questo non è vero, ad esempio con _Adam_. Infatti esistono varianti come _AdamW_ che utilizzano anche il weight decay.

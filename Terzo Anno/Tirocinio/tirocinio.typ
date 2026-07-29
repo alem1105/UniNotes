@@ -39,3 +39,4 @@
 
 #include "preliminaries.typ"
 #include "lnn_for_regression.typ"
+#include "lnn_for_classification.typ"
