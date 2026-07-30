@@ -6,7 +6,7 @@
 #ilm(
   title: [Automi, Calcolabilità e Complessità],
   author: "Alessio Marini, 2122855",
-  date: datetime(year: 2025, month: 09, day: 27),
+  date: datetime(year: 2026, month: 05, day: 20),
   abstract: [Appunti presi durante il corso di *Automi, Calcolabilità e Complessità* nell'anno *2025/2026* del professore Daniele Venturi. \ 
   Gli appunti li scrivo principalmente per rendere il corso più comprensibile *a me* e anche per imparare il linguaggio Typst. Se li usate per studiare verificate sempre le informazioni 🙏🏻. \ \
   *Contatti*: \
@@ -15,8 +15,11 @@
   []
 )
 
-#set page(numbering: "1")
-#set heading(numbering: "1.")
+#set text(
+  font: "New Computer Modern",
+  size: 11pt, 
+  lang: "it", // Fondamentale per attivare la sillabazione corretta in italiano
+)
 
 #include "automi2.typ"
 #include "calcolabilita2.typ"
