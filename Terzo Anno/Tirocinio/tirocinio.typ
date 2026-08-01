@@ -40,3 +40,5 @@
 #include "preliminaries.typ"
 #include "lnn_for_regression.typ"
 #include "lnn_for_classification.typ"
+#include "multilayer_perceptrons.typ"
+#include "cnn.typ"

@@ -180,3 +180,33 @@ Fino ad ora abbiamo trattato i problemi di apprendimento assumendo che i dati di
 Formalmente indichiamo con $X$ le variabili di input e con $Y$ le variabili target. La distribuzione congiunta dei dati è espressa da $P(X,Y)$. Attraverso le regole della probabilità condizionata, possiamo scomporre $P(X,Y)$ in due modi equivalenti: $ P(X,Y)=P(Y | X) P(X) = P(X|Y) P(Y) $
 
 Un *cambio di distribuzione* si verifica quando la distribuzione dei dati di addestramento $P_"train" (X,Y)$ differisce da quella di test $P_"test" (X,Y)$, esistono 3 casi principali:
+
+*Spostamento delle Covarianti* - Si verifica quando la distribuzione delle feature in input $P(X)$ cambia tra addestramento e test ma la relazione condizionata $P(Y | X)$ rimane identica. Ad esempio un classificatore di gatti e cani addestrato esclusivamente su immagini reali che viene poi testato su disegni o vignette di cani e gatti, la forma e l'aspetto dell'input cambiano ma la definizione di cosa rende un animale un cane o un gatto raimane invariata.
+
+#align(center, image("/assets/image-96.png", width: 50%))
+
+#align(center, image("/assets/image-97.png", width: 50%))
+
+*Spostamento delle Etichette* - Si verifica quando la distribuzione delle etichette cambia mentre la distribuzione condizionata degli input data l'etichetta $P(X|Y)$ rimane invariata. Questo presuppone una relazione causale in cui $Y$ causa $X$. Ad esempio la diagnosi medica, durante un'epidemia dell'influenza la percentuale di popolazione malata $P(Y = "influenza")$ aumenta drammaticamente. Tuttavia, i sintomi presentati da un singolo individuo malato $P(X = "sintomi" | Y = "influenza")$ rimangono esattamente gli stessi.
+
+*Spostamento del concetto* - Si verifica quando cambia direttamente la relazione funzionale tra gli input e le etichette, ovvero la distribuzione condizionata $P(Y|X)$ cambia nel tempo o nello spazio. Ad esempio l'analisi delle tendenze e dei prezzi. La definizione di un "prezzo ragionevole" per una casa o il significato di una parola nello slang cambiano profondamente nel corso dei decenni. Lo stesso input $X$ porta a un'etichetta $Y$ completamente diversa a seconda del momento storico.
+
+=== Correction of Distribution Shift
+...
+Moltiplichiamo la funzione di perdita di ciascun esempio di addestramento per un peso d'importanza.
+
+Supponiamo di voler addestrare un modello di rilevamento di malattie respiratorie:
+- Nel training set l'$80%$ dei pazienti ha piú di $70$ anni e il $20%$ ha meno di 30 anni
+- Nel test set ovvero la popolazione reale il $10%$ ha piú di 70 anni e il $90%$ ha meno di $30$ anni.
+
+Se addestriamo il modello normalmente esso si concentrerá sugli anziani, per correggere questo Covariate Shift calcoliamo $beta (x_"giovane") = (p_"test")/(p_"train")=(0.90)/(0.20) = 4.5$ e calcoliamo anche $beta (x_"anziano")=(0.10)/(0.80)=0.125$.
+
+Quando la rete calcola l'errore durante l'addestramento, moltiplicherá la perdita sui dati dei giovani per $4.5$ e quella degli anziani per $0.125$. In questo modo obblighiamo la rete a dare prioritá assoluta ad imparare bene sui campioni giovani, bilanciando l'errore esattamente per l'ambiente finale in cui lavorerá.
+
+=== A Taxonomy of Learning Problems
+Il modo in cui un modello interagisce con il proprio ambiente definisce la categoria del problema di machine learning.
+- *Batch Learning*: Il modello viene addestrato su un dataset statico, congelato e poi distribuito senza ulteriori aggiornamenti.
+- *Online Learning*: Il modello riceve continuamente dati in tempo reale, fa una predizione, osserva il risultato reale e aggiorna immediatamente i propri parametri.
+- *Multi-Armed Bandits*: Il modello deve scegliere tra diverse azioni e riceve una ricompensa solo per l'azione scelta, dovendo bilanciare l'esplorazione e lo sfruttamento delle conoscenze.
+- *Reinforcement Learning*: Il modello compie azioni in un ambiente dinamico, cambiando lo stato dell'ambiente stesso e ricevendo ricompense differite nel tempo.
+- *Adversarial Learning*: L'ambiente contiene un oppositore attivo che modifica intenzionalmente l'input $X$ per far fallire il modello.
