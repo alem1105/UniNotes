@@ -1,7 +1,7 @@
 #import "@preview/ilm:2.1.1": *
 
 #show: ilm.with(
-  title: [Appunti Tirocinio],
+  title: [Appunti Tirocinio - Deep Learning],
   authors: "Alessio Marini",
   abstract: [Appunti presi per il mio Tirocinio interno presso il Vision-Lab.],
   listing-index: (enabled: false),
@@ -37,8 +37,9 @@
 
 #show heading: set block(above: 1.5em, below: 1em)
 
-#include "preliminaries.typ"
-#include "lnn_for_regression.typ"
-#include "lnn_for_classification.typ"
-#include "multilayer_perceptrons.typ"
-#include "cnn.typ"
+#include "./preliminaries.typ"
+#include "./lnn_for_regression.typ"
+#include "./lnn_for_classification.typ"
+#include "./multilayer_perceptrons.typ"
+#include "./cnn.typ"
+#include "./cv.typ"
