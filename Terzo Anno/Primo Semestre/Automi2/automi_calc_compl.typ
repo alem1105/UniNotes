@@ -18,8 +18,10 @@
 #set text(
   font: "New Computer Modern",
   size: 11pt, 
-  lang: "it", // Fondamentale per attivare la sillabazione corretta in italiano
+  lang: "it",
 )
+
+#set page(numbering: "1")
 
 #include "automi2.typ"
 #include "calcolabilita2.typ"
