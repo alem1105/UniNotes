@@ -1929,6 +1929,7 @@ Come esempio vediamo il precedente linguaggio che abbiamo dimostrato non essere 
       edge(<q2>, <q2>, "-|>", $0 | epsilon arrow.r 0$, label-pos: 0.5, label-side: left, bend: 130deg),
       edge(<q2>, <q3>, "-|>", $1 | 0 arrow.r epsilon$, label-pos: 0.5, label-side: left, bend: 20deg),
       edge(<q3>, <q4>, "-|>", $epsilon | \$ arrow.r epsilon$, label-pos: 0.5, label-side: left, bend: 20deg),
+      edge(<q3>, <q3>, "-|>", $1 | 0 arrow.r epsilon$, label-pos: 0.5, label-side: right, bend: -130deg),
     ))
   ],
   [
