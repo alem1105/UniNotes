@@ -2074,7 +2074,7 @@ Quindi, in generale, abbiamo quest situazione:
 - Abbia solo transizioni che fanno PUSH o POP non entrambe.
 
 Per ogni coppia di stati $(p,q)$ la CFG ha una variabile $A_(p q)$ che genera tutte le stringhe che portano $M$ da $p$ a $q$ senza cambiare l'altezza dello stack. Le regole della grammatica si basano sul comportamento della pila nel passare da $p$ a $q$ e ce ne sono di 3 tipi:
-- *Stare Fermi*: $forall p, A_(p p) arrow.r epsilon$. Infatti per andare da $p$ a $p$ senza modificare la pia non dobbiamo leggere nulla.
+- *Stare Fermi*: $forall p, A_(p p) arrow.r epsilon$. Infatti per andare da $p$ a $p$ senza modificare la pila non dobbiamo leggere nulla.
 - Se nell'andare da $p$ a $q$ l'automa passa per un punto $r$ in cui la pila torna vuota allora il passaggio è la somma dei due passaggi. (Ovvero il simbolo pushato all'inizio non è quello che viene pop-ato alla fine).
 
 $ A_(p q) arrow.r A_(p r) A_(r q) space space space
