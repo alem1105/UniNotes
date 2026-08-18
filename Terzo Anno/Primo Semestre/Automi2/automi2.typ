@@ -1673,7 +1673,7 @@ Dato un DFA $D=(Q,Sigma,delta,q_0,F)$ voglio definire $G=(V,Sigma,R,S)$ t.c. $L(
 2. $L(G) subset.eq L(D)$. Sia $w in L(G)$ allora esiste una derivazione $S op(arrow.double.r)^* w$ ma le produzioni in $G$ sono tutte del tipo $(A arrow.r a B "o" A arrow.r epsilon)$ quindi la derivazione avrà forma $ V_q_0 arrow.double.r w_1 V_q_1 arrow.double.r ... arrow.double.r w_1 ... w_k V_q_k arrow.double.r w_1 ... w_k $
   Ogni passo della derivazione è possibile per la regola $(V_q_i arrow.r w_(i+1) V_(q_(i+1))) in R$ e per costruzione abbiamo che:
   - $delta(q_i, w_(i+1))=q_(i+1) in delta$
-  - $(V_q_k arrow.r epsilon) in R arrow.double.r.l q_k in F$ù
+  - $(V_q_k arrow.r epsilon) in R arrow.double.r.l q_k in F$
 
   La stringa viene quindi riconosciuta correttamente dall'automa.
 
