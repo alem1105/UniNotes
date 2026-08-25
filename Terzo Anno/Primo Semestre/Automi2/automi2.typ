@@ -1673,7 +1673,7 @@ Dato un DFA $D=(Q,Sigma,delta,q_0,F)$ voglio definire $G=(V,Sigma,R,S)$ t.c. $L(
 2. $L(G) subset.eq L(D)$. Sia $w in L(G)$ allora esiste una derivazione $S op(arrow.double.r)^* w$ ma le produzioni in $G$ sono tutte del tipo $(A arrow.r a B "o" A arrow.r epsilon)$ quindi la derivazione avrà forma $ V_q_0 arrow.double.r w_1 V_q_1 arrow.double.r ... arrow.double.r w_1 ... w_k V_q_k arrow.double.r w_1 ... w_k $
   Ogni passo della derivazione è possibile per la regola $(V_q_i arrow.r w_(i+1) V_(q_(i+1))) in R$ e per costruzione abbiamo che:
   - $delta(q_i, w_(i+1))=q_(i+1) in delta$
-  - $(V_q_k arrow.r epsilon) in R arrow.double.r.l q_k in F$ù
+  - $(V_q_k arrow.r epsilon) in R arrow.double.r.l q_k in F$
 
   La stringa viene quindi riconosciuta correttamente dall'automa.
 
@@ -2074,7 +2074,7 @@ Quindi, in generale, abbiamo quest situazione:
 - Abbia solo transizioni che fanno PUSH o POP non entrambe.
 
 Per ogni coppia di stati $(p,q)$ la CFG ha una variabile $A_(p q)$ che genera tutte le stringhe che portano $M$ da $p$ a $q$ senza cambiare l'altezza dello stack. Le regole della grammatica si basano sul comportamento della pila nel passare da $p$ a $q$ e ce ne sono di 3 tipi:
-- *Stare Fermi*: $forall p, A_(p p) arrow.r epsilon$. Infatti per andare da $p$ a $p$ senza modificare la pia non dobbiamo leggere nulla.
+- *Stare Fermi*: $forall p, A_(p p) arrow.r epsilon$. Infatti per andare da $p$ a $p$ senza modificare la pila non dobbiamo leggere nulla.
 - Se nell'andare da $p$ a $q$ l'automa passa per un punto $r$ in cui la pila torna vuota allora il passaggio è la somma dei due passaggi. (Ovvero il simbolo pushato all'inizio non è quello che viene pop-ato alla fine).
 
 $ A_(p q) arrow.r A_(p r) A_(r q) space space space
