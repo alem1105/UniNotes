@@ -29,13 +29,64 @@ jobs:
 
       - name: Detect changed course folders
         id: folders
+        env:
+          EVENT_BEFORE: ${{ github.event.before }}
         run: |
-          commit_count=$(git rev-list --count HEAD)
-          if [ "$commit_count" -le 1 ]; then
-            changed_dirs=""
-          else
-            changed_dirs=$(git diff --name-only HEAD~1 HEAD -- '*.typ' | grep '/' | cut -d/ -f1 | sort -u)
+          set -euo pipefail
+
+          base="$EVENT_BEFORE"
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            commit_count=$(git rev-list --count HEAD)
+            if [ "$commit_count" -le 1 ]; then
+              echo "Prima commit della repo: nessuna diff calcolabile"
+              {
+                echo "dirs<<EOF"
+                echo ""
+                echo "EOF"
+              } >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            base="HEAD~1"
+          elif ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            git fetch --depth=64 origin "$base" || true
+            if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+              echo "::warning::Impossibile recuperare la commit di base $base, uso HEAD~1"
+              base="HEAD~1"
+            fi
           fi
+
+          echo "Confronto tra $base e HEAD"
+
+          changed_files=$(git diff --name-only "$base" HEAD -- '*.typ' || true)
+
+          declare -A course_dirs
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            dir=$(dirname "$f")
+            found=""
+            while [ "$dir" != "." ] && [ "$dir" != "/" ]; do
+              if [ -f "$dir/main.typ" ]; then
+                found="$dir"
+                break
+              fi
+              dir=$(dirname "$dir")
+            done
+            if [ -n "$found" ]; then
+              course_dirs["$found"]=1
+            else
+              echo "::warning::Nessun main.typ trovato nelle cartelle superiori di '$f', file saltato"
+            fi
+          done <<< "$changed_files"
+
+          changed_dirs=""
+          for d in "${!course_dirs[@]}"; do
+            changed_dirs+="$d"$'\n'
+          done
+          changed_dirs=${changed_dirs%$'\n'}
+
+          echo "Cartelle-corso da ricompilare:"
+          echo "$changed_dirs"
+
           {
             echo "dirs<<EOF"
             echo "$changed_dirs"
