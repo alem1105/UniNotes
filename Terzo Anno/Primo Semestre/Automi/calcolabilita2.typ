@@ -7,7 +7,7 @@
 = Calcolabilità
 Iniziamo introducendo il concetto di *Macchina di Turing*, queste corrispondono al modello astratto di computer, tutto ciò che è calcolabile per un computer lo è anche per una TM.
 
-Una Turing Machine possiede un nastro infinito e una testina con la quale può leggere e scrivere sul nastro. Inizializziamo il nastro scrivendoci sopra la stringa di input, i restanti slot sono riempiti con il carattere _blank_ $union.sq$. I movimenti possibili per la testina sono _dx, sx, lettura, scrittura_ e continua a computare fino al raggiungimento lo stato di accettazione o rifiuto, se non raggiunge nessuno dei due allora va in loop.
+Una Turing Machine possiede un nastro infinito e una testina con la quale può leggere e scrivere sul nastro. Inizializziamo il nastro scrivendoci sopra la stringa di input, i restanti slot sono riempiti con il carattere _blank_ $union.sq$. I movimenti possibili per la testina sono _dx, sx, lettura, scrittura_ e continua a computare fino al raggiungimento dello stato di accettazione o rifiuto, se non raggiunge nessuno dei due allora va in loop.
 
 #showybox(
   frame: (
