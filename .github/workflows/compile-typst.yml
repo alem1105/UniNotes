@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 2
 
       - name: Setup Typst
-        uses: typst-community/setup-typst@v1
+        uses: typst-community/setup-typst@v5
 
       - name: Detect changed course folders
         id: folders
