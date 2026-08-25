@@ -188,7 +188,7 @@ Quindi $S$ su input $w = w_1, ..., w_n$ si comporta così:
 
 == TM non Deterministica
 Formalmente abbiamo che: $ delta: Q times Gamma arrow.r cal(P)(Q times Gamma times {L,R}) $
-Il concetto di non determinismo è uguale a quelllo che troviamo negli NFA. Semplicemente in questo caso quando la TM deve fare una mossa potrebbe avere più azioni possibili da svolgere e come per gli NFA, creiamo più percorsi indipendenti.
+Il concetto di non determinismo è uguale a quello che troviamo negli NFA. Semplicemente in questo caso quando la TM deve fare una mossa potrebbe avere più azioni possibili da svolgere e come per gli NFA, creiamo più percorsi indipendenti.
 
 Simuliamo una NTM $N$ con una TM $D$, per farlo consideriamo l'albero di computazione di $N$ che esploriamo con una BFS. Non effettuiamo la ricerca con una DFS perché dato che vogliamo simulare il parallelismo se eseguissimo una DFS questa potrebbe continuare all'infinito su un ramo.
 
