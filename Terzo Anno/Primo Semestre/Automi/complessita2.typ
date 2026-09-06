@@ -24,7 +24,7 @@ In questa sezione del corso ci si concentra sull'efficienza degli algoritmi (ovv
   ),
   title: [*Definizione* - Complessità di Tempo],
   [
-    Sia $M$ una TM decisore, la sua *complessità di tempo* é $ T:NN arrow.r NN "t.c." T(n)="max"_(x in Sigma^*, |x|=n){\# "pasi richiesti da" M(x)} $
+    Sia $M$ una TM decisore, la sua *complessità di tempo* é $ T:NN arrow.r NN "t.c." T(n)="max"_(x in Sigma^*, |x|=n){\# "passi richiesti da" M(x)} $
     Ovvero $T(n)$ sia il massimo numero di passi necessari a $M$ per processare una stringa lunga $n$
   ]
 )
@@ -265,7 +265,7 @@ Un circuito booleano con fan-out massimo 1 è definito *formula* booleana.
   ]
 )
 
-*Osservazione* - Circuit-SAT $in "EXP"$ perché posso deciderlo in $O(|chevron.l C  chevron.r dot 2^n)$
+*Osservazione* - Circuit-SAT $in "EXP"$ perché posso deciderlo in $O(|chevron.l C  chevron.r | dot 2^n)$
 
 Esistono alcune varianti:
 - `FORMULA-SAT`: $C$ é una formula
@@ -687,7 +687,7 @@ Per trasformare questa griglia in logica, inventiamo una variabile booleana $x_(
 
 La grande formula $phi_N$ é un insieme di 4 AND fra formule che impongono delle regole al tableau affinché si comporti come una vera TM.
 
-_METERE FOTO CARINA_
+_METTERE FOTO CARINA_
 
 Costruisco la formula $ phi_N = phi_"cell" and phi_"start" and phi_"move" and phi_"accept" $
 
